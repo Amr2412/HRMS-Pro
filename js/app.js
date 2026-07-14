@@ -147,6 +147,7 @@ function addEmployee() {
     const code = document.getElementById("empCode").value.trim();
     const name = document.getElementById("empName").value.trim();
     const department = document.getElementById("empDepartment").value;
+    const section = document.getElementById("empSection").value.trim();
     const jobTitle = document.getElementById("empJob").value.trim();
     const location = document.getElementById("empLocation").value.trim();
     const gender = document.getElementById("empGender").value;
@@ -163,7 +164,7 @@ function addEmployee() {
     }
 
     employees.push({
-        code, name, department, section: "", jobTitle,
+        code, name, department, section: section || department, jobTitle,
         manager: "-", location, status: "Active",
         hireDate: new Date().toISOString().split("T")[0],
         age: 0, gender, employeeType: empType,
@@ -181,7 +182,7 @@ function addEmployee() {
 }
 
 function clearForm() {
-    ["empCode", "empName", "empJob", "empLocation"].forEach(id => {
+    ["empCode", "empName", "empJob", "empLocation", "empSection"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
     });
