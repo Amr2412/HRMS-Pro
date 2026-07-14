@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Performance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html" class="active"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Performance Management</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Employees Evaluated</h6><h2 id="perfEvaluated">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Avg Score (2025)</h6><h2 id="perfAvg">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>PIP Employees</h6><h2 id="perfPip">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Top Performers</h2></div></div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">Performance List</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success"><tr><th>Code</th><th>Name</th><th>Department</th><th>Grade</th><th>Score 2023</th><th>Score 2024</th><th>Score 2025</th><th>PIP</th></tr></thead>
+                        <tbody id="perfTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let employees = [];
+async function loadPerf() {
+    try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
+    const evaluated = employees.filter(e => e.performance2025 > 0);
+    document.getElementById("perfEvaluated").textContent = evaluated.length;
+    const avg = evaluated.length ? (evaluated.reduce((s,e) => s + e.performance2025, 0) / evaluated.length).toFixed(1) : 0;
+    document.getElementById("perfAvg").textContent = avg + "/5";
+    document.getElementById("perfPip").textContent = employees.filter(e => e.pip).length;
+
+    const ratingLabel = s => s >= 5 ? "Excellent" : s >= 4 ? "Very Good" : s >= 3 ? "Good" : s >= 1 ? "Needs Improvement" : "N/A";
+    const ratingColor = s => s >= 5 ? "success" : s >= 4 ? "success" : s >= 3 ? "warning" : s >= 1 ? "danger" : "secondary";
+
+    document.getElementById("perfTable").innerHTML = employees.map(e => `
+        <tr>
+            <td><strong>${e.code}</strong></td>
+            <td>${e.name}</td>
+            <td>${e.department}</td>
+            <td>${e.grade}</td>
+            <td>${e.performance2023 || "-"}</td>
+            <td>${e.performance2024 || "-"}</td>
+            <td><span class="badge bg-${ratingColor(e.performance2025)}">${e.performance2025 ? e.performance2025 + "/5 - " + ratingLabel(e.performance2025) : "N/A"}</span></td>
+            <td>${e.pip ? '<span class="badge bg-danger">Yes</span>' : '<span class="badge bg-success">No</span>'}</td>
+        </tr>`).join("");
+}
+loadPerf();
+</script>
+</body>
+</html>

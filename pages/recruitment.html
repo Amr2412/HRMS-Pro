@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Recruitment</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .hiring-curve { position: relative; height: 300px; background: #f8f9fa; border-radius: 10px; overflow: hidden; }
+        .curve-canvas { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html" class="active"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Recruitment</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Annual Target</h6><h2 id="annualTarget">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Hired This Year</h6><h2 id="hiredCount" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Remaining</h6><h2 id="remaining" style="color:#dc3545">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Progress</h6><h2 id="progressPct" style="color:#0d6efd">0%</h2></div></div></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-success text-white d-flex justify-content-between">
+                        <span><i class="fa-solid fa-chart-line"></i> Hiring Curve - Target vs Actual</span>
+                        <select class="form-select form-select-sm" style="width:auto" id="yearSelect"></select>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="hiringCurveCanvas" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Department</div>
+                    <div class="card-body bar-chart" id="recruitDeptChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
+                <span><i class="fa-solid fa-table"></i> Quarterly Breakdown</span>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success">
+                            <tr><th>Quarter</th><th>Target</th><th>Hired</th><th>Remaining</th><th>Progress</th><th>Daily Avg Needed</th></tr>
+                        </thead>
+                        <tbody id="quarterTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white"><i class="fa-solid fa-list"></i> Requisitions</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success"><tr><th>Req ID</th><th>Department</th><th>Job Title</th><th>Needed</th><th>Filled</th><th>Progress</th><th>Status</th></tr></thead>
+                        <tbody>
+                            <tr><td>REQ-001</td><td>النخيل</td><td>Farm Supervisor</td><td>5</td><td>3</td><td><div class="progress" style="height:20px"><div class="progress-bar bg-success" style="width:60%">60%</div></div></td><td><span class="badge bg-warning text-dark">Open</span></td></tr>
+                            <tr><td>REQ-002</td><td>الحسابات</td><td>Accountant</td><td>2</td><td>2</td><td><div class="progress" style="height:20px"><div class="progress-bar bg-success" style="width:100%">100%</div></div></td><td><span class="badge bg-success">Closed</span></td></tr>
+                            <tr><td>REQ-003</td><td>البيانات</td><td>Backend Developer</td><td>3</td><td>1</td><td><div class="progress" style="height:20px"><div class="progress-bar bg-warning" style="width:33%">33%</div></div></td><td><span class="badge bg-warning text-dark">Open</span></td></tr>
+                            <tr><td>REQ-004</td><td>الجوده</td><td>Quality Controller</td><td>4</td><td>4</td><td><div class="progress" style="height:20px"><div class="progress-bar bg-success" style="width:100%">100%</div></div></td><td><span class="badge bg-success">Closed</span></td></tr>
+                            <tr><td>REQ-005</td><td>المشتريات المخازن</td><td>Warehouse Worker</td><td>6</td><td>2</td><td><div class="progress" style="height:20px"><div class="progress-bar bg-warning" style="width:33%">33%</div></div></td><td><span class="badge bg-warning text-dark">Open</span></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const ANNUAL_TARGET = 50;
+const QUARTERLY_TARGETS = [
+    { name: "Q1 (Jan-Mar)", target: 12, days: 90 },
+    { name: "Q2 (Apr-Jun)", target: 14, days: 91 },
+    { name: "Q3 (Jul-Sep)", target: 13, days: 92 },
+    { name: "Q4 (Oct-Dec)", target: 11, days: 92 }
+];
+
+let employees = [];
+async function loadRecruit() {
+    try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
+    const saved = localStorage.getItem("hrms_employees");
+    if (saved) employees = JSON.parse(saved);
+
+    const now = new Date();
+    const thisYear = now.getFullYear();
+    const thisYearHires = employees.filter(e => new Date(e.hireDate).getFullYear() === thisYear);
+    const hired = thisYearHires.length;
+    const remaining = Math.max(ANNUAL_TARGET - hired, 0);
+    const pct = ANNUAL_TARGET > 0 ? ((hired / ANNUAL_TARGET) * 100).toFixed(1) : 0;
+
+    document.getElementById("annualTarget").textContent = ANNUAL_TARGET;
+    document.getElementById("hiredCount").textContent = hired;
+    document.getElementById("remaining").textContent = remaining;
+    document.getElementById("progressPct").textContent = pct + "%";
+
+    // Quarterly
+    let qHtml = '';
+    let cumHired = 0;
+    QUARTERLY_TARGETS.forEach((q, i) => {
+        const qHires = thisYearHires.filter(e => {
+            const m = new Date(e.hireDate).getMonth();
+            if (i === 0) return m >= 0 && m <= 2;
+            if (i === 1) return m >= 3 && m <= 5;
+            if (i === 2) return m >= 6 && m <= 8;
+            return m >= 9 && m <= 11;
+        }).length;
+        cumHired += qHires;
+        const remain = Math.max(q.target - qHires, 0);
+        const prog = q.target > 0 ? ((qHires / q.target) * 100).toFixed(0) : 0;
+        const dailyNeeded = remain > 0 ? (remain / q.days).toFixed(1) : 0;
+        const barColor = prog >= 100 ? 'bg-success' : prog >= 50 ? 'bg-warning' : 'bg-danger';
+        qHtml += `<tr>
+            <td><strong>${q.name}</strong></td>
+            <td>${q.target}</td><td>${qHires}</td><td>${remain}</td>
+            <td><div class="progress" style="height:20px"><div class="progress-bar ${barColor}" style="width:${Math.min(prog,100)}%">${prog}%</div></div></td>
+            <td>${dailyNeeded > 0 ? dailyNeeded + '/day' : '<span class="text-success">Done</span>'}</td>
+        </tr>`;
+    });
+    document.getElementById("quarterTable").innerHTML = qHtml;
+
+    // Hiring Curve Chart
+    drawHiringCurve(thisYearHires, thisYear);
+
+    // Dept chart
+    const deptCounts = {};
+    thisYearHires.forEach(e => { deptCounts[e.department] = (deptCounts[e.department] || 0) + 1; });
+    const max = Math.max(...Object.values(deptCounts), 1);
+    document.getElementById("recruitDeptChart").innerHTML = Object.entries(deptCounts).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div>
+        <span class="bar-value">${v}</span></div>`).join("") || '<div class="text-center text-muted">No hires this year</div>';
+}
+
+function drawHiringCurve(hires, year) {
+    const canvas = document.getElementById("hiringCurveCanvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = 300;
+    const W = canvas.width, H = canvas.height;
+    const pad = {top:30, right:30, bottom:50, left:60};
+    const gW = W - pad.left - pad.right;
+    const gH = H - pad.top - pad.bottom;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Monthly actual
+    const monthlyActual = new Array(12).fill(0);
+    hires.forEach(e => {
+        const m = new Date(e.hireDate).getMonth();
+        monthlyActual[m]++;
+    });
+
+    // Cumulative
+    const monthlyCumulative = [];
+    let cum = 0;
+    monthlyActual.forEach(v => { cum += v; monthlyCumulative.push(cum); });
+
+    // Target cumulative (linear)
+    const monthlyTarget = [];
+    for (let i = 0; i < 12; i++) {
+        monthlyTarget.push(((i + 1) / 12) * ANNUAL_TARGET);
+    }
+
+    const maxVal = Math.max(ANNUAL_TARGET, ...monthlyCumulative, ...monthlyTarget) * 1.1;
+
+    // Grid
+    ctx.strokeStyle = "#e9ecef";
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 5; i++) {
+        const y = pad.top + (gH / 5) * i;
+        ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+        ctx.fillStyle = "#666"; ctx.font = "11px sans-serif"; ctx.textAlign = "right";
+        ctx.fillText(Math.round(maxVal - (maxVal / 5) * i), pad.left - 8, y + 4);
+    }
+
+    // X labels
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    months.forEach((m, i) => {
+        const x = pad.left + (gW / 11) * i;
+        ctx.fillStyle = "#666"; ctx.font = "11px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(m, x, H - pad.bottom + 20);
+    });
+
+    // Target line (dashed)
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle = "#dc3545";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    monthlyTarget.forEach((v, i) => {
+        const x = pad.left + (gW / 11) * i;
+        const y = pad.top + gH - (v / maxVal) * gH;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Actual line
+    ctx.strokeStyle = "#198754";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    monthlyCumulative.forEach((v, i) => {
+        const x = pad.left + (gW / 11) * i;
+        const y = pad.top + gH - (v / maxVal) * gH;
+        i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    // Actual dots
+    monthlyCumulative.forEach((v, i) => {
+        const x = pad.left + (gW / 11) * i;
+        const y = pad.top + gH - (v / maxVal) * gH;
+        ctx.fillStyle = "#198754";
+        ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#333"; ctx.font = "bold 10px sans-serif"; ctx.textAlign = "center";
+        ctx.fillText(v, x, y - 10);
+    });
+
+    // Legend
+    ctx.fillStyle = "#198754"; ctx.fillRect(W - 200, 10, 12, 12);
+    ctx.fillStyle = "#333"; ctx.font = "12px sans-serif"; ctx.textAlign = "left";
+    ctx.fillText("Actual Hired", W - 183, 20);
+    ctx.strokeStyle = "#dc3545"; ctx.lineWidth = 2; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(W - 200, 38); ctx.lineTo(W - 188, 38); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillText("Target", W - 183, 42);
+}
+
+window.addEventListener("resize", () => {
+    const saved = localStorage.getItem("hrms_employees");
+    if (saved) employees = JSON.parse(saved);
+    const thisYear = new Date().getFullYear();
+    const hires = employees.filter(e => new Date(e.hireDate).getFullYear() === thisYear);
+    drawHiringCurve(hires, thisYear);
+});
+
+loadRecruit();
+</script>
+</body>
+</html>

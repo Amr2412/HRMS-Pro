@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Employees</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html" class="active"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <h2>Employees</h2>
+        <div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div>
+    </div>
+
+    <div class="container-fluid p-4">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">Employee Master</h4>
+            <div class="d-flex gap-2">
+                <button class="btn btn-outline-success" data-bs-toggle="modal" data-bs-target="#importModal"><i class="fa-solid fa-file-import"></i> Import Excel</button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addEmployeeModal"><i class="fa-solid fa-plus"></i> Add Employee</button>
+            </div>
+        </div>
+
+        <div class="row mb-4">
+            <div class="col-md-3"><input type="text" id="searchEmployee" class="form-control" placeholder="Search by name, dept..."></div>
+            <div class="col-md-2">
+                <select class="form-select" id="departmentFilter">
+                    <option value="">All Departments</option>
+                    <option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option><option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option><option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option><option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option><option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option><option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option><option>الفنيه</option><option>المشاتل</option><option>الصيانة</option><option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" id="locationFilter">
+                    <option value="">All Locations</option>
+                    <option>H.O Dokki</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara</option><option>Orabi</option><option>Sadat</option><option>October</option><option>Dokki Store</option><option>Helioplies</option><option>Shooting Club</option>
+                </select>
+            </div>
+            <div class="col-md-2"><button class="btn btn-success w-100" onclick="exportToCSV()"><i class="fa-solid fa-file-excel"></i> Export</button></div>
+        </div>
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Employees</h6><h2 id="totalEmployees">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Active</h6><h2 id="activeEmployees">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Male</h6><h2 id="maleEmployees">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Female</h6><h2 id="femaleEmployees">0</h2></div></div></div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">Employees List</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-success">
+                            <tr><th>ID</th><th>Employee</th><th>Department</th><th>Position</th><th>Manager</th><th>Location</th><th>Status</th><th width="150">Actions</th></tr>
+                        </thead>
+                        <tbody id="employeesTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-user-plus text-success"></i> Add Employee</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label">Code *</label><input type="text" id="empCode" class="form-control" placeholder="e.g. 1021"></div>
+                <div class="col-md-4"><label class="form-label">Full Name *</label><input type="text" id="empName" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Gender</label><select id="empGender" class="form-select"><option>Male</option><option>Female</option></select></div>
+                <div class="col-md-4"><label class="form-label">Department *</label><select id="empDepartment" class="form-select"><option value="">Select</option><option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option><option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option><option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option><option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option><option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option><option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option><option>الفنيه</option><option>المشاتل</option><option>الصيانة</option><option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option></select></div>
+                <div class="col-md-4"><label class="form-label">Job Title *</label><input type="text" id="empJob" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Location *</label><select id="empLocation" class="form-select"><option value="">Select</option><option>H.O Dokki</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara</option><option>Orabi</option><option>Sadat</option><option>October</option><option>Dokki Store</option><option>Helioplies</option><option>Shooting Club</option></select></div>
+                <div class="col-md-6"><label class="form-label">Employee Type</label><select id="empType" class="form-select"><option>White Collar</option><option>Blue Collar</option></select></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-success" onclick="addEmployee()"><i class="fa-solid fa-check"></i> Save</button>
+        </div>
+    </div></div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-user-pen text-success"></i> Edit Employee</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <input type="hidden" id="editEmpCode">
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label">Name</label><input type="text" id="editEmpName" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Department</label><select id="editEmpDepartment" class="form-select"><option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option><option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option><option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option><option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option><option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option><option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option><option>الفنيه</option><option>المشاتل</option><option>الصيانة</option><option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option></select></div>
+                <div class="col-md-6"><label class="form-label">Job Title</label><input type="text" id="editEmpJob" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Location</label><select id="editEmpLocation" class="form-select"><option>H.O Dokki</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara</option><option>Orabi</option><option>Sadat</option><option>October</option><option>Dokki Store</option><option>Helioplies</option><option>Shooting Club</option></select></div>
+                <div class="col-md-4"><label class="form-label">Gender</label><select id="editEmpGender" class="form-select"><option>Male</option><option>Female</option></select></div>
+                <div class="col-md-4"><label class="form-label">Grade</label><input type="text" id="editEmpGrade" class="form-control"></div>
+                <div class="col-md-4"><label class="form-label">Employee Type</label><select id="editEmpType" class="form-select"><option>White Collar</option><option>Blue Collar</option></select></div>
+                <div class="col-md-6"><label class="form-label">Exit Date (marks as Inactive)</label><input type="date" id="editEmpExitDate" class="form-control"></div>
+                <div class="col-md-6"><label class="form-label">Exit Reason</label><input type="text" id="editEmpExitReason" class="form-control" placeholder="e.g. Resignation, Termination"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-success" onclick="saveEdit()"><i class="fa-solid fa-check"></i> Save Changes</button>
+        </div>
+    </div></div>
+</div>
+
+<!-- View Modal -->
+<div class="modal fade" id="viewEmployeeModal" tabindex="-1">
+    <div class="modal-dialog"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-user text-success"></i> Employee Profile</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body" id="viewModalBody"></div>
+        <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+    </div></div>
+</div>
+
+<!-- Import Excel Modal -->
+<div class="modal fade" id="importModal" tabindex="-1">
+    <div class="modal-dialog modal-lg"><div class="modal-content">
+        <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-file-import text-success"></i> Import from Excel</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+        <div class="modal-body">
+            <div class="alert alert-info"><small><strong>Supported columns:</strong> Code, Name, Department, Section, Job Title, Manager, Location, Gender, Status, Grade, Employee Type, Hire Date, Age</small></div>
+            <div class="mb-3">
+                <label class="form-label">Select Excel File (.xlsx, .xls, .csv)</label>
+                <input type="file" id="excelFile" class="form-control" accept=".xlsx,.xls,.csv">
+            </div>
+            <div id="importPreview" style="display:none;">
+                <h6>Preview (<span id="importCount">0</span> employees found)</h6>
+                <div class="table-responsive" style="max-height:300px;overflow-y:auto;">
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-success" id="previewHead"></thead>
+                        <tbody id="previewBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button class="btn btn-success" id="confirmImportBtn" disabled onclick="confirmImport()"><i class="fa-solid fa-check"></i> Import All</button>
+        </div>
+    </div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="../js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Analytics</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html" class="active"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>HR Analytics</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Headcount</h6><h2 id="aHeadcount">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Average Age</h6><h2 id="aAvgAge">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>White Collar</h6><h2 id="aWhite">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Blue Collar</h6><h2 id="aBlue">0</h2></div></div></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card"><div class="card-header bg-success text-white"><i class="fa-solid fa-venus-mars"></i> Gender Distribution</div>
+                    <div class="card-body bar-chart" id="aGenderChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card"><div class="card-header bg-success text-white"><i class="fa-solid fa-shield-halved"></i> Status Distribution</div>
+                    <div class="card-body bar-chart" id="aStatusChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card"><div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Department</div>
+                    <div class="card-body bar-chart" id="aDeptChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card"><div class="card-header bg-success text-white"><i class="fa-solid fa-star"></i> Performance Distribution (2025)</div>
+                    <div class="card-body bar-chart" id="aPerfChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white"><i class="fa-solid fa-list"></i> Upcoming Reports</div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fa-solid fa-building text-success me-2"></i>Headcount by Department</li>
+                    <li class="list-group-item"><i class="fa-solid fa-location-dot text-success me-2"></i>Employees by Location</li>
+                    <li class="list-group-item"><i class="fa-solid fa-arrow-up text-success me-2"></i>Promotion Rate</li>
+                    <li class="list-group-item"><i class="fa-solid fa-arrow-trend-down text-warning me-2"></i>Turnover Trend</li>
+                    <li class="list-group-item"><i class="fa-solid fa-right-from-bracket text-danger me-2"></i>Exit Reasons</li>
+                    <li class="list-group-item"><i class="fa-solid fa-cake-candles text-info me-2"></i>Retirement Forecast</li>
+                    <li class="list-group-item"><i class="fa-solid fa-clock text-success me-2"></i>Average Service Years</li>
+                    <li class="list-group-item"><i class="fa-solid fa-vest text-success me-2"></i>Blue Collar vs White Collar</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let employees = [];
+async function loadAnalytics() {
+    try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
+
+    document.getElementById("aHeadcount").textContent = employees.length;
+    const ages = employees.filter(e => e.age > 0);
+    document.getElementById("aAvgAge").textContent = ages.length ? Math.round(ages.reduce((s,e) => s + e.age, 0) / ages.length) : 0;
+    document.getElementById("aWhite").textContent = employees.filter(e => e.employeeType === "White Collar").length;
+    document.getElementById("aBlue").textContent = employees.filter(e => e.employeeType === "Blue Collar").length;
+
+    renderBar("aGenderChart", employees, "gender");
+    renderBar("aStatusChart", employees, "status");
+    renderBar("aDeptChart", employees, "department");
+
+    const perfCounts = {};
+    employees.forEach(e => { if (e.performance2025 > 0) { const label = e.performance2025 + "/5"; perfCounts[label] = (perfCounts[label] || 0) + 1; } });
+    const perfMax = Math.max(...Object.values(perfCounts), 1);
+    document.getElementById("aPerfChart").innerHTML = Object.entries(perfCounts).sort((a,b) => b[0].localeCompare(a[0])).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/perfMax)*100}%"></div></div><span class="bar-value">${v}</span></div>`).join("");
+}
+
+function renderBar(id, data, field) {
+    const counts = {};
+    data.forEach(e => { counts[e[field]] = (counts[e[field]] || 0) + 1; });
+    const max = Math.max(...Object.values(counts), 1);
+    document.getElementById(id).innerHTML = Object.entries(counts).sort((a,b) => b[1]-a[1]).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div><span class="bar-value">${v}</span></div>`).join("");
+}
+
+loadAnalytics();
+</script>
+</body>
+</html>

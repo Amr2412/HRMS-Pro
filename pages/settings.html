@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html" class="active"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Settings</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card kpi"><div class="card-body text-center">
+                    <i class="fa-solid fa-users fa-2x mb-3 text-success"></i>
+                    <h6>User Management</h6><p class="text-muted">Manage users and permissions.</p>
+                    <button class="btn btn-success btn-sm">Open</button>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi"><div class="card-body text-center">
+                    <i class="fa-solid fa-building fa-2x mb-3 text-success"></i>
+                    <h6>Departments</h6><p class="text-muted">Create and edit departments.</p>
+                    <button class="btn btn-success btn-sm">Open</button>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi"><div class="card-body text-center">
+                    <i class="fa-solid fa-user-shield fa-2x mb-3 text-success"></i>
+                    <h6>Roles & Permissions</h6><p class="text-muted">Control access levels.</p>
+                    <button class="btn btn-success btn-sm">Open</button>
+                </div></div>
+            </div>
+            <div class="col-md-3">
+                <div class="card kpi"><div class="card-body text-center">
+                    <i class="fa-solid fa-database fa-2x mb-3 text-success"></i>
+                    <h6>System Backup</h6><p class="text-muted">Backup and restore data.</p>
+                    <button class="btn btn-success btn-sm">Open</button>
+                </div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">System Configuration</div>
+            <div class="card-body">
+                <table class="table table-hover mb-0">
+                    <thead class="table-success"><tr><th>Setting</th><th>Current Value</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>Company Name</td><td>Linah Farms</td><td><span class="badge bg-success">Configured</span></td></tr>
+                        <tr><td>Working Days</td><td>Sunday - Thursday</td><td><span class="badge bg-success">Configured</span></td></tr>
+                        <tr><td>Annual Leave Policy</td><td>Enabled</td><td><span class="badge bg-success">Active</span></td></tr>
+                        <tr><td>Email Notifications</td><td>Enabled</td><td><span class="badge bg-success">Active</span></td></tr>
+                        <tr><td>Automatic Backup</td><td>Daily</td><td><span class="badge bg-success">Running</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

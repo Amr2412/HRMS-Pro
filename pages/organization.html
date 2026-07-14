@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Organization</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html" class="active"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Organization Structure</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Employees</h6><h2 id="orgTotal">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Departments</h6><h2 id="orgDepts">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Sections</h6><h2 id="orgSections">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Locations</h6><h2 id="orgLocations">0</h2></div></div></div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
+                <span><i class="fa-solid fa-sitemap"></i> Organization Chart</span>
+                <select class="form-select form-select-sm" style="width:auto" id="deptFilter">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+            <div class="card-body" id="orgChart"></div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">Departments Overview</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success"><tr><th>Department</th><th>Employees</th><th>Sections</th><th>White</th><th>Blue</th><th>Avg Age</th></tr></thead>
+                        <tbody id="deptTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white">Grade Distribution</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-center mb-0">
+                        <thead><tr><th>Grade</th><th>Count</th><th>%</th></tr></thead>
+                        <tbody id="gradeTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let employees = [];
+async function loadOrg() {
+    try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
+    const saved = localStorage.getItem("hrms_employees");
+    if (saved) employees = JSON.parse(saved);
+    employees.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
+
+    const active = employees.filter(e => e.status !== "Inactive");
+    document.getElementById("orgTotal").textContent = employees.length;
+
+    const depts = [...new Set(active.map(e => e.department))];
+    document.getElementById("orgDepts").textContent = depts.length;
+    const secs = [...new Set(active.map(e => e.section).filter(Boolean))];
+    document.getElementById("orgSections").textContent = secs.length;
+    const locs = [...new Set(active.map(e => e.location))];
+    document.getElementById("orgLocations").textContent = locs.length;
+
+    // Dept filter
+    const filter = document.getElementById("deptFilter");
+    depts.sort().forEach(d => { const o = document.createElement("option"); o.value = d; o.textContent = d; filter.appendChild(o); });
+    filter.addEventListener("change", () => renderOrgChart(active, filter.value));
+
+    renderOrgChart(active, "");
+    renderDeptTable(active);
+    renderGradeTable(active);
+}
+
+function renderOrgChart(active, deptFilter) {
+    const data = deptFilter ? active.filter(e => e.department === deptFilter) : active;
+    const gradeOrder = {"G10":1,"G9":2,"G8":3,"G7":4,"G6":5,"G5":6,"G4":7,"G3":8,"G2":9,"G1":10};
+
+    const departments = {};
+    data.forEach(e => {
+        if (!departments[e.department]) departments[e.department] = {};
+        const sec = e.section || e.department;
+        if (!departments[e.department][sec]) departments[e.department][sec] = [];
+        departments[e.department][sec].push(e);
+    });
+
+    let html = '';
+    Object.entries(departments).sort((a,b) => a[0].localeCompare(b[0])).forEach(([dept, sections]) => {
+        const deptEmployees = Object.values(sections).flat();
+        html += `<div class="mb-4">
+            <div class="d-flex align-items-center gap-2 mb-2" style="background:#d4edda;padding:10px 15px;border-radius:8px;">
+                <i class="fa-solid fa-building text-success"></i>
+                <strong>${dept}</strong>
+                <span class="badge bg-success ms-auto">${deptEmployees.length}</span>
+            </div>`;
+
+        Object.entries(sections).sort((a,b) => a[0].localeCompare(b[0])).forEach(([sec, emps]) => {
+            if (Object.keys(sections).length > 1) {
+                html += `<div class="ms-4 mb-2 mt-2">
+                    <div class="d-flex align-items-center gap-2" style="background:#f8f9fa;padding:8px 12px;border-radius:6px;border-left:3px solid #198754;">
+                        <i class="fa-solid fa-layer-group text-muted" style="font-size:12px"></i>
+                        <small class="fw-semibold">${sec}</small>
+                        <span class="badge bg-secondary ms-auto" style="font-size:10px">${emps.length}</span>
+                    </div>`;
+            }
+
+            const sorted = emps.sort((a,b) => (gradeOrder[a.grade]||99) - (gradeOrder[b.grade]||99));
+            html += `<div class="ms-${Object.keys(sections).length > 1 ? '4' : '4'} mt-1">`;
+            sorted.forEach(emp => {
+                const initials = emp.name.split(" ").map(n=>n[0]).join("").toUpperCase();
+                const isHead = ["G10","G9"].includes(emp.grade);
+                html += `<div class="d-flex align-items-center gap-2 py-1 px-3" style="border-left:2px solid ${isHead?'#198754':'#dee2e6'};margin-left:10px;">
+                    <div class="emp-avatar" style="width:28px;height:28px;font-size:10px;${isHead?'background:#198754;color:white;':''}">${initials}</div>
+                    <div>
+                        <span style="font-size:13px;${isHead?'font-weight:600;':''}">${emp.name}</span>
+                        <small class="text-muted" style="font-size:11px"> | ${emp.jobTitle} | ${emp.grade} | ${emp.location}</small>
+                    </div>
+                </div>`;
+            });
+            html += `</div>`;
+            if (Object.keys(sections).length > 1) html += `</div>`;
+        });
+        html += `</div>`;
+    });
+
+    document.getElementById("orgChart").innerHTML = html || '<div class="text-center text-muted py-4">No data</div>';
+}
+
+function renderDeptTable(active) {
+    const departments = {};
+    active.forEach(e => {
+        if (!departments[e.department]) departments[e.department] = {count:0,sections:new Set(),white:0,blue:0,ages:[]};
+        departments[e.department].count++;
+        if (e.section) departments[e.department].sections.add(e.section);
+        if (e.employeeType === "White Collar") departments[e.department].white++;
+        if (e.employeeType === "Blue Collar") departments[e.department].blue++;
+        if (e.age > 0) departments[e.department].ages.push(e.age);
+    });
+
+    document.getElementById("deptTable").innerHTML = Object.entries(departments).sort((a,b) => b[1].count - a[1].count).map(([dept, d]) => {
+        const avgAge = d.ages.length ? Math.round(d.ages.reduce((a,b)=>a+b,0)/d.ages.length) : "-";
+        return `<tr><td><strong>${dept}</strong></td><td>${d.count}</td><td>${d.sections.size}</td><td>${d.white}</td><td>${d.blue}</td><td>${avgAge}</td></tr>`;
+    }).join("");
+}
+
+function renderGradeTable(active) {
+    const counts = {};
+    active.forEach(e => { counts[e.grade] = (counts[e.grade] || 0) + 1; });
+    const total = active.length;
+    const order = ["G10","G9","G8","G7","G6","G5","G4","G3","G2","G1"];
+    document.getElementById("gradeTable").innerHTML = order.filter(g => counts[g]).map(g => `
+        <tr><td><strong>${g}</strong></td><td>${counts[g]}</td><td>${total > 0 ? ((counts[g]/total)*100).toFixed(1) : 0}%</td></tr>
+    `).join("");
+}
+
+loadOrg();
+</script>
+</body>
+</html>

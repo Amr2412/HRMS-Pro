@@ -1,0 +1,282 @@
+[
+  {
+    "code": "1001", "name": "Ahmed Ali", "department": "الزراعه", "section": "القطاع الزراعي",
+    "jobTitle": "HR Business Partner", "manager": "Mohamed Hassan", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2025-05-20", "age": 31, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G8", "performance2023": 4, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "2026-01-01", "pip": false, "retirementDate": "2055-04-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1002", "name": "Sara Mohamed", "department": "الحسابات", "section": "الحسابات",
+    "jobTitle": "Accountant", "manager": "Ali Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2026-01-15", "age": 27, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 0, "performance2024": 0, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2059-07-10", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1003", "name": "Omar Khalid", "department": "التشغيل", "section": "التشغيل",
+    "jobTitle": "Operations Director", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2020-03-10", "age": 38, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G10", "performance2023": 5, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2023-06-01", "pip": false, "retirementDate": "2048-03-10", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1004", "name": "Fatma Hassan", "department": "الموارد البشريه", "section": "الموارد البشريه",
+    "jobTitle": "HR Specialist", "manager": "Nour Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2023-02-01", "age": 29, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 0, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2057-02-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1005", "name": "Nour Ibrahim", "department": "الموارد البشريه", "section": "الموارد البشريه",
+    "jobTitle": "HR Director", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2019-08-05", "age": 40, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G10", "performance2023": 5, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2022-01-01", "pip": false, "retirementDate": "2046-08-05", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1006", "name": "Mohamed Hassan", "department": "البيانات", "section": "البيانات",
+    "jobTitle": "IT Manager", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2018-11-20", "age": 42, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G9", "performance2023": 4, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2021-06-01", "pip": false, "retirementDate": "2044-11-20", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1007", "name": "Yasmin Adel", "department": "الحسابات", "section": "الحسابات",
+    "jobTitle": "Accountant", "manager": "Khaled Osman", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2023-05-12", "age": 26, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 3, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2060-05-12", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1008", "name": "Khaled Osman", "department": "الحسابات", "section": "الحسابات",
+    "jobTitle": "Finance Manager", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2019-01-08", "age": 45, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G9", "performance2023": 4, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "2022-09-01", "pip": false, "retirementDate": "2041-01-08", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1009", "name": "Mariam Said", "department": "البحث والتطوير", "section": "البحث والتطوير",
+    "jobTitle": "Researcher", "manager": "Mohamed Hassan", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2023-09-01", "age": 25, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 0, "performance2024": 0, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2061-09-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1010", "name": "Tarek Mahmoud", "department": "الزراعه", "section": "النخيل",
+    "jobTitle": "Farm Supervisor", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "On Leave", "hireDate": "2022-04-18", "age": 35, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G4", "performance2023": 3, "performance2024": 3, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2051-04-18", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1011", "name": "Hana Fawzy", "department": "المشتريات المخازن", "section": "المخازن",
+    "jobTitle": "Logistics Coordinator", "manager": "Omar Khalid", "location": "Minya",
+    "status": "Active", "hireDate": "2024-01-10", "age": 24, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 0, "performance2025": 3,
+    "promotionDate": "", "pip": false, "retirementDate": "2062-01-10", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1012", "name": "Amr Mohamed", "department": "البيانات", "section": "البيانات",
+    "jobTitle": "Full Stack Developer", "manager": "Mohamed Hassan", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2021-07-22", "age": 30, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2024-01-01", "pip": false, "retirementDate": "2056-07-22", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1013", "name": "Mona Rashed", "department": "الجوده", "section": "الجوده",
+    "jobTitle": "Quality Supervisor", "manager": "Ahmed Fathy", "location": "October",
+    "status": "Active", "hireDate": "2022-08-14", "age": 33, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "", "pip": false, "retirementDate": "2053-08-14", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1014", "name": "Youssef Karim", "department": "الزراعه", "section": "الزيتون",
+    "jobTitle": "Agriculture Engineer", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2023-03-20", "age": 28, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 0, "performance2024": 0, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2058-03-20", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1015", "name": "Nada Salah", "department": "الجوده", "section": "الجوده",
+    "jobTitle": "Quality Controller", "manager": "Mona Rashed", "location": "October",
+    "status": "Inactive", "hireDate": "2021-11-05", "age": 32, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 3, "performance2024": 2, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2054-11-05", "exitDate": "2026-03-01", "exitReason": "Better Job Opportunity"
+  },
+  {
+    "code": "1016", "name": "Ahmed Fathy", "department": "الانشاءات", "section": "الانشاءات",
+    "jobTitle": "Construction Manager", "manager": "CEO", "location": "October",
+    "status": "Active", "hireDate": "2019-06-15", "age": 43, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G9", "performance2023": 5, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "2022-03-01", "pip": false, "retirementDate": "2043-06-15", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1017", "name": "Wael Saad", "department": "الانشاءات", "section": "الانشاءات",
+    "jobTitle": "Site Supervisor", "manager": "Ahmed Fathy", "location": "October",
+    "status": "Active", "hireDate": "2022-01-10", "age": 36, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G4", "performance2023": 3, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2050-01-10", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1018", "name": "Ali Ibrahim", "department": "الحسابات", "section": "الحسابات",
+    "jobTitle": "Finance Director", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2018-04-01", "age": 47, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G10", "performance2023": 5, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2021-01-01", "pip": false, "retirementDate": "2039-04-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1019", "name": "Mahmoud Adel", "department": "المشتريات المخازن", "section": "المشتريات",
+    "jobTitle": "Procurement Manager", "manager": "Ali Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2020-09-12", "age": 39, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G8", "performance2023": 4, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "2023-06-01", "pip": false, "retirementDate": "2047-09-12", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1020", "name": "Salma Adel", "department": "الموارد البشريه", "section": "الموارد البشريه",
+    "jobTitle": "Training Coordinator", "manager": "Nour Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2024-06-01", "age": 26, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 0, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2060-06-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1021", "name": "Khaled Mostafa", "department": "الامن", "section": "الامن",
+    "jobTitle": "Security Manager", "manager": "CEO", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2019-03-01", "age": 48, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G8", "performance2023": 4, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2038-03-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1022", "name": "Mohamed Saeed", "department": "السلامه والصحه المهنيه", "section": "السلامه والصحه المهنيه",
+    "jobTitle": "HSE Officer", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2022-06-15", "age": 32, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 3, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2054-06-15", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1023", "name": "Heba Farouk", "department": "الاداره الفنيه", "section": "الاداره الفنيه",
+    "jobTitle": "Technical Admin", "manager": "CEO", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2020-11-01", "age": 37, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "", "pip": false, "retirementDate": "2049-11-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1024", "name": "Omar Reda", "department": "الميكنه الزراعيه", "section": "الميكنه الزراعيه",
+    "jobTitle": "Mechanization Engineer", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "Inactive", "hireDate": "2021-02-10", "age": 30, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 3, "performance2024": 2, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2056-02-10", "exitDate": "2025-12-15", "exitReason": "Higher Salary"
+  },
+  {
+    "code": "1025", "name": "Nourhan Ashraf", "department": "الشؤون الاداريه", "section": "الشؤون الاداريه",
+    "jobTitle": "Admin Assistant", "manager": "Heba Farouk", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2024-03-01", "age": 24, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G4", "performance2023": 0, "performance2024": 0, "performance2025": 3,
+    "promotionDate": "", "pip": false, "retirementDate": "2062-03-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1026", "name": "Ahmed Gamal", "department": "الصيانة", "section": "الصيانة",
+    "jobTitle": "Maintenance Technician", "manager": "Heba Farouk", "location": "October",
+    "status": "Active", "hireDate": "2023-07-01", "age": 29, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G3", "performance2023": 0, "performance2024": 3, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2057-07-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1027", "name": "Fatma Youssef", "department": "رى وتسميد", "section": "الري والتسميد",
+    "jobTitle": "Irrigation Engineer", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2022-09-15", "age": 31, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 3, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2055-09-15", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1028", "name": "Mostafa Ali", "department": "مراقبه التكاليف", "section": "مراقبه التكاليف",
+    "jobTitle": "Cost Controller", "manager": "Ali Ibrahim", "location": "H.O Dokki",
+    "status": "Probation", "hireDate": "2026-04-01", "age": 26, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 0, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2060-04-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1029", "name": "Yasmin Adel", "department": "الهندسيه", "section": "الهندسيه",
+    "jobTitle": "Civil Engineer", "manager": "Ahmed Fathy", "location": "October",
+    "status": "Inactive", "hireDate": "2020-05-20", "age": 34, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 3, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2052-05-20", "exitDate": "2026-01-20", "exitReason": "Failed Probation"
+  },
+  {
+    "code": "1030", "name": "Mohamed Farid", "department": "النخيل", "section": "النخيل",
+    "jobTitle": "Palm Farm Supervisor", "manager": "Omar Khalid", "location": "Sadat",
+    "status": "Active", "hireDate": "2015-01-10", "age": 45, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G4", "performance2023": 3, "performance2024": 3, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2041-01-10", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1031", "name": "Hany Ibrahim", "department": "النخيل", "section": "النخيل",
+    "jobTitle": "Farm Worker", "manager": "Mohamed Farid", "location": "Sadat",
+    "status": "Active", "hireDate": "2018-06-01", "age": 40, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G2", "performance2023": 3, "performance2024": 3, "performance2025": 3,
+    "promotionDate": "", "pip": false, "retirementDate": "2046-06-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1032", "name": "Walid Nabil", "department": "النخيل", "section": "النخيل",
+    "jobTitle": "Farm Worker", "manager": "Mohamed Farid", "location": "Sadat",
+    "status": "Active", "hireDate": "2020-09-15", "age": 36, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G2", "performance2023": 3, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2050-09-15", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1033", "name": "Adel Mahmoud", "department": "المشاتل", "section": "المشاتل",
+    "jobTitle": "Nursery Manager", "manager": "Omar Khalid", "location": "Minya",
+    "status": "Active", "hireDate": "2019-04-01", "age": 44, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 4, "performance2025": 5,
+    "promotionDate": "", "pip": false, "retirementDate": "2042-04-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1034", "name": "Samiha Omar", "department": "الموارد البشريه", "section": "الموارد البشريه",
+    "jobTitle": "Recruitment Specialist", "manager": "Nour Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2023-11-01", "age": 28, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G6", "performance2023": 0, "performance2024": 0, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2058-11-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1035", "name": "Ibrahim Hassan", "department": "القطاع الزراعي", "section": "القطاع الزراعي",
+    "jobTitle": "Sector Director", "manager": "CEO", "location": "Wahat Bahreya",
+    "status": "Active", "hireDate": "2016-01-05", "age": 52, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G10", "performance2023": 5, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2020-01-01", "pip": false, "retirementDate": "2034-01-05", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1036", "name": "Rami Essam", "department": "الانشاءات", "section": "الانشاءات",
+    "jobTitle": "Site Engineer", "manager": "Ahmed Fathy", "location": "October",
+    "status": "Active", "hireDate": "2023-01-15", "age": 27, "gender": "Male",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 0, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2059-01-15", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1037", "name": "Dina Khaled", "department": "الحسابات", "section": "الحسابات",
+    "jobTitle": "Senior Accountant", "manager": "Ali Ibrahim", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2019-08-20", "age": 38, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G7", "performance2023": 4, "performance2024": 5, "performance2025": 5,
+    "promotionDate": "2023-01-01", "pip": false, "retirementDate": "2048-08-20", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1038", "name": "Tamer Soliman", "department": "المكافحه", "section": "المكافحه",
+    "jobTitle": "Pest Control Specialist", "manager": "Omar Khalid", "location": "Wahat Bahreya",
+    "status": "Inactive", "hireDate": "2021-04-10", "age": 33, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G3", "performance2023": 3, "performance2024": 2, "performance2025": 0,
+    "promotionDate": "", "pip": false, "retirementDate": "2053-04-10", "exitDate": "2026-02-28", "exitReason": "Long Commute Distance"
+  },
+  {
+    "code": "1039", "name": "Mai Hossam", "department": "البيانات", "section": "البيانات",
+    "jobTitle": "Data Analyst", "manager": "Mohamed Hassan", "location": "H.O Dokki",
+    "status": "Active", "hireDate": "2024-09-01", "age": 25, "gender": "Female",
+    "employeeType": "White Collar", "grade": "G5", "performance2023": 0, "performance2024": 0, "performance2025": 3,
+    "promotionDate": "", "pip": false, "retirementDate": "2061-09-01", "exitDate": "", "exitReason": ""
+  },
+  {
+    "code": "1040", "name": "Ashraf Nagy", "department": "الفنية", "section": "الفنيه",
+    "jobTitle": "Senior Technician", "manager": "Heba Farouk", "location": "Khtara",
+    "status": "Active", "hireDate": "2017-03-01", "age": 46, "gender": "Male",
+    "employeeType": "Blue Collar", "grade": "G4", "performance2023": 4, "performance2024": 4, "performance2025": 4,
+    "promotionDate": "", "pip": false, "retirementDate": "2040-03-01", "exitDate": "", "exitReason": ""
+  }
+]
