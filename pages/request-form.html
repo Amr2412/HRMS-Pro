@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linah Farms - Submit Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #198754 0%, #146c43 100%); min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; }
+        .form-container { max-width: 700px; margin: 30px auto; }
+        .form-card { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; }
+        .form-header { background: white; padding: 30px; text-align: center; border-bottom: 3px solid #198754; }
+        .form-header img { height: 60px; margin-bottom: 10px; }
+        .form-header h3 { color: #198754; font-weight: 700; margin: 0; }
+        .form-header p { color: #666; margin: 5px 0 0; font-size: 14px; }
+        .form-body { padding: 30px; background: white; }
+        .form-label { font-weight: 600; font-size: 13px; color: #333; margin-bottom: 4px; }
+        .mandatory::after { content: " *"; color: #dc3545; }
+        .form-control:focus, .form-select:focus { border-color: #198754; box-shadow: 0 0 0 0.2rem rgba(25,135,84,0.15); }
+        .btn-submit { background: #198754; border: none; padding: 12px 40px; font-size: 16px; font-weight: 600; border-radius: 10px; transition: 0.3s; }
+        .btn-submit:hover { background: #146c43; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(25,135,84,0.3); }
+        .success-screen { display: none; text-align: center; padding: 50px 30px; }
+        .success-screen .checkmark { width: 80px; height: 80px; background: #198754; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .success-screen .checkmark i { color: white; font-size: 36px; }
+        .form-footer { background: #f8f9fa; padding: 15px 30px; text-align: center; font-size: 12px; color: #999; }
+        .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .type-card { border: 2px solid #e9ecef; border-radius: 10px; padding: 12px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .type-card:hover { border-color: #198754; background: #f0fff4; }
+        .type-card.selected { border-color: #198754; background: #d4edda; }
+        .type-card i { font-size: 24px; color: #198754; display: block; margin-bottom: 5px; }
+        .type-card span { font-size: 12px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h3><i class="fa-solid fa-leaf text-success"></i> Linah Farms</h3>
+            <p>Employee Request Form</p>
+        </div>
+
+        <div class="form-body" id="requestFormBody">
+            <form id="empRequestForm" onsubmit="return submitForm(event)">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Employee Code</label>
+                        <input class="form-control" id="fCode" required placeholder="e.g. 1001">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Full Name</label>
+                        <input class="form-control" id="fName" required placeholder="Your full name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Job Title</label>
+                        <input class="form-control" id="fJobTitle" required placeholder="e.g. Accountant">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Department</label>
+                        <select class="form-select" id="fDept" required>
+                            <option value="">Select Department</option>
+                            <option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option>
+                            <option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option>
+                            <option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option>
+                            <option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option>
+                            <option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option>
+                            <option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option>
+                            <option>الفنيه</option><option>المشاتل</option><option>الصيانة</option>
+                            <option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Phone Number</label>
+                        <input class="form-control" id="fPhone" required placeholder="01012345678" type="tel">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="fPriority">
+                            <option value="Normal">Normal</option>
+                            <option value="Urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label mandatory">Request Type</label>
+                        <div class="type-cards" id="typeCards">
+                            <div class="type-card" data-type="Mobile Phone (خط تليفون)" onclick="selectType(this)">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                                <span>Mobile Phone<br><small>خط تليفون</small></span>
+                            </div>
+                            <div class="type-card" data-type="Laptop (لابتوب)" onclick="selectType(this)">
+                                <i class="fa-solid fa-laptop"></i>
+                                <span>Laptop<br><small>لابتوب</small></span>
+                            </div>
+                            <div class="type-card" data-type="Internet Package Upgrade (ت علية باقة النت)" onclick="selectType(this)">
+                                <i class="fa-solid fa-wifi"></i>
+                                <span>Internet Upgrade<br><small>ت علية باقة النت</small></span>
+                            </div>
+                            <div class="type-card" data-type="Odoo Account (تفعيل اكونت اودو)" onclick="selectType(this)">
+                                <i class="fa-solid fa-cube"></i>
+                                <span>Odoo Account<br><small>تفعيل اكونت اودو</small></span>
+                            </div>
+                            <div class="type-card" data-type="Mentor Account (اكونت المنتور)" onclick="selectType(this)">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                                <span>Mentor Account<br><small>اكونت المنتور</small></span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="fType" required>
+                    </div>
+
+                    <div class="col-md-6" id="deviceField" style="display:none">
+                        <label class="form-label">Device Model</label>
+                        <input class="form-control" id="fDevice" placeholder="e.g. iPhone 15, Dell Latitude">
+                    </div>
+                    <div class="col-md-6" id="simField" style="display:none">
+                        <label class="form-label">SIM / Line Number</label>
+                        <input class="form-control" id="fSim" placeholder="New line number">
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label mandatory">Description</label>
+                        <textarea class="form-control" id="fDesc" rows="3" required placeholder="Describe your request..."></textarea>
+                    </div>
+
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-submit text-white" id="submitBtn">
+                            <i class="fa-solid fa-paper-plane"></i> Submit Request
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="success-screen" id="successScreen">
+            <div class="checkmark"><i class="fa-solid fa-check"></i></div>
+            <h3 class="text-success">Request Submitted!</h3>
+            <p class="text-muted mt-2">Your request has been sent to HR for processing.</p>
+            <p class="text-muted">You will be notified once it's reviewed.</p>
+            <div class="mt-4">
+                <button class="btn btn-outline-success" onclick="resetForm()"><i class="fa-solid fa-plus"></i> Submit Another</button>
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <i class="fa-solid fa-leaf text-success"></i> Linah Farms HRMS &copy; 2026 | All Rights Reserved
+        </div>
+    </div>
+</div>
+
+<script>
+let selectedType = "";
+
+function selectType(el) {
+    document.querySelectorAll(".type-card").forEach(c => c.classList.remove("selected"));
+    el.classList.add("selected");
+    selectedType = el.dataset.type;
+    document.getElementById("fType").value = selectedType;
+    const isDevice = selectedType.includes("Mobile") || selectedType.includes("Laptop");
+    const isSim = selectedType.includes("Mobile");
+    document.getElementById("deviceField").style.display = isDevice ? "block" : "none";
+    document.getElementById("simField").style.display = isSim ? "block" : "none";
+}
+
+function submitForm(e) {
+    e.preventDefault();
+    if (!selectedType) return alert("Please select a request type");
+
+    const req = {
+        id: "REQ-" + Date.now().toString(36).toUpperCase(),
+        code: document.getElementById("fCode").value.trim(),
+        name: document.getElementById("fName").value.trim(),
+        jobTitle: document.getElementById("fJobTitle").value.trim(),
+        department: document.getElementById("fDept").value,
+        phone: document.getElementById("fPhone").value.trim(),
+        type: selectedType,
+        deviceModel: document.getElementById("fDevice")?.value.trim() || "",
+        simNumber: document.getElementById("fSim")?.value.trim() || "",
+        description: document.getElementById("fDesc").value.trim(),
+        priority: document.getElementById("fPriority").value,
+        status: "New",
+        date: new Date().toISOString().split("T")[0],
+        resolvedDate: "",
+        history: [{ status: "New", date: new Date().toISOString(), by: "Employee (Self-Service)" }],
+        source: "QR/Link"
+    };
+
+    // Save to shared localStorage
+    const existing = JSON.parse(localStorage.getItem("hrms_requests") || "[]");
+    existing.push(req);
+    localStorage.setItem("hrms_requests", JSON.stringify(existing));
+
+    document.getElementById("requestFormBody").style.display = "none";
+    document.getElementById("successScreen").style.display = "block";
+}
+
+function resetForm() {
+    document.getElementById("empRequestForm").reset();
+    document.querySelectorAll(".type-card").forEach(c => c.classList.remove("selected"));
+    selectedType = "";
+    document.getElementById("fType").value = "";
+    document.getElementById("deviceField").style.display = "none";
+    document.getElementById("simField").style.display = "none";
+    document.getElementById("requestFormBody").style.display = "block";
+    document.getElementById("successScreen").style.display = "none";
+}
+</script>
+</body>
+</html>
