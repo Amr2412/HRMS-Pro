@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linah Farms - Medical Request</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); min-height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; }
+        .form-container { max-width: 700px; margin: 30px auto; }
+        .form-card { border: none; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); overflow: hidden; }
+        .form-header { background: white; padding: 30px; text-align: center; border-bottom: 3px solid #dc3545; }
+        .form-header h3 { color: #dc3545; font-weight: 700; margin: 0; }
+        .form-header p { color: #666; margin: 5px 0 0; font-size: 14px; }
+        .form-body { padding: 30px; background: white; }
+        .form-label { font-weight: 600; font-size: 13px; color: #333; }
+        .mandatory::after { content: " *"; color: #dc3545; }
+        .form-control:focus, .form-select:focus { border-color: #dc3545; box-shadow: 0 0 0 0.2rem rgba(220,53,69,0.15); }
+        .btn-submit { background: #dc3545; border: none; padding: 12px 40px; font-size: 16px; font-weight: 600; border-radius: 10px; transition: 0.3s; color: white; }
+        .btn-submit:hover { background: #b02a37; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(220,53,69,0.3); }
+        .success-screen { display: none; text-align: center; padding: 50px 30px; }
+        .success-screen .checkmark { width: 80px; height: 80px; background: #198754; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .success-screen .checkmark i { color: white; font-size: 36px; }
+        .form-footer { background: #f8f9fa; padding: 15px 30px; text-align: center; font-size: 12px; color: #999; }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h3><i class="fa-solid fa-leaf text-success"></i> Linah Farms</h3>
+            <p><i class="fa-solid fa-heart-pulse text-danger"></i> Medical Request Form</p>
+        </div>
+
+        <div class="form-body" id="medFormBody">
+            <form id="medForm" onsubmit="return submitMed(event)">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Employee Code</label>
+                        <input class="form-control" id="mCode" required placeholder="e.g. 1001">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Full Name</label>
+                        <input class="form-control" id="mName" required placeholder="Your full name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Department</label>
+                        <select class="form-select" id="mDept" required>
+                            <option value="">Select</option>
+                            <option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option>
+                            <option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option>
+                            <option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option>
+                            <option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option>
+                            <option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option>
+                            <option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option>
+                            <option>الفنيه</option><option>المشاتل</option><option>الصيانة</option>
+                            <option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Phone Number</label>
+                        <input class="form-control" id="mPhone" required placeholder="01012345678" type="tel">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Request Type</label>
+                        <select class="form-select" id="mType" required>
+                            <option value="">Select</option>
+                            <option value="Treatment Approval">Treatment Approval (موافقة علاج)</option>
+                            <option value="Cash Reimbursement">Cash Reimbursement (صرف نقدي)</option>
+                            <option value="Medical Checkup">Medical Checkup (فحص طبي)</option>
+                            <option value="Dental">Dental (علاج أسنان)</option>
+                            <option value="Optical">Optical (نظارات / عيون)</option>
+                            <option value="Lab Tests">Lab Tests (تحاليل)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label mandatory">Hospital / Clinic</label>
+                        <input class="form-control" id="mHospital" required placeholder="Hospital name">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Amount (EGP)</label>
+                        <input type="number" class="form-control" id="mAmount" placeholder="0">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Attachment</label>
+                        <input type="file" class="form-control" id="mAttachment" accept="image/*,.pdf">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label mandatory">Notes / Description</label>
+                        <textarea class="form-control" id="mNotes" rows="3" required placeholder="Describe your medical request..."></textarea>
+                    </div>
+                    <div class="col-12 text-center mt-3">
+                        <button type="submit" class="btn btn-submit"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="success-screen" id="medSuccess">
+            <div class="checkmark"><i class="fa-solid fa-check"></i></div>
+            <h3 class="text-success">Request Submitted!</h3>
+            <p class="text-muted mt-2">Your medical request has been sent to HR.</p>
+            <button class="btn btn-outline-success mt-3" onclick="resetMedForm()"><i class="fa-solid fa-plus"></i> Submit Another</button>
+        </div>
+
+        <div class="form-footer">
+            <i class="fa-solid fa-leaf text-success"></i> Linah Farms HRMS &copy; 2026
+        </div>
+    </div>
+</div>
+
+<script>
+function submitMed(e) {
+    e.preventDefault();
+    const req = {
+        id: "MED-" + Date.now().toString(36).toUpperCase(),
+        employee: document.getElementById("mName").value.trim(),
+        code: document.getElementById("mCode").value.trim(),
+        department: document.getElementById("mDept").value,
+        phone: document.getElementById("mPhone").value.trim(),
+        type: document.getElementById("mType").value,
+        hospital: document.getElementById("mHospital").value.trim(),
+        amount: parseFloat(document.getElementById("mAmount").value) || 0,
+        notes: document.getElementById("mNotes").value.trim(),
+        status: "In Progress",
+        submitDate: new Date().toISOString().split("T")[0],
+        resolveDate: "",
+        source: "QR/Link"
+    };
+    const existing = JSON.parse(localStorage.getItem("hrms_medical") || "[]");
+    existing.push(req);
+    localStorage.setItem("hrms_medical", JSON.stringify(existing));
+    document.getElementById("medFormBody").style.display = "none";
+    document.getElementById("medSuccess").style.display = "block";
+}
+
+function resetMedForm() {
+    document.getElementById("medForm").reset();
+    document.getElementById("medFormBody").style.display = "block";
+    document.getElementById("medSuccess").style.display = "none";
+}
+</script>
+</body>
+</html>

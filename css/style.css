@@ -82,6 +82,7 @@ body {
     opacity: 0.5;
     padding: 16px 14px 6px;
     font-weight: 700;
+    list-style: none;
 }
 
 /* Main Content */

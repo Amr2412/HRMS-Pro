@@ -3,27 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRMS Pro - Dashboard</title>
+    <title>HRMS Pro - Home</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .home-card { border: none; border-radius: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); transition: 0.3s; cursor: pointer; text-decoration: none; color: inherit; display: block; }
+        .home-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.12); color: inherit; }
+        .home-card .icon-box { width: 55px; height: 55px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; color: white; margin-bottom: 12px; }
+        .home-card h5 { font-size: 15px; font-weight: 600; margin: 0; }
+        .home-card p { font-size: 12px; color: #888; margin: 4px 0 0; }
+        .home-card .count { font-size: 28px; font-weight: 700; color: #198754; margin-top: 8px; }
+        .quick-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #f8f9fa; border-radius: 10px; margin-bottom: 8px; text-decoration: none; color: #333; transition: 0.2s; }
+        .quick-link:hover { background: #d4edda; color: #198754; }
+        .quick-link i { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+        .quick-link .ql-text h6 { margin: 0; font-size: 13px; }
+        .quick-link .ql-text small { color: #888; font-size: 11px; }
+        .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+        .activity-item:last-child { border: none; }
+        .activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+        .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
+        .summary-row:last-child { border: none; }
+        .summary-row .label { color: #666; font-size: 13px; }
+        .summary-row .value { font-weight: 700; font-size: 14px; }
+    </style>
 </head>
 <body>
 
 <aside class="sidebar">
     <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
     <ul>
-        <li><a href="index.html" class="active"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
-        <li><a href="pages/employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i>Home</a></li>
+        <li class="nav-section">Modules</li>
+        <li><a href="pages/dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="pages/attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="pages/organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="pages/recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
-        <li><a href="pages/attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
-        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
-        <li><a href="pages/medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
         <li><a href="pages/performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
-        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="pages/training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="pages/medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li class="nav-section">Requests</li>
         <li><a href="pages/requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
-        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="pages/qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
+        <li class="nav-section">System</li>
+        <li><a href="pages/database.html"><i class="fa-solid fa-database"></i>Database</a></li>
+        <li><a href="pages/handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="pages/analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
         <li><a href="pages/settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
@@ -31,257 +55,227 @@
 
 <div class="main-content">
     <div class="topbar">
-        <h2>Dashboard</h2>
-        <div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div>
+        <h2><i class="fa-solid fa-house text-success"></i> Home</h2>
+        <div class="topbar-actions">
+            <div style="position:relative;cursor:pointer" onclick="location.href='pages/qr-links.html'">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notif-badge" id="homeNotifCount">0</span>
+            </div>
+            <i class="fa-solid fa-user"></i>
+        </div>
     </div>
 
     <div class="container-fluid p-4">
 
-        <!-- Row 1: Headcount KPIs -->
-        <h6 class="text-muted mb-2 text-uppercase" style="letter-spacing:1px;font-size:11px;">Headcount</h6>
+        <!-- Quick KPIs -->
         <div class="row g-3 mb-4">
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Total</h6><h2 id="totalEmployees">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Active</h6><h2 id="activeEmployees" style="color:#198754">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Inactive</h6><h2 id="inactiveEmployees" style="color:#dc3545">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>On Leave</h6><h2 id="onLeaveEmployees" style="color:#ffc107">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>White Collar</h6><h2 id="whiteCollar">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Blue Collar</h6><h2 id="blueCollar">0</h2></div></div></div>
+            <div class="col-md-2">
+                <a href="pages/dashboard.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#198754,#146c43)"><i class="fa-solid fa-users"></i></div>
+                    <h5>Employees</h5>
+                    <p>Total active staff</p>
+                    <div class="count" id="homeTotalEmp">0</div>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="pages/attendance.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#0d6efd,#0b5ed7)"><i class="fa-solid fa-calendar-check"></i></div>
+                    <h5>Attendance</h5>
+                    <p>Today's records</p>
+                    <div class="count" id="homeAttCount" style="color:#0d6efd">0</div>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="pages/requests.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#ffc107,#e0a800)"><i class="fa-solid fa-file-lines"></i></div>
+                    <h5>Requests</h5>
+                    <p>Pending requests</p>
+                    <div class="count" id="homeReqCount" style="color:#ffc107">0</div>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="pages/medical.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#dc3545,#b02a37)"><i class="fa-solid fa-heart-pulse"></i></div>
+                    <h5>Medical</h5>
+                    <p>In progress</p>
+                    <div class="count" id="homeMedCount" style="color:#dc3545">0</div>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="pages/performance.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#6f42c1,#5a32a3)"><i class="fa-solid fa-chart-column"></i></div>
+                    <h5>Performance</h5>
+                    <p>Avg score 2025</p>
+                    <div class="count" id="homePerfAvg" style="color:#6f42c1">-</div>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="pages/training.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#20c997,#12b886)"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <h5>Training</h5>
+                    <p>Pending approvals</p>
+                    <div class="count" id="homeTrainCount" style="color:#20c997">0</div>
+                </a>
+            </div>
         </div>
 
-        <!-- Row 2: Movement -->
-        <h6 class="text-muted mb-2 text-uppercase" style="letter-spacing:1px;font-size:11px;">Movement</h6>
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>New Hires</h6><h2 id="newHires" style="color:#198754">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Resignations</h6><h2 id="resignations" style="color:#dc3545">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Turnover Rate</h6><h2 id="turnoverRate" style="color:#dc3545">0%</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Probation</h6><h2 id="probationCount" style="color:#0d6efd">0</h2></div></div></div>
-        </div>
+        <div class="row g-4">
 
-        <!-- Row 3: Charts -->
-        <div class="row g-4 mb-4">
+            <!-- Quick Links -->
             <div class="col-md-4">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Department</div>
-                    <div class="card-body bar-chart" id="deptChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-bolt"></i> Quick Links</div>
+                    <div class="card-body">
+                        <a href="pages/request-form.html" target="_blank" class="quick-link">
+                            <i style="background:#198754"><i class="fa-solid fa-plus"></i></i>
+                            <div class="ql-text"><h6>New HR Request</h6><small>Open employee form</small></div>
+                        </a>
+                        <a href="pages/medical-form.html" target="_blank" class="quick-link">
+                            <i style="background:#dc3545"><i class="fa-solid fa-heart-pulse"></i></i>
+                            <div class="ql-text"><h6>New Medical Request</h6><small>Open medical form</small></div>
+                        </a>
+                        <a href="pages/qr-links.html" class="quick-link">
+                            <i style="background:#0d6efd"><i class="fa-solid fa-qrcode"></i></i>
+                            <div class="ql-text"><h6>QR Codes & Links</h6><small>Share with employees</small></div>
+                        </a>
+                        <a href="pages/employees.html" class="quick-link">
+                            <i style="background:#ffc107"><i class="fa-solid fa-users"></i></i>
+                            <div class="ql-text"><h6>Manage Employees</h6><small>Add, edit, import</small></div>
+                        </a>
+                        <a href="pages/analytics.html" class="quick-link">
+                            <i style="background:#6f42c1"><i class="fa-solid fa-chart-pie"></i></i>
+                            <div class="ql-text"><h6>Analytics</h6><small>Reports & charts</small></div>
+                        </a>
+                        <a href="pages/settings.html" class="quick-link">
+                            <i style="background:#6c757d"><i class="fa-solid fa-gear"></i></i>
+                            <div class="ql-text"><h6>Settings</h6><small>Profile & preferences</small></div>
+                        </a>
+                    </div>
                 </div>
             </div>
+
+            <!-- Summary -->
+            <div class="col-md-4">
+                <div class="card mb-4" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-bar"></i> Workforce Summary</div>
+                    <div class="card-body">
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-circle text-success" style="font-size:8px"></i> Active Employees</span><span class="value" id="sumActive">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-circle text-danger" style="font-size:8px"></i> Inactive Employees</span><span class="value" id="sumInactive">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-circle text-warning" style="font-size:8px"></i> On Leave</span><span class="value" id="sumLeave">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-circle text-info" style="font-size:8px"></i> Probation</span><span class="value" id="sumProbation">0</span></div>
+                        <hr>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-shirt" style="font-size:10px;color:#666"></i> White Collar</span><span class="value" id="sumWhite">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-hard-hat" style="font-size:10px;color:#666"></i> Blue Collar</span><span class="value" id="sumBlue">0</span></div>
+                        <hr>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-building" style="font-size:10px;color:#666"></i> Departments</span><span class="value" id="sumDepts">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-location-dot" style="font-size:10px;color:#666"></i> Locations</span><span class="value" id="sumLocations">0</span></div>
+                        <div class="summary-row"><span class="label"><i class="fa-solid fa-arrow-trend-down" style="font-size:10px;color:#dc3545"></i> Exits This Year</span><span class="value" id="sumExits" style="color:#dc3545">0</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
             <div class="col-md-4">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-location-dot"></i> By Location</div>
-                    <div class="card-body bar-chart" id="locationChart"></div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" style="height:100%">
-                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-right-from-bracket"></i> Exit Reasons</div>
-                    <div class="card-body bar-chart" id="exitReasonsChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-clock-rotate-left"></i> Recent Activity</div>
+                    <div class="card-body" id="recentActivity">
+                        <div class="text-center text-muted py-4">Loading...</div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Row 4: Tenure Analysis -->
-        <div class="row g-4 mb-4">
+        <!-- Bottom Row -->
+        <div class="row g-4 mt-2">
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-clock"></i> Tenure Distribution (Active)</div>
-                    <div class="card-body bar-chart" id="tenureChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-building"></i> Employees by Department</div>
+                    <div class="card-body bar-chart" id="homeDeptChart"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-clock-rotate-left"></i> Resignation Tenure</div>
-                    <div class="card-body bar-chart" id="resignTenureChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-location-dot"></i> Employees by Location</div>
+                    <div class="card-body bar-chart" id="homeLocChart"></div>
                 </div>
             </div>
         </div>
-
-        <!-- Row 5: Gender + Type -->
-        <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-venus-mars"></i> By Gender</div>
-                    <div class="card-body bar-chart" id="genderChart"></div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-shield-halved"></i> By Employee Type</div>
-                    <div class="card-body bar-chart" id="typeChart"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Row 6: Recent Employees -->
-        <div class="card mb-4">
-            <div class="card-header bg-success text-white d-flex justify-content-between">
-                <span><i class="fa-solid fa-clock-rotate-left"></i> Recent Employees</span>
-                <a href="pages/employees.html" class="btn btn-light btn-sm">View All</a>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-success"><tr><th>Employee</th><th>Department</th><th>Location</th><th>Hire Date</th><th>Status</th></tr></thead>
-                        <tbody id="recentEmployees"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const EXIT_REASONS = [
-    "Better Job Opportunity","Higher Salary","Travel Abroad","Personal Business",
-    "Work Nature Unsuitable","Accommodation/Food/Restrooms","Poor Performance",
-    "Job Position Eliminated","Failed Probation","High Work Pressure",
-    "No Development Opportunities","Direct Manager Style","Total/Partial Disability",
-    "Death","Special Circumstances","Drugs","Long Commute Distance",
-    "Retirement Age","Legal Affairs","Uncomfortable Work Environment"
-];
-
 let employees = [];
-
-function syncStatuses() {
-    employees.forEach(emp => {
-        if (emp.exitDate && emp.exitDate.trim() !== "") emp.status = "Inactive";
-    });
-}
-
-function calcTenure(hireDate) {
-    if (!hireDate) return 0;
-    const h = new Date(hireDate);
-    const now = new Date();
-    return (now - h) / (1000 * 60 * 60 * 24 * 365.25);
-}
-
-function tenureLabel(years) {
-    if (years < 1) return "< 1 Year";
-    if (years < 2) return "1-2 Years";
-    if (years < 3) return "2-3 Years";
-    if (years < 4) return "3-4 Years";
-    if (years < 5) return "4-5 Years";
-    if (years < 10) return "5-10 Years";
-    if (years < 15) return "10-15 Years";
-    if (years < 20) return "15-20 Years";
-    return "20+ Years";
-}
-
-function resignationTenureLabel(months) {
-    if (months < 3) return "< 3 Months";
-    if (months < 12) return "< 1 Year";
-    if (months < 24) return "1-2 Years";
-    if (months < 36) return "2-3 Years";
-    return "3+ Years";
-}
-
-function renderBar(containerId, data, field, color) {
-    const counts = {};
-    data.forEach(e => { const v = e[field] || "N/A"; counts[v] = (counts[v] || 0) + 1; });
-    const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
-    const max = Math.max(...sorted.map(x=>x[1]), 1);
-    document.getElementById(containerId).innerHTML = sorted.map(([k,v]) => `
-        <div class="bar-row">
-            <span class="bar-label">${k}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%;${color?'background:'+color:''}"></div></div>
-            <span class="bar-value">${v}</span>
-        </div>`).join("");
-}
-
-async function loadDashboard() {
+async function loadHome() {
+    try { const r = await fetch("data/employees.json"); employees = await r.json(); } catch { employees = []; }
     const saved = localStorage.getItem("hrms_employees");
-    if (saved) { employees = JSON.parse(saved); }
-    else {
-        try { const r = await fetch("data/employees.json"); employees = await r.json(); } catch { employees = []; }
-    }
-    syncStatuses();
+    if (saved) employees = JSON.parse(saved);
+    employees.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
 
     const active = employees.filter(e => e.status === "Active");
     const inactive = employees.filter(e => e.status === "Inactive");
-    const exited = employees.filter(e => e.exitDate && e.exitDate.trim() !== "");
+    const onLeave = employees.filter(e => e.status === "On Leave");
+    const probation = employees.filter(e => e.status === "Probation");
+    const white = employees.filter(e => e.employeeType === "White Collar");
+    const blue = employees.filter(e => e.employeeType === "Blue Collar");
+    const depts = [...new Set(active.map(e => e.department))];
+    const locs = [...new Set(active.map(e => e.location))];
+    const thisYear = new Date().getFullYear();
+    const exits = employees.filter(e => e.exitDate && new Date(e.exitDate).getFullYear() === thisYear);
+    const scores = active.filter(e => e.performance2025 > 0).map(e => e.performance2025);
+    const avgScore = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : "-";
 
-    // Headcount
-    document.getElementById("totalEmployees").textContent = employees.length;
-    document.getElementById("activeEmployees").textContent = active.length;
-    document.getElementById("inactiveEmployees").textContent = inactive.length;
-    document.getElementById("onLeaveEmployees").textContent = employees.filter(e => e.status === "On Leave").length;
-    document.getElementById("whiteCollar").textContent = employees.filter(e => e.employeeType === "White Collar").length;
-    document.getElementById("blueCollar").textContent = employees.filter(e => e.employeeType === "Blue Collar").length;
+    const reqs = JSON.parse(localStorage.getItem("hrms_requests") || "[]").filter(r => r.status === "New");
+    const meds = JSON.parse(localStorage.getItem("hrms_medical") || "[]").filter(r => r.status === "In Progress");
+    const trains = JSON.parse(localStorage.getItem("hrms_training") || "[]").filter(r => r.status === "Pending");
+    const att = JSON.parse(localStorage.getItem("hrms_attendance") || "[]");
 
-    // Movement
-    const now = new Date();
-    const thisYear = now.getFullYear();
-    const newHires = employees.filter(e => { const y = new Date(e.hireDate).getFullYear(); return y === thisYear; });
-    document.getElementById("newHires").textContent = newHires.length;
-    document.getElementById("resignations").textContent = exited.length;
-    document.getElementById("turnoverRate").textContent = employees.length > 0 ? ((exited.length / employees.length) * 100).toFixed(1) + "%" : "0%";
-    document.getElementById("probationCount").textContent = employees.filter(e => e.status === "Probation").length;
+    document.getElementById("homeTotalEmp").textContent = active.length;
+    document.getElementById("homeAttCount").textContent = att.length;
+    document.getElementById("homeReqCount").textContent = reqs.length;
+    document.getElementById("homeMedCount").textContent = meds.length;
+    document.getElementById("homePerfAvg").textContent = avgScore;
+    document.getElementById("homeTrainCount").textContent = trains.length;
+    document.getElementById("homeNotifCount").textContent = reqs.length + meds.length;
 
-    // Charts
-    renderBar("deptChart", active, "department");
-    renderBar("locationChart", active, "location");
-    renderBar("genderChart", active, "gender");
-    renderBar("typeChart", active, "employeeType");
+    document.getElementById("sumActive").textContent = active.length;
+    document.getElementById("sumInactive").textContent = inactive.length;
+    document.getElementById("sumLeave").textContent = onLeave.length;
+    document.getElementById("sumProbation").textContent = probation.length;
+    document.getElementById("sumWhite").textContent = white.length;
+    document.getElementById("sumBlue").textContent = blue.length;
+    document.getElementById("sumDepts").textContent = depts.length;
+    document.getElementById("sumLocations").textContent = locs.length;
+    document.getElementById("sumExits").textContent = exits.length;
 
-    // Exit Reasons
-    const exitCounts = {};
-    exited.forEach(e => { const r = e.exitReason || "Unknown"; exitCounts[r] = (exitCounts[r] || 0) + 1; });
-    const exitSorted = Object.entries(exitCounts).sort((a,b) => b[1]-a[1]);
-    const exitMax = Math.max(...exitSorted.map(x=>x[1]), 1);
-    document.getElementById("exitReasonsChart").innerHTML = exitSorted.length === 0
-        ? '<div class="text-center text-muted py-4">No exits recorded</div>'
-        : exitSorted.map(([k,v]) => `
-        <div class="bar-row">
-            <span class="bar-label" style="width:160px">${k}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(v/exitMax)*100}%;background:#dc3545"></div></div>
-            <span class="bar-value">${v}</span>
-        </div>`).join("");
+    // Department chart
+    const deptCounts = {};
+    active.forEach(e => { deptCounts[e.department] = (deptCounts[e.department]||0)+1; });
+    const maxD = Math.max(...Object.values(deptCounts),1);
+    document.getElementById("homeDeptChart").innerHTML = Object.entries(deptCounts).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxD)*100}%"></div></div><span class="bar-value">${v}</span></div>`).join("");
 
-    // Tenure Distribution
-    const tenureBuckets = {};
-    active.forEach(e => { const t = tenureLabel(calcTenure(e.hireDate)); tenureBuckets[t] = (tenureBuckets[t] || 0) + 1; });
-    const tenureOrder = ["< 1 Year","1-2 Years","2-3 Years","3-4 Years","4-5 Years","5-10 Years","10-15 Years","15-20 Years","20+ Years"];
-    const tenureMax = Math.max(...Object.values(tenureBuckets), 1);
-    document.getElementById("tenureChart").innerHTML = tenureOrder.filter(k => tenureBuckets[k]).map(k => `
-        <div class="bar-row">
-            <span class="bar-label">${k}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(tenureBuckets[k]/tenureMax)*100}%"></div></div>
-            <span class="bar-value">${tenureBuckets[k]}</span>
-        </div>`).join("");
+    // Location chart
+    const locCounts = {};
+    active.forEach(e => { locCounts[e.location] = (locCounts[e.location]||0)+1; });
+    const maxL = Math.max(...Object.values(locCounts),1);
+    document.getElementById("homeLocChart").innerHTML = Object.entries(locCounts).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxL)*100}%;background:#0d6efd"></div></div><span class="bar-value">${v}</span></div>`).join("");
 
-    // Resignation Tenure
-    const resTenureBuckets = {};
-    exited.forEach(e => {
-        const h = new Date(e.hireDate);
-        const ex = new Date(e.exitDate);
-        const months = (ex - h) / (1000 * 60 * 60 * 24 * 30.44);
-        const label = resignationTenureLabel(months);
-        resTenureBuckets[label] = (resTenureBuckets[label] || 0) + 1;
-    });
-    const resOrder = ["< 3 Months","< 1 Year","1-2 Years","2-3 Years","3+ Years"];
-    const resMax = Math.max(...Object.values(resTenureBuckets), 1);
-    document.getElementById("resignTenureChart").innerHTML = resOrder.filter(k => resTenureBuckets[k]).map(k => `
-        <div class="bar-row">
-            <span class="bar-label">${k}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(resTenureBuckets[k]/resMax)*100}%;background:#dc3545"></div></div>
-            <span class="bar-value">${resTenureBuckets[k]}</span>
-        </div>`).join("") || '<div class="text-center text-muted py-4">No resignations recorded</div>';
+    // Recent Activity
+    const activities = [];
+    reqs.slice(-3).forEach(r => activities.push({ icon: "fa-file-lines", color: "#198754", text: `New request from <strong>${r.name}</strong> - ${r.type}`, time: r.date }));
+    meds.slice(-3).forEach(r => activities.push({ icon: "fa-heart-pulse", color: "#dc3545", text: `Medical request from <strong>${r.employee}</strong> - ${r.type}`, time: r.submitDate }));
+    active.slice(-3).forEach(e => activities.push({ icon: "fa-user", color: "#0d6efd", text: `<strong>${e.name}</strong> - ${e.jobTitle}`, time: e.hireDate }));
+    activities.sort((a,b) => new Date(b.time) - new Date(a.time));
 
-    // Recent Employees
-    const recent = active.slice(-5).reverse();
-    document.getElementById("recentEmployees").innerHTML = recent.map(emp => `
-        <tr>
-            <td><div class="d-flex align-items-center gap-2">
-                <div class="emp-avatar">${emp.name.split(" ").map(n=>n[0]).join("").toUpperCase()}</div>
-                <div><div class="fw-semibold">${emp.name}</div><small class="text-muted">${emp.code}</small></div>
-            </div></td>
-            <td>${emp.department}</td><td>${emp.location}</td><td>${emp.hireDate}</td>
-            <td><span class="badge bg-success">${emp.status}</span></td>
-        </tr>`).join("");
+    document.getElementById("recentActivity").innerHTML = activities.slice(0,8).map(a => `
+        <div class="activity-item">
+            <div class="activity-dot" style="background:${a.color}"></div>
+            <div><small>${a.text}</small><br><small class="text-muted">${a.time}</small></div>
+        </div>`).join("") || '<div class="text-center text-muted">No recent activity</div>';
 }
 
-loadDashboard();
+loadHome();
 </script>
 </body>
 </html>

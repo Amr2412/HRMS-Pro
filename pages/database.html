@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Database</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
+        <li class="nav-section">Modules</li>
+        <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li class="nav-section">Requests</li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
+        <li class="nav-section">System</li>
+        <li><a href="database.html" class="active"><i class="fa-solid fa-database"></i>Database</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2><i class="fa-solid fa-database text-success"></i> Database</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+
+        <div class="row g-4">
+
+            <!-- Employee Database -->
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white d-flex justify-content-between">
+                        <span><i class="fa-solid fa-users"></i> Employee Database</span>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sm btn-light" onclick="location.href='employees.html'"><i class="fa-solid fa-expand"></i> Full View</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-2 mb-3">
+                            <div class="col-md-3"><input class="form-control form-control-sm" id="dbSearch" placeholder="Search name, code..." oninput="filterDB()"></div>
+                            <div class="col-md-2"><select class="form-select form-select-sm" id="dbDept" onchange="filterDB()"><option value="">All Departments</option></select></div>
+                            <div class="col-md-2"><select class="form-select form-select-sm" id="dbStatus" onchange="filterDB()"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>On Leave</option><option>Probation</option></select></div>
+                            <div class="col-md-2"><select class="form-select form-select-sm" id="dbType" onchange="filterDB()"><option value="">All Types</option><option>White Collar</option><option>Blue Collar</option></select></div>
+                            <div class="col-md-1"><button class="btn btn-sm btn-outline-success w-100" onclick="filterDB()">Filter</button></div>
+                            <div class="col-md-2"><button class="btn btn-sm btn-success w-100" onclick="exportDB()"><i class="fa-solid fa-download"></i> Export CSV</button></div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-success">
+                                    <tr><th>Code</th><th>Name</th><th>Department</th><th>Section</th><th>Job Title</th><th>Location</th><th>Grade</th><th>Type</th><th>Status</th><th>Hire Date</th><th>Actions</th></tr>
+                                </thead>
+                                <tbody id="dbTable"></tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <small class="text-muted" id="dbCount">0 employees</small>
+                            <nav><ul class="pagination pagination-sm mb-0" id="dbPagination"></ul></nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let allEmps = [];
+let currentPage = 1;
+const PAGE_SIZE = 15;
+
+async function loadDB() {
+    try { const r = await fetch("../data/employees.json"); allEmps = await r.json(); } catch { allEmps = []; }
+    const saved = localStorage.getItem("hrms_employees");
+    if (saved) allEmps = JSON.parse(saved);
+    allEmps.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
+
+    const depts = [...new Set(allEmps.map(e => e.department))].sort();
+    const sel = document.getElementById("dbDept");
+    depts.forEach(d => { sel.innerHTML += `<option>${d}</option>`; });
+
+    filterDB();
+}
+
+function filterDB() {
+    const search = document.getElementById("dbSearch").value.toLowerCase();
+    const dept = document.getElementById("dbDept").value;
+    const status = document.getElementById("dbStatus").value;
+    const type = document.getElementById("dbType").value;
+    let data = allEmps;
+    if (search) data = data.filter(e => e.name.toLowerCase().includes(search) || e.code.includes(search) || e.jobTitle.toLowerCase().includes(search));
+    if (dept) data = data.filter(e => e.department === dept);
+    if (status) data = data.filter(e => e.status === status);
+    if (type) data = data.filter(e => e.employeeType === type);
+
+    document.getElementById("dbCount").textContent = data.length + " employees";
+    currentPage = 1;
+    renderDB(data);
+}
+
+function renderDB(data) {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    const page = data.slice(start, start + PAGE_SIZE);
+    const totalPages = Math.ceil(data.length / PAGE_SIZE);
+
+    const sColors = {Active:"bg-success",Inactive:"bg-danger","On Leave":"bg-warning text-dark",Probation:"bg-info"};
+    document.getElementById("dbTable").innerHTML = page.map(e => `<tr>
+        <td><small>${e.code}</small></td>
+        <td><strong>${e.name}</strong></td><td>${e.department}</td><td>${e.section}</td>
+        <td>${e.jobTitle}</td><td>${e.location}</td><td>${e.grade}</td>
+        <td><small>${e.employeeType}</small></td>
+        <td><span class="badge ${sColors[e.status]||'bg-secondary'}">${e.status}</span></td>
+        <td>${e.hireDate}</td>
+        <td><button class="btn btn-sm btn-outline-success" onclick="viewEmp('${e.code}')"><i class="fa-solid fa-eye"></i></button></td>
+    </tr>`).join("") || '<tr><td colspan="11" class="text-center text-muted">No employees found</td></tr>';
+
+    let pagHtml = '';
+    for (let i = 1; i <= totalPages; i++) {
+        pagHtml += `<li class="page-item ${i===currentPage?'active':''}"><a class="page-link" href="#" onclick="goPage(${i})">${i}</a></li>`;
+    }
+    document.getElementById("dbPagination").innerHTML = pagHtml;
+    window._dbData = data;
+}
+
+function goPage(p) { currentPage = p; renderDB(window._dbData); }
+
+function viewEmp(code) {
+    const e = allEmps.find(x => x.code === code);
+    if (!e) return;
+    alert(`${e.name}\nCode: ${e.code}\nDept: ${e.department}\nTitle: ${e.jobTitle}\nGrade: ${e.grade}\nLocation: ${e.location}\nStatus: ${e.status}\nHire Date: ${e.hireDate}`);
+}
+
+function exportDB() {
+    const headers = ["Code","Name","Department","Section","Job Title","Manager","Location","Grade","Type","Status","Hire Date","Age","Gender","Performance 2023","Performance 2024","Performance 2025","Exit Date","Exit Reason"];
+    const csv = [headers.join(",")];
+    allEmps.forEach(e => {
+        csv.push([e.code,`"${e.name}"`,`"${e.department}"`,`"${e.section}"`,`"${e.jobTitle}"`,`"${e.manager}"`,`"${e.location}"`,e.grade,`"${e.employeeType}"`,`"${e.status}"`,e.hireDate,e.age,e.gender,e.performance2023,e.performance2024,e.performance2025,e.exitDate,`"${e.exitReason||''}"`].join(","));
+    });
+    const blob = new Blob(["\uFEFF"+csv.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "employees_database.csv"; a.click();
+}
+
+loadDB();
+</script>
+</body>
+</html>
