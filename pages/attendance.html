@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Attendance</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="attendance.html" class="active"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Attendance Management</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Total Records</h6><h2 id="attTotal">0</h2></div></div></div>
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Present</h6><h2 id="attPresent" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Absent</h6><h2 id="attAbsent" style="color:#dc3545">0</h2></div></div></div>
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Mission</h6><h2 id="attMission" style="color:#0d6efd">0</h2></div></div></div>
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Late</h6><h2 id="attLate" style="color:#ffc107">0</h2></div></div></div>
+            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Lost Days</h6><h2 id="attLost" style="color:#6f42c1">0</h2></div></div></div>
+        </div>
+
+        <ul class="nav nav-tabs mb-4" id="attTabs">
+            <li class="nav-item"><a class="nav-link active" href="#" onclick="showAttTab('import')"><i class="fa-solid fa-file-excel"></i> Import Excel</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showAttTab('data')"><i class="fa-solid fa-table"></i> Attendance Data</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showAttTab('report')"><i class="fa-solid fa-chart-bar"></i> Lost Days Report</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showAttTab('summary')"><i class="fa-solid fa-file-lines"></i> Employee Summary</a></li>
+        </ul>
+
+        <!-- IMPORT TAB -->
+        <div id="importTab">
+            <div class="row g-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-file-excel"></i> Import Attendance from Excel</div>
+                        <div class="card-body">
+                            <div class="alert alert-info">
+                                <strong>Expected Excel Columns:</strong><br>
+                                <code>Employee Code | Employee Name | Department | Date | Status (Present/Absent/Mission/Late/Half Day) | Check In | Check Out | Notes</code>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><strong>Select Excel File</strong></label>
+                                <input type="file" class="form-control" id="attFileInput" accept=".xlsx,.xls,.csv" onchange="handleAttFile(event)">
+                            </div>
+                            <div id="attPreview" style="display:none">
+                                <h6>Preview (first 10 rows):</h6>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-bordered" id="attPreviewTable"></table>
+                                </div>
+                                <button class="btn btn-success mt-3" onclick="confirmImport()"><i class="fa-solid fa-check"></i> Confirm Import</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-info-circle"></i> Instructions</div>
+                        <div class="card-body" style="font-size:13px">
+                            <h6 class="text-success">Column Mapping</h6>
+                            <ul>
+                                <li><strong>Employee Code:</strong> Match with HR records</li>
+                                <li><strong>Status:</strong> Present, Absent, Mission, Late, Half Day</li>
+                                <li><strong>Check In/Out:</strong> Time format (HH:MM)</li>
+                                <li><strong>Date:</strong> DD/MM/YYYY or YYYY-MM-DD</li>
+                            </ul>
+                            <h6 class="text-success mt-3">Lost Days Calculation</h6>
+                            <p>Absent days - Annual leave days = Lost days (deducted from salary)</p>
+                            <h6 class="text-success mt-3">Supported Formats</h6>
+                            <p>.xlsx, .xls, .csv</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DATA TAB -->
+        <div id="dataTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between">
+                    <span><i class="fa-solid fa-table"></i> Attendance Records</span>
+                    <div class="d-flex gap-2">
+                        <input type="date" class="form-control form-control-sm" id="attDateFilter" onchange="renderAttData()">
+                        <select class="form-select form-select-sm" id="attStatusFilter" onchange="renderAttData()" style="width:auto">
+                            <option value="">All Status</option>
+                            <option>Present</option><option>Absent</option><option>Mission</option><option>Late</option><option>Half Day</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success"><tr><th>Code</th><th>Name</th><th>Department</th><th>Date</th><th>Status</th><th>Check In</th><th>Check Out</th><th>Notes</th></tr></thead>
+                            <tbody id="attDataTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOST DAYS REPORT -->
+        <div id="reportTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-bar"></i> Lost Days Report</div>
+                <div class="card-body">
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Month</label>
+                            <select class="form-select" id="lostMonth" onchange="renderLostDays()">
+                                <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                                <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                                <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                                <option value="9">October</option><option value="10">November</option><option value="11" selected>December</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Annual Leave Entitlement</label>
+                            <input type="number" class="form-control" id="lostLeaveDays" value="21" onchange="renderLostDays()">
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success"><tr><th>Employee</th><th>Code</th><th>Department</th><th>Working Days</th><th>Present</th><th>Absent</th><th>Mission</th><th>Late</th><th>Leave Used</th><th>Lost Days</th></tr></thead>
+                            <tbody id="lostDaysTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPLOYEE SUMMARY -->
+        <div id="summaryTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-user"></i> Employee Attendance Summary</div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <select class="form-select" id="summaryEmpSelect" onchange="renderEmpSummary()">
+                            <option value="">Select Employee</option>
+                        </select>
+                    </div>
+                    <div id="empSummaryContent">
+                        <div class="text-center text-muted py-4">Select an employee to view summary</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let attendanceData = [];
+let pendingImport = [];
+
+function loadAttendance() {
+    const saved = localStorage.getItem("hrms_attendance");
+    attendanceData = saved ? JSON.parse(saved) : [];
+    updateAttKPIs();
+    renderAttData();
+    renderLostDays();
+    populateEmpSelect();
+}
+
+function handleAttFile(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            const wb = XLSX.read(ev.target.result, { type: "array" });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const data = XLSX.utils.sheet_to_json(ws);
+            pendingImport = data.map(row => {
+                const keys = Object.keys(row);
+                const getCode = keys.find(k => k.toLowerCase().includes("code") || k.toLowerCase().includes("emp"));
+                const getName = keys.find(k => k.toLowerCase().includes("name"));
+                const getDept = keys.find(k => k.toLowerCase().includes("dept"));
+                const getDate = keys.find(k => k.toLowerCase().includes("date"));
+                const getStatus = keys.find(k => k.toLowerCase().includes("status"));
+                const getIn = keys.find(k => k.toLowerCase().includes("check in") || k.toLowerCase().includes("checkin") || k.toLowerCase().includes("in"));
+                const getOut = keys.find(k => k.toLowerCase().includes("check out") || k.toLowerCase().includes("checkout") || k.toLowerCase().includes("out"));
+                const getNotes = keys.find(k => k.toLowerCase().includes("note") || k.toLowerCase().includes("remark"));
+                return {
+                    code: row[getCode] || "",
+                    name: row[getName] || "",
+                    department: row[getDept] || "",
+                    date: normalizeDate(row[getDate]),
+                    status: row[getStatus] || "Present",
+                    checkIn: row[getIn] || "",
+                    checkOut: row[getOut] || "",
+                    notes: row[getNotes] || ""
+                };
+            });
+            showPreview();
+        } catch (err) { alert("Error reading file: " + err.message); }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+function normalizeDate(d) {
+    if (!d) return "";
+    if (typeof d === "number") {
+        const date = new Date((d - 25569) * 86400000);
+        return date.toISOString().split("T")[0];
+    }
+    const str = String(d);
+    if (str.includes("/")) {
+        const parts = str.split("/");
+        if (parts.length === 3) return `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+    }
+    return str.split(" ")[0];
+}
+
+function showPreview() {
+    document.getElementById("attPreview").style.display = "block";
+    const preview = pendingImport.slice(0, 10);
+    const headers = Object.keys(preview[0] || {});
+    document.getElementById("attPreviewTable").innerHTML = `
+        <thead><tr>${headers.map(h => `<th>${h}</th>`).join("")}</tr></thead>
+        <tbody>${preview.map(row => `<tr>${headers.map(h => `<td>${row[h]||''}</td>`).join("")}</tr>`).join("")}</tbody>
+        <tfoot><tr><td colspan="${headers.length}"><strong>${pendingImport.length} total rows</strong></td></tr></tfoot>`;
+}
+
+function confirmImport() {
+    attendanceData = attendanceData.concat(pendingImport);
+    localStorage.setItem("hrms_attendance", JSON.stringify(attendanceData));
+    pendingImport = [];
+    document.getElementById("attPreview").style.display = "none";
+    document.getElementById("attFileInput").value = "";
+    updateAttKPIs();
+    renderAttData();
+    renderLostDays();
+    populateEmpSelect();
+    alert(`Imported ${attendanceData.length} records successfully!`);
+}
+
+function updateAttKPIs() {
+    document.getElementById("attTotal").textContent = attendanceData.length;
+    document.getElementById("attPresent").textContent = attendanceData.filter(r => r.status === "Present").length;
+    document.getElementById("attAbsent").textContent = attendanceData.filter(r => r.status === "Absent").length;
+    document.getElementById("attMission").textContent = attendanceData.filter(r => r.status === "Mission").length;
+    document.getElementById("attLate").textContent = attendanceData.filter(r => r.status === "Late").length;
+    document.getElementById("attLost").textContent = calcTotalLostDays();
+}
+
+function calcTotalLostDays() {
+    const absent = attendanceData.filter(r => r.status === "Absent").length;
+    const leave = parseInt(document.getElementById("lostLeaveDays")?.value) || 21;
+    return Math.max(absent - leave, 0);
+}
+
+function renderAttData() {
+    const dateFilter = document.getElementById("attDateFilter")?.value;
+    const statusFilter = document.getElementById("attStatusFilter")?.value;
+    let data = attendanceData;
+    if (dateFilter) data = data.filter(r => r.date === dateFilter);
+    if (statusFilter) data = data.filter(r => r.status === statusFilter);
+
+    const sColors = {Present:"bg-success",Absent:"bg-danger",Mission:"bg-primary",Late:"bg-warning text-dark","Half Day":"bg-info"};
+    document.getElementById("attDataTable").innerHTML = data.length === 0
+        ? '<tr><td colspan="8" class="text-center text-muted py-4">No attendance data. Import from Excel first.</td></tr>'
+        : data.map(r => `<tr>
+            <td>${r.code}</td><td>${r.name}</td><td>${r.department}</td><td>${r.date}</td>
+            <td><span class="badge ${sColors[r.status]||'bg-secondary'}">${r.status}</span></td>
+            <td>${r.checkIn||'-'}</td><td>${r.checkOut||'-'}</td><td>${r.notes||'-'}</td>
+        </tr>`).join("");
+}
+
+function renderLostDays() {
+    const month = parseInt(document.getElementById("lostMonth")?.value) ?? new Date().getMonth();
+    const leaveEntitlement = parseInt(document.getElementById("lostLeaveDays")?.value) || 21;
+
+    const monthData = attendanceData.filter(r => {
+        const d = new Date(r.date);
+        return d.getMonth() === month;
+    });
+
+    const employees = {};
+    monthData.forEach(r => {
+        const key = r.code || r.name;
+        if (!employees[key]) employees[key] = { code: r.code, name: r.name, department: r.department, present: 0, absent: 0, mission: 0, late: 0, total: 0 };
+        employees[key].total++;
+        if (r.status === "Present") employees[key].present++;
+        if (r.status === "Absent") employees[key].absent++;
+        if (r.status === "Mission") employees[key].mission++;
+        if (r.status === "Late") employees[key].late++;
+    });
+
+    const leavePerMonth = leaveEntitlement / 12;
+    document.getElementById("lostDaysTable").innerHTML = Object.values(employees).map(emp => {
+        const lostDays = Math.max(emp.absent - Math.round(leavePerMonth), 0);
+        return `<tr>
+            <td><strong>${emp.name}</strong></td><td>${emp.code}</td><td>${emp.department}</td>
+            <td>${emp.total}</td><td>${emp.present}</td>
+            <td>${emp.absent > 0 ? '<span class="text-danger">'+emp.absent+'</span>' : emp.absent}</td>
+            <td>${emp.mission}</td><td>${emp.late}</td>
+            <td>${Math.round(leavePerMonth)}</td>
+            <td>${lostDays > 0 ? '<span class="badge bg-danger">'+lostDays+' days</span>' : '<span class="badge bg-success">0</span>'}</td>
+        </tr>`;
+    }).join("") || '<tr><td colspan="10" class="text-center text-muted py-4">No data for this month</td></tr>';
+}
+
+function populateEmpSelect() {
+    const emps = [...new Set(attendanceData.map(r => r.code + "|" + r.name))].sort();
+    const sel = document.getElementById("summaryEmpSelect");
+    sel.innerHTML = '<option value="">Select Employee</option>';
+    emps.forEach(e => {
+        const [code, ...nameParts] = e.split("|");
+        sel.innerHTML += `<option value="${code}">${code} - ${nameParts.join(" ")}</option>`;
+    });
+}
+
+function renderEmpSummary() {
+    const code = document.getElementById("summaryEmpSelect").value;
+    if (!code) { document.getElementById("empSummaryContent").innerHTML = '<div class="text-center text-muted py-4">Select an employee</div>'; return; }
+    const empData = attendanceData.filter(r => r.code === code);
+    const emp = empData[0] || {};
+    const present = empData.filter(r => r.status === "Present").length;
+    const absent = empData.filter(r => r.status === "Absent").length;
+    const mission = empData.filter(r => r.status === "Mission").length;
+    const late = empData.filter(r => r.status === "Late").length;
+    const halfDay = empData.filter(r => r.status === "Half Day").length;
+    const total = empData.length;
+    const attendanceRate = total > 0 ? ((present / total) * 100).toFixed(1) : 0;
+
+    document.getElementById("empSummaryContent").innerHTML = `
+        <div class="row g-4">
+            <div class="col-md-4">
+                <h5>${emp.name || 'Unknown'}</h5>
+                <p class="text-muted">${emp.code} | ${emp.department}</p>
+                <p><strong>Attendance Rate:</strong> <span class="badge ${attendanceRate >= 90 ? 'bg-success' : attendanceRate >= 75 ? 'bg-warning' : 'bg-danger'}">${attendanceRate}%</span></p>
+            </div>
+            <div class="col-md-8">
+                <div class="row g-3">
+                    <div class="col-md-4"><div class="card text-center p-3"><h3 class="text-success">${present}</h3><small>Present</small></div></div>
+                    <div class="col-md-4"><div class="card text-center p-3"><h3 class="text-danger">${absent}</h3><small>Absent</small></div></div>
+                    <div class="col-md-4"><div class="card text-center p-3"><h3 class="text-primary">${mission}</h3><small>Mission</small></div></div>
+                    <div class="col-md-4"><div class="card text-center p-3"><h3 style="color:#ffc107">${late}</h3><small>Late</small></div></div>
+                    <div class="col-md-4"><div class="card text-center p-3"><h3 class="text-info">${halfDay}</h3><small>Half Day</small></div></div>
+                    <div class="col-md-4"><div class="card text-center p-3"><h3>${total}</h3><small>Total Records</small></div></div>
+                </div>
+            </div>
+        </div>`;
+}
+
+function showAttTab(tab) {
+    ["import","data","report","summary"].forEach(t => {
+        document.getElementById(t+"Tab").style.display = t === tab ? "block" : "none";
+    });
+    document.querySelectorAll("#attTabs a").forEach(a => a.classList.remove("active"));
+    event.target.closest("a").classList.add("active");
+    if (tab === "data") renderAttData();
+    if (tab === "report") renderLostDays();
+    if (tab === "summary") populateEmpSelect();
+}
+
+loadAttendance();
+</script>
+</body>
+</html>

@@ -7,6 +7,23 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .obj-row { background: #f8f9fa; border-radius: 8px; padding: 12px; margin-bottom: 8px; border-left: 3px solid #198754; }
+        .weight-badge { font-size: 18px; font-weight: 700; color: #198754; }
+        .eval-section { border: 2px solid #e9ecef; border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .eval-section h5 { color: #198754; }
+        .star-rating { display: flex; gap: 5px; }
+        .star-rating i { font-size: 24px; cursor: pointer; color: #ddd; transition: 0.2s; }
+        .star-rating i.active, .star-rating i:hover { color: #ffc107; }
+        .total-weight { font-size: 20px; font-weight: 700; }
+        .total-weight.valid { color: #198754; }
+        .total-weight.invalid { color: #dc3545; }
+        .progress-step { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+        .progress-step .step-circle { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .step-done { background: #198754; color: white; }
+        .step-current { background: #ffc107; color: #333; }
+        .step-pending { background: #e9ecef; color: #999; }
+    </style>
 </head>
 <body>
 
@@ -17,13 +34,13 @@
         <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
-        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
         <li><a href="performance.html" class="active"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
-        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
-        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
@@ -33,52 +50,391 @@
     <div class="topbar"><h2>Performance Management</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
 
     <div class="container-fluid p-4">
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Employees Evaluated</h6><h2 id="perfEvaluated">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Avg Score (2025)</h6><h2 id="perfAvg">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>PIP Employees</h6><h2 id="perfPip">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Top Performers</h2></div></div></div>
+
+        <ul class="nav nav-tabs mb-4" id="perfTabs">
+            <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('employee')"><i class="fa-solid fa-user"></i> Employee Evaluation</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('manager')"><i class="fa-solid fa-user-tie"></i> Manager Evaluation</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('overview')"><i class="fa-solid fa-table"></i> All Scores</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('pip')"><i class="fa-solid fa-triangle-exclamation"></i> PIP Tracking</a></li>
+        </ul>
+
+        <!-- EMPLOYEE SELF-EVALUATION -->
+        <div id="employeeTab">
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-list-check"></i> Evaluation Progress</div>
+                        <div class="card-body" id="evalProgress">
+                            <div class="progress-step"><div class="step-circle step-done"><i class="fa-solid fa-check"></i></div><span>Set Objectives</span></div>
+                            <div class="progress-step"><div class="step-circle step-current">2</div><span>Self-Rate</span></div>
+                            <div class="progress-step"><div class="step-circle step-pending">3</div><span>Manager Rate</span></div>
+                            <div class="progress-step"><div class="step-circle step-pending">4</div><span>Final Score</span></div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-info-circle"></i> How it Works</div>
+                        <div class="card-body" style="font-size:12px">
+                            <p><strong>1.</strong> Add your objectives for this period</p>
+                            <p><strong>2.</strong> Assign weight to each objective (total = 100%)</p>
+                            <p><strong>3.</strong> Rate yourself 1-5 on each objective</p>
+                            <p><strong>4.</strong> Submit for manager review</p>
+                            <p><strong>5.</strong> Manager rates you and final score is calculated</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white d-flex justify-content-between">
+                            <span><i class="fa-solid fa-bullseye"></i> My Objectives & Self-Evaluation</span>
+                            <span>Total Weight: <span class="total-weight valid" id="totalWeightDisplay">0%</span></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-3">
+                                <div class="col-md-4"><label class="form-label">Employee Name</label><input class="form-control" id="evalEmpName" placeholder="Your name"></div>
+                                <div class="col-md-4"><label class="form-label">Department</label><input class="form-control" id="evalEmpDept" placeholder="Your department"></div>
+                                <div class="col-md-4"><label class="form-label">Evaluation Period</label><select class="form-select" id="evalPeriod"><option>H1 2026</option><option>H2 2026</option><option>Q1 2026</option><option>Q2 2026</option><option>Annual 2026</option></select></div>
+                            </div>
+
+                            <div id="objectivesList"></div>
+
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button class="btn btn-outline-success" onclick="addObjective()"><i class="fa-solid fa-plus"></i> Add Objective</button>
+                                <button class="btn btn-success btn-lg" onclick="submitSelfEval()"><i class="fa-solid fa-paper-plane"></i> Submit for Manager Review</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-comments"></i> Additional Comments</div>
+                        <div class="card-body">
+                            <div class="mb-3"><label class="form-label"><strong>Key Achievements This Period</strong></label><textarea class="form-control" id="evalAchievements" rows="3" placeholder="What did you accomplish?"></textarea></div>
+                            <div class="mb-3"><label class="form-label"><strong>Challenges Faced</strong></label><textarea class="form-control" id="evalChallenges" rows="3" placeholder="What challenges did you face?"></textarea></div>
+                            <div class="mb-3"><label class="form-label"><strong>Development Goals for Next Period</strong></label><textarea class="form-control" id="evalGoals" rows="3" placeholder="What do you want to achieve next?"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="card">
-            <div class="card-header bg-success text-white">Performance List</div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-success"><tr><th>Code</th><th>Name</th><th>Department</th><th>Grade</th><th>Score 2023</th><th>Score 2024</th><th>Score 2025</th><th>PIP</th></tr></thead>
-                        <tbody id="perfTable"></tbody>
-                    </table>
+        <!-- MANAGER EVALUATION -->
+        <div id="managerTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-user-tie"></i> Manager Evaluation</div>
+                <div class="card-body">
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label">Select Employee</label>
+                            <select class="form-select" id="mgrSelectEmp" onchange="loadEmployeeEval()">
+                                <option value="">Choose employee...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="mgrEvalContent">
+                        <div class="text-center text-muted py-4">Select an employee to evaluate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALL SCORES -->
+        <div id="overviewTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-table"></i> Performance Scores Overview</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success"><tr><th>Employee</th><th>Dept</th><th>Grade</th><th>2023</th><th>2024</th><th>2025</th><th>Trend</th><th>PIP</th><th>Actions</th></tr></thead>
+                            <tbody id="overviewTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PIP TRACKING -->
+        <div id="pipTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white d-flex justify-content-between">
+                    <span><i class="fa-solid fa-triangle-exclamation"></i> PIP Tracking</span>
+                    <button class="btn btn-sm btn-light" onclick="openAddPIP()"><i class="fa-solid fa-plus"></i> New PIP</button>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success"><tr><th>Employee</th><th>Dept</th><th>Start</th><th>End</th><th>Manager</th><th>Status</th><th>Progress</th><th>Actions</th></tr></thead>
+                            <tbody id="pipTable"></tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+<div class="modal fade" id="addPIPModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header bg-success text-white"><h5 class="modal-title">New PIP</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Employee Name</label><input class="form-control" id="pipName"></div>
+            <div class="col-md-6"><label class="form-label">Department</label><input class="form-control" id="pipDept"></div>
+            <div class="col-md-6"><label class="form-label">Manager</label><input class="form-control" id="pipManager"></div>
+            <div class="col-md-6"><label class="form-label">Duration (days)</label><input type="number" class="form-control" id="pipDuration" value="90"></div>
+            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" class="form-control" id="pipStart"></div>
+            <div class="col-md-6"><label class="form-label">Status</label><select class="form-select" id="pipStatus"><option>In Progress</option><option>Completed - Passed</option><option>Completed - Failed</option></select></div>
+            <div class="col-12"><label class="form-label">Improvement Areas</label><textarea class="form-control" id="pipAreas" rows="2"></textarea></div>
+            <div class="col-12"><label class="form-label">Goals / Action Items</label><textarea class="form-control" id="pipGoals" rows="2"></textarea></div>
+        </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="savePIP()">Create</button></div>
+</div></div></div>
+
 <script>
 let employees = [];
+let objectives = [];
+let evaluations = [];
+let pipRecords = [];
+
+const COMPETENCIES = ["Job Knowledge","Quality of Work","Productivity","Communication","Teamwork","Problem Solving","Initiative","Adaptability"];
+
 async function loadPerf() {
     try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
-    const evaluated = employees.filter(e => e.performance2025 > 0);
-    document.getElementById("perfEvaluated").textContent = evaluated.length;
-    const avg = evaluated.length ? (evaluated.reduce((s,e) => s + e.performance2025, 0) / evaluated.length).toFixed(1) : 0;
-    document.getElementById("perfAvg").textContent = avg + "/5";
-    document.getElementById("perfPip").textContent = employees.filter(e => e.pip).length;
+    const saved = localStorage.getItem("hrms_employees");
+    if (saved) employees = JSON.parse(saved);
+    employees.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
 
-    const ratingLabel = s => s >= 5 ? "Excellent" : s >= 4 ? "Very Good" : s >= 3 ? "Good" : s >= 1 ? "Needs Improvement" : "N/A";
-    const ratingColor = s => s >= 5 ? "success" : s >= 4 ? "success" : s >= 3 ? "warning" : s >= 1 ? "danger" : "secondary";
+    const objSaved = localStorage.getItem("hrms_objectives");
+    objectives = objSaved ? JSON.parse(objSaved) : [];
+    const evalSaved = localStorage.getItem("hrms_evaluations");
+    evaluations = evalSaved ? JSON.parse(evalSaved) : [];
+    const pipSaved = localStorage.getItem("hrms_pip");
+    pipRecords = pipSaved ? JSON.parse(pipSaved) : [
+        { employee: "Nada Salah", department: "الجوده", startDate: "2025-08-01", endDate: "2025-10-30", duration: 90, manager: "Mona Rashed", status: "Completed - Failed", areas: "QC processes", goals: "Improve accuracy to 98%" },
+        { employee: "Tamer Rashed", department: "المكافحه", startDate: "2026-01-15", endDate: "2026-04-15", duration: 90, manager: "Omar Khalid", status: "In Progress", areas: "Performance, attendance", goals: "Meet monthly targets" },
+    ];
 
-    document.getElementById("perfTable").innerHTML = employees.map(e => `
-        <tr>
-            <td><strong>${e.code}</strong></td>
-            <td>${e.name}</td>
-            <td>${e.department}</td>
-            <td>${e.grade}</td>
-            <td>${e.performance2023 || "-"}</td>
-            <td>${e.performance2024 || "-"}</td>
-            <td><span class="badge bg-${ratingColor(e.performance2025)}">${e.performance2025 ? e.performance2025 + "/5 - " + ratingLabel(e.performance2025) : "N/A"}</span></td>
-            <td>${e.pip ? '<span class="badge bg-danger">Yes</span>' : '<span class="badge bg-success">No</span>'}</td>
-        </tr>`).join("");
+    addObjective();
+    addObjective();
+    addObjective();
+    renderOverview();
+    renderPIP();
+    populateManagerDropdown();
 }
+
+function addObjective() {
+    objectives.push({ objective: "", weight: 0, selfRating: 3 });
+    renderObjectives();
+}
+
+function removeObjective(i) {
+    if (objectives.length <= 1) return;
+    objectives.splice(i, 1);
+    renderObjectives();
+}
+
+function renderObjectives() {
+    const list = document.getElementById("objectivesList");
+    list.innerHTML = objectives.map((obj, i) => `
+        <div class="obj-row">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label" style="font-size:11px">Objective ${i + 1}</label>
+                    <input class="form-control form-control-sm" value="${obj.objective}" placeholder="e.g. Increase sales by 20%" onchange="objectives[${i}].objective=this.value">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label" style="font-size:11px">Weight %</label>
+                    <input type="number" class="form-control form-control-sm" value="${obj.weight}" min="0" max="100" onchange="objectives[${i}].weight=parseInt(this.value)||0;updateWeightDisplay()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" style="font-size:11px">Self Rating (1-5)</label>
+                    <div class="star-rating" id="stars${i}">
+                        ${[1,2,3,4,5].map(s => `<i class="fa-solid fa-star ${s <= obj.selfRating ? 'active' : ''}" onclick="objectives[${i}].selfRating=${s};renderObjectives()"></i>`).join("")}
+                        <small class="text-muted ms-2">${obj.selfRating}/5</small>
+                    </div>
+                </div>
+                <div class="col-md-1">
+                    <button class="btn btn-sm btn-outline-danger" onclick="removeObjective(${i})"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+        </div>`).join("");
+    updateWeightDisplay();
+}
+
+function updateWeightDisplay() {
+    const total = objectives.reduce((s, o) => s + (o.weight || 0), 0);
+    const el = document.getElementById("totalWeightDisplay");
+    el.textContent = total + "%";
+    el.className = "total-weight " + (total === 100 ? "valid" : "invalid");
+}
+
+function submitSelfEval() {
+    const name = document.getElementById("evalEmpName").value.trim();
+    if (!name) return alert("Please enter your name");
+    const dept = document.getElementById("evalEmpDept").value.trim();
+    const period = document.getElementById("evalPeriod").value;
+    const totalWeight = objectives.reduce((s, o) => s + (o.weight || 0), 0);
+    if (totalWeight !== 100) return alert("Total weight must be exactly 100%");
+
+    const eval_ = {
+        id: "EVL-" + String(evaluations.length + 1).padStart(3, "0"),
+        employee: name, department: dept, period,
+        objectives: objectives.map(o => ({ ...o })),
+        achievements: document.getElementById("evalAchievements").value.trim(),
+        challenges: document.getElementById("evalChallenges").value.trim(),
+        goals: document.getElementById("evalGoals").value.trim(),
+        selfScore: objectives.reduce((s, o) => s + o.selfRating * (o.weight / 100), 0).toFixed(2),
+        managerScores: null,
+        managerScore: null,
+        finalScore: null,
+        status: "Pending Manager Review",
+        date: new Date().toISOString().split("T")[0]
+    };
+    evaluations.push(eval_);
+    localStorage.setItem("hrms_evaluations", JSON.stringify(evaluations));
+    alert("Self-evaluation submitted! Waiting for manager review.");
+    populateManagerDropdown();
+}
+
+function populateManagerDropdown() {
+    const sel = document.getElementById("mgrSelectEmp");
+    sel.innerHTML = '<option value="">Choose employee...</option>';
+    evaluations.forEach(e => {
+        sel.innerHTML += `<option value="${e.id}">${e.employee} - ${e.period} (${e.status})</option>`;
+    });
+}
+
+function loadEmployeeEval() {
+    const id = document.getElementById("mgrSelectEmp").value;
+    if (!id) { document.getElementById("mgrEvalContent").innerHTML = '<div class="text-center text-muted py-4">Select an employee</div>'; return; }
+    const evl = evaluations.find(e => e.id === id);
+    if (!evl) return;
+
+    const hasManager = evl.managerScores !== null;
+    document.getElementById("mgrEvalContent").innerHTML = `
+        <div class="eval-section">
+            <h5>Employee Objectives</h5>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-success"><tr><th>#</th><th>Objective</th><th>Weight</th><th>Self Rating</th><th>Manager Rating</th></tr></thead>
+                    <tbody>
+                        ${evl.objectives.map((o, i) => `<tr>
+                            <td>${i+1}</td><td>${o.objective}</td><td>${o.weight}%</td><td>${o.selfRating}/5</td>
+                            <td><select class="form-select form-select-sm mgr-rating" data-idx="${i}" ${hasManager ? 'disabled' : ''}>
+                                <option value="1" ${hasManager && evl.managerScores[i]===1?'selected':''}>1</option>
+                                <option value="2" ${hasManager && evl.managerScores[i]===2?'selected':''}>2</option>
+                                <option value="3" ${!hasManager?'selected':''} ${hasManager && evl.managerScores[i]===3?'selected':''}>3</option>
+                                <option value="4" ${hasManager && evl.managerScores[i]===4?'selected':''}>4</option>
+                                <option value="5" ${hasManager && evl.managerScores[i]===5?'selected':''}>5</option>
+                            </select></td>
+                        </tr>`).join("")}
+                    </tbody>
+                </table>
+            </div>
+            <div class="row g-3 mt-3">
+                <div class="col-4"><strong>Self Score:</strong> <span class="badge bg-info">${evl.selfScore}</span></div>
+                <div class="col-4"><strong>Manager Score:</strong> <span class="badge bg-warning">${evl.managerScore || '-'}</span></div>
+                <div class="col-4"><strong>Final Score:</strong> <span class="badge bg-success">${evl.finalScore || '-'}</span></div>
+            </div>
+            <div class="row g-3 mt-3">
+                <div class="col-12"><strong>Achievements:</strong> ${evl.achievements || '-'}</div>
+                <div class="col-12"><strong>Challenges:</strong> ${evl.challenges || '-'}</div>
+                <div class="col-12"><strong>Goals:</strong> ${evl.goals || '-'}</div>
+            </div>
+            ${!hasManager ? `<div class="mt-3 text-end"><button class="btn btn-success btn-lg" onclick="submitManagerEval('${evl.id}')"><i class="fa-solid fa-check"></i> Submit Manager Evaluation</button></div>` : `<div class="mt-3"><span class="badge bg-success">Manager evaluation completed</span></div>`}
+        </div>`;
+}
+
+function submitManagerEval(id) {
+    const evl = evaluations.find(e => e.id === id);
+    if (!evl) return;
+    const ratings = document.querySelectorAll(".mgr-rating");
+    const scores = [];
+    ratings.forEach(r => scores.push(parseInt(r.value)));
+    evl.managerScores = scores;
+    evl.managerScore = evl.objectives.reduce((s, o, i) => s + scores[i] * (o.weight / 100), 0).toFixed(2);
+    evl.finalScore = ((parseFloat(evl.selfScore) + parseFloat(evl.managerScore)) / 2).toFixed(2);
+    evl.status = "Completed";
+    localStorage.setItem("hrms_evaluations", JSON.stringify(evaluations));
+    alert("Manager evaluation submitted!");
+    loadEmployeeEval();
+    renderOverview();
+}
+
+function renderOverview() {
+    const active = employees.filter(e => e.status !== "Inactive");
+    document.getElementById("overviewTable").innerHTML = active.map(e => {
+        const s2025 = e.performance2025 || 0;
+        const s2024 = e.performance2024 || 0;
+        let trend = '-';
+        if (s2025 > s2024) trend = '<i class="fa-solid fa-arrow-trend-up text-success"></i>';
+        else if (s2025 < s2024 && s2024 > 0) trend = '<i class="fa-solid fa-arrow-trend-down text-danger"></i>';
+        const rc = {5:"#198754",4:"#20c997",3:"#ffc107",2:"#fd7e14",1:"#dc3545"};
+        return `<tr>
+            <td><strong>${e.name}</strong></td><td>${e.department}</td><td>${e.grade}</td>
+            <td>${e.performance2023>0?`<span style="color:${rc[e.performance2023]}">${e.performance2023}</span>`:'-'}</td>
+            <td>${e.performance2024>0?`<span style="color:${rc[e.performance2024]}">${e.performance2024}</span>`:'-'}</td>
+            <td>${s2025>0?`<span style="color:${rc[s2025]}">${s2025}</span>`:'-'}</td>
+            <td>${trend}</td>
+            <td>${e.pip?'<span class="badge bg-danger">PIP</span>':'<span class="badge bg-success">OK</span>'}</td>
+            <td><button class="btn btn-sm btn-outline-success" onclick="viewEval('${e.name}')"><i class="fa-solid fa-eye"></i></button></td>
+        </tr>`;
+    }).join("");
+}
+
+function viewEval(name) {
+    const evl = evaluations.find(e => e.employee === name);
+    if (!evl) return alert("No evaluation found for " + name);
+    alert(`${evl.employee} - ${evl.period}\nSelf: ${evl.selfScore} | Manager: ${evl.managerScore || '-'} | Final: ${evl.finalScore || '-'}\nStatus: ${evl.status}`);
+}
+
+function renderPIP() {
+    document.getElementById("pipTable").innerHTML = pipRecords.map((r, i) => {
+        const total = (new Date(r.endDate) - new Date(r.startDate)) / 86400000;
+        const elapsed = Math.min(((new Date() - new Date(r.startDate)) / 86400000), total);
+        const progress = Math.min(Math.round((elapsed / total) * 100), 100);
+        const badge = r.status.includes("Passed") ? "bg-success" : r.status.includes("Failed") ? "bg-danger" : "bg-warning text-dark";
+        return `<tr>
+            <td><strong>${r.employee}</strong></td><td>${r.department}</td><td>${r.startDate}</td><td>${r.endDate}</td><td>${r.manager}</td>
+            <td><span class="badge ${badge}">${r.status}</span></td>
+            <td><div class="progress" style="height:20px;width:100px"><div class="progress-bar ${badge}" style="width:${progress}%">${progress}%</div></div></td>
+            <td><button class="btn btn-sm btn-outline-success" onclick="viewPIPCard(${i})"><i class="fa-solid fa-eye"></i></button></td>
+        </tr>`;
+    }).join("");
+}
+
+function openAddPIP() { new bootstrap.Modal(document.getElementById("addPIPModal")).show(); }
+
+function savePIP() {
+    const name = document.getElementById("pipName").value.trim();
+    if (!name) return alert("Enter employee name");
+    const start = document.getElementById("pipStart").value;
+    const dur = parseInt(document.getElementById("pipDuration").value) || 90;
+    const end = new Date(new Date(start).getTime() + dur * 86400000).toISOString().split("T")[0];
+    pipRecords.push({
+        employee: name, department: document.getElementById("pipDept").value.trim(),
+        startDate: start, endDate: end, duration: dur,
+        manager: document.getElementById("pipManager").value.trim(),
+        status: document.getElementById("pipStatus").value,
+        areas: document.getElementById("pipAreas").value.trim(),
+        goals: document.getElementById("pipGoals").value.trim()
+    });
+    localStorage.setItem("hrms_pip", JSON.stringify(pipRecords));
+    renderPIP();
+    bootstrap.Modal.getInstance(document.getElementById("addPIPModal")).hide();
+}
+
+function viewPIPCard(i) {
+    const r = pipRecords[i];
+    alert(`PIP: ${r.employee}\nDept: ${r.department}\nManager: ${r.manager}\nPeriod: ${r.startDate} to ${r.endDate}\nStatus: ${r.status}\nAreas: ${r.areas}\nGoals: ${r.goals}`);
+}
+
+function showTab(tab) {
+    ["employee","manager","overview","pip"].forEach(t => {
+        document.getElementById(t+"Tab").style.display = t === tab ? "block" : "none";
+    });
+    document.querySelectorAll("#perfTabs a").forEach(a => a.classList.remove("active"));
+    event.target.closest("a").classList.add("active");
+}
+
 loadPerf();
 </script>
 </body>

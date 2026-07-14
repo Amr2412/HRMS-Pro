@@ -21,9 +21,9 @@
         <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
-        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
-        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
         <li><a href="settings.html" class="active"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
@@ -33,55 +33,181 @@
     <div class="topbar"><h2>Settings</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
 
     <div class="container-fluid p-4">
-        <div class="row g-3 mb-4">
-            <div class="col-md-3">
-                <div class="card kpi"><div class="card-body text-center">
-                    <i class="fa-solid fa-users fa-2x mb-3 text-success"></i>
-                    <h6>User Management</h6><p class="text-muted">Manage users and permissions.</p>
-                    <button class="btn btn-success btn-sm">Open</button>
-                </div></div>
-            </div>
-            <div class="col-md-3">
-                <div class="card kpi"><div class="card-body text-center">
-                    <i class="fa-solid fa-building fa-2x mb-3 text-success"></i>
-                    <h6>Departments</h6><p class="text-muted">Create and edit departments.</p>
-                    <button class="btn btn-success btn-sm">Open</button>
-                </div></div>
-            </div>
-            <div class="col-md-3">
-                <div class="card kpi"><div class="card-body text-center">
-                    <i class="fa-solid fa-user-shield fa-2x mb-3 text-success"></i>
-                    <h6>Roles & Permissions</h6><p class="text-muted">Control access levels.</p>
-                    <button class="btn btn-success btn-sm">Open</button>
-                </div></div>
-            </div>
-            <div class="col-md-3">
-                <div class="card kpi"><div class="card-body text-center">
-                    <i class="fa-solid fa-database fa-2x mb-3 text-success"></i>
-                    <h6>System Backup</h6><p class="text-muted">Backup and restore data.</p>
-                    <button class="btn btn-success btn-sm">Open</button>
-                </div></div>
-            </div>
-        </div>
 
-        <div class="card">
-            <div class="card-header bg-success text-white">System Configuration</div>
-            <div class="card-body">
-                <table class="table table-hover mb-0">
-                    <thead class="table-success"><tr><th>Setting</th><th>Current Value</th><th>Status</th></tr></thead>
-                    <tbody>
-                        <tr><td>Company Name</td><td>Linah Farms</td><td><span class="badge bg-success">Configured</span></td></tr>
-                        <tr><td>Working Days</td><td>Sunday - Thursday</td><td><span class="badge bg-success">Configured</span></td></tr>
-                        <tr><td>Annual Leave Policy</td><td>Enabled</td><td><span class="badge bg-success">Active</span></td></tr>
-                        <tr><td>Email Notifications</td><td>Enabled</td><td><span class="badge bg-success">Active</span></td></tr>
-                        <tr><td>Automatic Backup</td><td>Daily</td><td><span class="badge bg-success">Running</span></td></tr>
-                    </tbody>
-                </table>
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-user-gear"></i> Profile Settings</div>
+                    <div class="card-body">
+                        <div class="mb-3"><label class="form-label">Full Name</label><input class="form-control" id="settingName" value="HR Admin"></div>
+                        <div class="mb-3"><label class="form-label">Email</label><input type="email" class="form-control" id="settingEmail" value="hr@linahfarms.com"></div>
+                        <div class="mb-3"><label class="form-label">Department</label><input class="form-control" id="settingDept" value="الموارد البشريه" readonly></div>
+                        <div class="mb-3"><label class="form-label">Role</label>
+                            <select class="form-select" id="settingRole">
+                                <option value="Admin" selected>Admin</option>
+                                <option value="HR Manager">HR Manager</option>
+                                <option value="HR Specialist">HR Specialist</option>
+                                <option value="Viewer">Viewer (Read Only)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="saveProfile()"><i class="fa-solid fa-save"></i> Save Profile</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-bell"></i> Notification Settings</div>
+                    <div class="card-body">
+                        <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="notifEmail" checked><label class="form-check-label">Email Notifications</label></div>
+                        <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="notifNewHire" checked><label class="form-check-label">New Hire Alerts</label></div>
+                        <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="notifExit" checked><label class="form-check-label">Exit/Resignation Alerts</label></div>
+                        <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="notifMedical"><label class="form-check-label">Medical Request Alerts</label></div>
+                        <div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" id="notifPerformance"><label class="form-check-label">Performance Review Alerts</label></div>
+                        <button class="btn btn-success" onclick="saveNotifications()"><i class="fa-solid fa-save"></i> Save Notifications</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-building"></i> Company Info</div>
+                    <div class="card-body">
+                        <div class="mb-3"><label class="form-label">Company Name</label><input class="form-control" id="settingCompany" value="Linah Farms"></div>
+                        <div class="mb-3"><label class="form-label">Working Days</label><input class="form-control" value="Sunday - Thursday" readonly></div>
+                        <div class="mb-3"><label class="form-label">Annual Leave Days</label><input type="number" class="form-control" id="settingLeaveDays" value="21"></div>
+                        <div class="mb-3"><label class="form-label">Probation Period (months)</label><input type="number" class="form-control" id="settingProbation" value="3"></div>
+                        <div class="mb-3"><label class="form-label">Annual Hiring Target</label><input type="number" class="form-control" id="settingHiringTarget" value="50"></div>
+                        <button class="btn btn-success" onclick="saveCompany()"><i class="fa-solid fa-save"></i> Save Company Settings</button>
+                    </div>
+                </div>
+
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-database"></i> Data Management</div>
+                    <div class="card-body">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button class="btn btn-outline-success" onclick="exportAllData()"><i class="fa-solid fa-download"></i> Export All Data (JSON)</button>
+                            <button class="btn btn-outline-info" onclick="document.getElementById('importFile').click()"><i class="fa-solid fa-upload"></i> Import Data</button>
+                            <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                            <button class="btn btn-outline-danger" onclick="resetAllData()"><i class="fa-solid fa-trash"></i> Reset All Data</button>
+                        </div>
+                        <hr>
+                        <div class="text-muted" style="font-size:13px">
+                            <p class="mb-1"><strong>Stored Data:</strong></p>
+                            <p class="mb-1">Employees: <span id="dataEmpCount">0</span> records</p>
+                            <p class="mb-1">Medical Requests: <span id="dataMedCount">0</span> records</p>
+                            <p>Training Requests: <span id="dataTrainCount">0</span> records</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-palette"></i> Appearance</div>
+                    <div class="card-body">
+                        <div class="mb-3"><label class="form-label">Theme</label>
+                            <select class="form-select" id="settingTheme" onchange="changeTheme()">
+                                <option value="light" selected>Light</option>
+                                <option value="dark">Dark</option>
+                            </select>
+                        </div>
+                        <div class="mb-3"><label class="form-label">Sidebar Color</label>
+                            <input type="color" class="form-control form-control-color" id="settingSidebarColor" value="#198754" onchange="changeSidebarColor()">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function loadSettings() {
+    const s = JSON.parse(localStorage.getItem("hrms_settings") || "{}");
+    if (s.name) document.getElementById("settingName").value = s.name;
+    if (s.email) document.getElementById("settingEmail").value = s.email;
+    if (s.role) document.getElementById("settingRole").value = s.role;
+    if (s.company) document.getElementById("settingCompany").value = s.company;
+    if (s.leaveDays) document.getElementById("settingLeaveDays").value = s.leaveDays;
+    if (s.probation) document.getElementById("settingProbation").value = s.probation;
+    if (s.hiringTarget) document.getElementById("settingHiringTarget").value = s.hiringTarget;
+    if (s.theme) { document.getElementById("settingTheme").value = s.theme; changeTheme(); }
+    if (s.sidebarColor) { document.getElementById("settingSidebarColor").value = s.sidebarColor; changeSidebarColor(); }
+    if (s.notifEmail !== undefined) document.getElementById("notifEmail").checked = s.notifEmail;
+    if (s.notifNewHire !== undefined) document.getElementById("notifNewHire").checked = s.notifNewHire;
+    if (s.notifExit !== undefined) document.getElementById("notifExit").checked = s.notifExit;
+    if (s.notifMedical !== undefined) document.getElementById("notifMedical").checked = s.notifMedical;
+    if (s.notifPerformance !== undefined) document.getElementById("notifPerformance").checked = s.notifPerformance;
+
+    const empCount = JSON.parse(localStorage.getItem("hrms_employees") || "[]").length;
+    const medCount = JSON.parse(localStorage.getItem("hrms_medical") || "[]").length;
+    const trainCount = JSON.parse(localStorage.getItem("hrms_training") || "[]").length;
+    document.getElementById("dataEmpCount").textContent = empCount;
+    document.getElementById("dataMedCount").textContent = medCount;
+    document.getElementById("dataTrainCount").textContent = trainCount;
+}
+
+function getSettings() { return JSON.parse(localStorage.getItem("hrms_settings") || "{}"); }
+function saveSettings(obj) { localStorage.setItem("hrms_settings", JSON.stringify({...getSettings(), ...obj})); }
+
+function saveProfile() { saveSettings({ name: document.getElementById("settingName").value, email: document.getElementById("settingEmail").value, role: document.getElementById("settingRole").value }); alert("Profile saved!"); }
+function saveNotifications() { saveSettings({ notifEmail: document.getElementById("notifEmail").checked, notifNewHire: document.getElementById("notifNewHire").checked, notifExit: document.getElementById("notifExit").checked, notifMedical: document.getElementById("notifMedical").checked, notifPerformance: document.getElementById("notifPerformance").checked }); alert("Notifications saved!"); }
+function saveCompany() { saveSettings({ company: document.getElementById("settingCompany").value, leaveDays: document.getElementById("settingLeaveDays").value, probation: document.getElementById("settingProbation").value, hiringTarget: document.getElementById("settingHiringTarget").value }); alert("Company settings saved!"); }
+
+function changeTheme() {
+    const theme = document.getElementById("settingTheme").value;
+    saveSettings({ theme });
+    document.body.style.background = theme === "dark" ? "#1a1a2e" : "#f0f2f5";
+    document.querySelectorAll(".card").forEach(c => c.style.background = theme === "dark" ? "#16213e" : "white");
+    document.querySelectorAll(".card-header").forEach(c => { if (!c.classList.contains("bg-success")) c.style.color = theme === "dark" ? "white" : "black"; });
+    document.querySelectorAll("h2, h6, label, .form-check-label, td, th, .modal-title").forEach(el => el.style.color = theme === "dark" ? "#e0e0e0" : "");
+}
+
+function changeSidebarColor() {
+    const color = document.getElementById("settingSidebarColor").value;
+    saveSettings({ sidebarColor: color });
+    document.querySelector(".sidebar").style.background = color;
+    document.querySelectorAll(".card-header.bg-success").forEach(c => { c.style.background = color; });
+}
+
+function exportAllData() {
+    const data = {
+        employees: JSON.parse(localStorage.getItem("hrms_employees") || "[]"),
+        medical: JSON.parse(localStorage.getItem("hrms_medical") || "[]"),
+        training: JSON.parse(localStorage.getItem("hrms_training") || "[]"),
+        settings: getSettings(),
+        exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a"); a.href = url; a.download = "hrms_backup_" + new Date().toISOString().split("T")[0] + ".json"; a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importData(e) {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            const data = JSON.parse(ev.target.result);
+            if (data.employees) localStorage.setItem("hrms_employees", JSON.stringify(data.employees));
+            if (data.medical) localStorage.setItem("hrms_medical", JSON.stringify(data.medical));
+            if (data.training) localStorage.setItem("hrms_training", JSON.stringify(data.training));
+            if (data.settings) localStorage.setItem("hrms_settings", JSON.stringify(data.settings));
+            alert("Data imported successfully!"); location.reload();
+        } catch { alert("Invalid file"); }
+    };
+    reader.readAsText(file);
+}
+
+function resetAllData() {
+    if (!confirm("This will delete ALL data. Are you sure?")) return;
+    if (!confirm("This action cannot be undone. Click OK to confirm.")) return;
+    localStorage.removeItem("hrms_employees");
+    localStorage.removeItem("hrms_medical");
+    localStorage.removeItem("hrms_training");
+    localStorage.removeItem("hrms_settings");
+    alert("All data reset. Redirecting..."); location.href = "../index.html";
+}
+
+loadSettings();
+</script>
 </body>
 </html>

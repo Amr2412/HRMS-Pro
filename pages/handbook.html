@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Handbook</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="handbook.html" class="active"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Employee Handbook</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="card mb-3">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-list"></i> Topics</div>
+                    <div class="list-group list-group-flush" id="handbookNav">
+                        <a class="list-group-item list-group-item-action active" href="#" onclick="showSection('welcome')"><i class="fa-solid fa-handshake"></i> Welcome</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('conduct')"><i class="fa-solid fa-scale-balanced"></i> Code of Conduct</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('attendance')"><i class="fa-solid fa-clock"></i> Attendance Policy</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('leave')"><i class="fa-solid fa-umbrella-beach"></i> Leave Policy</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('salary')"><i class="fa-solid fa-money-bill"></i> Salary & Benefits</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('disciplinary')"><i class="fa-solid fa-gavel"></i> Disciplinary Policy</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('safety')"><i class="fa-solid fa-shield-halved"></i> Safety & Health</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('grievance')"><i class="fa-solid fa-comments"></i> Grievance Procedure</a>
+                        <a class="list-group-item list-group-item-action" href="#" onclick="showSection('termination')"><i class="fa-solid fa-door-open"></i> Termination</a>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-upload"></i> Upload Policy</div>
+                    <div class="card-body">
+                        <div class="mb-2"><label class="form-label" style="font-size:12px">Policy Name</label><input class="form-control form-control-sm" id="policyName"></div>
+                        <div class="mb-2"><label class="form-label" style="font-size:12px">Select Image</label><input type="file" class="form-control form-control-sm" id="policyImage" accept="image/*"></div>
+                        <div class="mb-2"><label class="form-label" style="font-size:12px">Or PDF</label><input type="file" class="form-control form-control-sm" id="policyPDF" accept=".pdf"></div>
+                        <button class="btn btn-success btn-sm w-100" onclick="uploadPolicy()"><i class="fa-solid fa-upload"></i> Upload</button>
+                    </div>
+                </div>
+                <div class="card mt-3" id="uploadedPoliciesCard" style="display:none">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-file"></i> Uploaded Policies</div>
+                    <div class="list-group list-group-flush" id="uploadedPoliciesList"></div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="card">
+                    <div class="card-body" id="handbookContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const sections = {
+    welcome: {
+        title: "Welcome to Linah Farms",
+        content: `
+            <h4 class="text-success">Welcome to Linah Farms!</h4>
+            <p>We are delighted to have you as part of our team. Linah Farms is committed to providing a productive, safe, and supportive work environment for all employees.</p>
+            <h5 class="mt-4">Our Mission</h5>
+            <p>To be a leading agricultural enterprise in Egypt, producing high-quality products while maintaining sustainable practices and investing in our people.</p>
+            <h5>Our Values</h5>
+            <ul><li><strong>Integrity:</strong> We operate with honesty and transparency</li>
+            <li><strong>Excellence:</strong> We strive for the highest quality in everything we do</li>
+            <li><strong>Teamwork:</strong> We work together to achieve common goals</li>
+            <li><strong>Safety:</strong> We prioritize the health and safety of our employees</li>
+            <li><strong>Growth:</strong> We invest in developing our people</li></ul>
+            <h5>Working Hours</h5>
+            <p><strong>Sunday - Thursday</strong> | Working hours vary by department and location.</p>
+            <p><strong>Head Office:</strong> 9:00 AM - 5:00 PM</p>
+            <p><strong>Field Operations:</strong> As per agricultural schedule</p>
+            <hr><p class="text-muted"><small>Last updated: January 2026 | Version 1.0</small></p>`
+    },
+    conduct: {
+        title: "Code of Conduct",
+        content: `<h4 class="text-success">Code of Conduct</h4><p>All employees are expected to maintain the highest standards of professional behavior.</p>
+            <h5 class="mt-3">Professional Behavior</h5>
+            <ul><li>Treat all colleagues with respect and dignity</li><li>Maintain a positive and cooperative attitude</li><li>Communicate openly and honestly</li><li>Avoid conflicts of interest</li></ul>
+            <h5>Dress Code</h5>
+            <ul><li><strong>Office Staff:</strong> Business casual attire</li><li><strong>Field Staff:</strong> Company-provided safety gear and uniforms</li><li><strong>Meetings:</strong> Formal business attire</li></ul>
+            <h5>Prohibited Conduct</h5>
+            <ul><li>Harassment or discrimination of any kind</li><li>Theft or misuse of company property</li><li>Working under the influence of alcohol or drugs</li><li>Unauthorized disclosure of confidential information</li></ul>`
+    },
+    attendance: {
+        title: "Attendance Policy",
+        content: `<h4 class="text-success">Attendance Policy</h4>
+            <h5 class="mt-3">Working Days</h5><p><strong>Sunday through Thursday.</strong> Friday and Saturday are rest days.</p>
+            <h5>Check-in / Check-out</h5><ul><li>All employees must clock in at start of shift</li><li>Late arrival beyond 15 minutes = half-day absence</li><li>Early departure without approval = unauthorized absence</li></ul>
+            <h5>Absence</h5><ul><li>Unexcused absence 3+ consecutive days may result in termination</li><li>Medical leave requires a doctor's certificate</li><li>Planned leave must be approved 3 days in advance</li></ul>
+            <h5>Overtime</h5><p>Overtime must be pre-approved. Compensation as per Egyptian Labor Law.</p>`
+    },
+    leave: {
+        title: "Leave Policy",
+        content: `<h4 class="text-success">Leave Policy</h4>
+            <h5 class="mt-3">Annual Leave</h5><p><strong>21 working days/year</strong> for first 5 years, 30 days after 5 years.</p>
+            <h5>Sick Leave</h5><ul><li>Up to 6 months (with medical docs)</li><li>First 3 months: full salary</li><li>Next 3 months: 75% salary</li></ul>
+            <h5>Maternity Leave</h5><p><strong>90 days</strong> (fully paid) as per Egyptian Labor Law.</p>
+            <h5>Other Leave</h5><ul><li><strong>Bereavement:</strong> 3-5 days</li><li><strong>Marriage:</strong> 3 days</li><li><strong>Hajj/Umrah:</strong> As per policy</li></ul>`
+    },
+    salary: {
+        title: "Salary & Benefits",
+        content: `<h4 class="text-success">Salary & Benefits</h4>
+            <h5 class="mt-3">Payment</h5><ul><li>Monthly via bank transfer</li><li>Last working day of each month</li></ul>
+            <h5>Benefits</h5><ul><li><strong>Medical Insurance:</strong> Employee + family</li><li><strong>Social Insurance:</strong> As per law</li><li><strong>Transportation:</strong> Company bus for field locations</li><li><strong>Meals:</strong> Subsidized canteen</li><li><strong>Housing:</strong> Provided for field staff</li></ul>
+            <h5>Grades</h5><p><strong>G1 (Entry)</strong> to <strong>G10 (Director)</strong>. Each grade has a defined salary range.</p>`
+    },
+    disciplinary: {
+        title: "Disciplinary Policy",
+        content: `<h4 class="text-success">Disciplinary Policy</h4><p>Progressive disciplinary approach:</p>
+            <ol><li><strong>Verbal Warning</strong></li><li><strong>Written Warning</strong></li><li><strong>Final Written Warning</strong></li><li><strong>Performance Improvement Plan (PIP)</strong></li><li><strong>Termination</strong></li></ol>
+            <h5>Immediate Termination</h5><ul><li>Theft or fraud</li><li>Violence</li><li>Harassment</li><li>Serious safety violations</li><li>Drugs/alcohol at work</li></ul>`
+    },
+    safety: {
+        title: "Safety & Health",
+        content: `<h4 class="text-success">Safety & Health</h4>
+            <ul><li>Follow all safety protocols</li><li>Mandatory safety training for new hires</li><li>Report hazards immediately</li><li>PPE required in field areas</li></ul>
+            <h5 class="mt-3">Emergency</h5><ul><li>Fire exits must stay clear</li><li>Assembly points on floor plans</li><li>24/7 emergency hotline</li></ul>
+            <h5>Occupational Health</h5><ul><li>Annual health checkups</li><li>Ergonomic assessments</li><li>Heat stress prevention for field workers</li></ul>`
+    },
+    grievance: {
+        title: "Grievance Procedure",
+        content: `<h4 class="text-success">Grievance Procedure</h4>
+            <ol><li>Discuss with direct manager</li><li>Submit written grievance to HR</li><li>HR investigation within 5 working days</li><li>Appeal to senior management within 7 days</li></ol>
+            <h5>Anonymous Reporting</h5><p>Anonymous suggestion box at Head Office. Email HR directly.</p>
+            <h5>Non-Retaliation</h5><p>Strictly prohibited against any employee who raises a grievance in good faith.</p>`
+    },
+    termination: {
+        title: "Termination",
+        content: `<h4 class="text-success">Termination Policy</h4>
+            <h5 class="mt-3">Resignation</h5><ul><li>Notice: 60 days (managerial), 30 days (others)</li><li>Written resignation required</li><li>Settlement within 14 days</li></ul>
+            <h5>Company-Initiated</h5><ul><li>30 days notice or payment in lieu</li><li>End of service benefits per Egyptian Law</li><li>Experience certificate on request</li></ul>`
+    }
+};
+
+function showSection(key) {
+    const s = sections[key];
+    document.getElementById("handbookContent").innerHTML = `<h3 class="text-success mb-3">${s.title}</h3>${s.content}`;
+    document.querySelectorAll("#handbookNav a").forEach(a => a.classList.remove("active"));
+    event.target.closest("a").classList.add("active");
+}
+
+function uploadPolicy() {
+    const name = document.getElementById("policyName").value.trim();
+    if (!name) return alert("Enter policy name");
+    const imgFile = document.getElementById("policyImage").files[0];
+    const pdfFile = document.getElementById("policyPDF").files[0];
+    if (!imgFile && !pdfFile) return alert("Select an image or PDF");
+
+    const policies = JSON.parse(localStorage.getItem("hrms_policies") || "[]");
+
+    if (imgFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            policies.push({ name, type: "image", data: e.target.result, date: new Date().toISOString().split("T")[0] });
+            localStorage.setItem("hrms_policies", JSON.stringify(policies));
+            document.getElementById("policyImage").value = "";
+            document.getElementById("policyName").value = "";
+            renderPolicies();
+            alert("Policy uploaded!");
+        };
+        reader.readAsDataURL(imgFile);
+    } else if (pdfFile) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            policies.push({ name, type: "pdf", data: e.target.result, date: new Date().toISOString().split("T")[0] });
+            localStorage.setItem("hrms_policies", JSON.stringify(policies));
+            document.getElementById("policyPDF").value = "";
+            document.getElementById("policyName").value = "";
+            renderPolicies();
+            alert("Policy uploaded!");
+        };
+        reader.readAsDataURL(pdfFile);
+    }
+}
+
+function renderPolicies() {
+    const policies = JSON.parse(localStorage.getItem("hrms_policies") || "[]");
+    const card = document.getElementById("uploadedPoliciesCard");
+    const list = document.getElementById("uploadedPoliciesList");
+    if (policies.length === 0) { card.style.display = "none"; return; }
+    card.style.display = "block";
+    list.innerHTML = policies.map((p, i) => `
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="#" onclick="viewPolicy(${i})">
+            <span><i class="fa-solid ${p.type==='image'?'fa-image':'fa-file-pdf'}"></i> ${p.name}</span>
+            <small class="text-muted">${p.date}</small>
+        </a>`).join("");
+}
+
+function viewPolicy(i) {
+    const policies = JSON.parse(localStorage.getItem("hrms_policies") || "[]");
+    const p = policies[i];
+    if (!p) return;
+    if (p.type === "image") {
+        document.getElementById("handbookContent").innerHTML = `
+            <h3 class="text-success mb-3">${p.name}</h3>
+            <p class="text-muted">Uploaded: ${p.date}</p>
+            <img src="${p.data}" class="img-fluid rounded" style="max-width:100%;border:1px solid #ddd">`;
+    } else {
+        document.getElementById("handbookContent").innerHTML = `
+            <h3 class="text-success mb-3">${p.name}</h3>
+            <p class="text-muted">Uploaded: ${p.date}</p>
+            <iframe src="${p.data}" style="width:100%;height:600px;border:1px solid #ddd;border-radius:8px"></iframe>`;
+    }
+}
+
+showSection("welcome");
+renderPolicies();
+</script>
+</body>
+</html>

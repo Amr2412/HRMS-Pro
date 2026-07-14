@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRMS Pro - HR Requests</title>
+    <title>HRMS Pro - Employee Requests</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .request-form-card { max-width: 800px; margin: 0 auto; }
+        .request-form-card .form-label { font-weight: 600; font-size: 13px; color: #333; }
+        .request-form-card .mandatory::after { content: " *"; color: #dc3545; }
+        .progress-ring { width: 120px; height: 120px; }
+        .req-stats { display: flex; gap: 20px; flex-wrap: wrap; }
+        .req-stat-item { text-align: center; flex: 1; min-width: 100px; padding: 15px; background: #f8f9fa; border-radius: 10px; }
+        .req-stat-item h3 { margin: 0; font-size: 28px; }
+        .req-stat-item p { margin: 0; font-size: 12px; color: #666; }
+    </style>
 </head>
 <body>
 
@@ -17,49 +27,419 @@
         <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
-        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
-        <li><a href="#"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="requests.html" class="active"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
-        <li><a href="#"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
 
 <div class="main-content">
-    <div class="topbar"><h2>HR Requests</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+    <div class="topbar">
+        <h2>Employee Requests</h2>
+        <div class="topbar-actions">
+            <div style="position:relative;cursor:pointer" onclick="showTab('notifications')">
+                <i class="fa-solid fa-bell"></i>
+                <span class="notif-badge" id="notifCount">0</span>
+            </div>
+            <i class="fa-solid fa-user"></i>
+        </div>
+    </div>
 
     <div class="container-fluid p-4">
-        <div class="row g-3 mb-4">
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Requests</h6><h2>186</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Pending</h6><h2>24</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Approved</h6><h2>145</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Rejected</h6><h2>17</h2></div></div></div>
-        </div>
 
-        <div class="card">
-            <div class="card-header bg-success text-white">Requests List</div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-success"><tr><th>Request No.</th><th>Employee</th><th>Department</th><th>Type</th><th>Date</th><th>Status</th></tr></thead>
-                        <tbody>
-                            <tr><td>REQ-1001</td><td>Ahmed Hassan</td><td>Agriculture</td><td>Annual Leave</td><td>10-Jul-2026</td><td><span class="badge bg-success">Approved</span></td></tr>
-                            <tr><td>REQ-1002</td><td>Omar Samir</td><td>Finance</td><td>Salary Advance</td><td>11-Jul-2026</td><td><span class="badge bg-warning text-dark">Pending</span></td></tr>
-                            <tr><td>REQ-1003</td><td>Sara Mohamed</td><td>HR</td><td>Business Trip</td><td>11-Jul-2026</td><td><span class="badge bg-success">Approved</span></td></tr>
-                            <tr><td>REQ-1004</td><td>Mostafa Khaled</td><td>Operations</td><td>Medical Request</td><td>12-Jul-2026</td><td><span class="badge bg-danger">Rejected</span></td></tr>
-                            <tr><td>REQ-1005</td><td>Youssef Adel</td><td>Production</td><td>Resignation</td><td>13-Jul-2026</td><td><span class="badge bg-primary">In Progress</span></td></tr>
-                        </tbody>
-                    </table>
+        <ul class="nav nav-tabs mb-4" id="reqTabs">
+            <li class="nav-item"><a class="nav-link active" href="#" onclick="showTab('submit')"><i class="fa-solid fa-plus-circle"></i> Submit Request</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('list')"><i class="fa-solid fa-list"></i> All Requests <span class="badge bg-success" id="listBadge"></span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('notifications')"><i class="fa-solid fa-bell"></i> Notifications <span class="badge bg-danger" id="notifBadge"></span></a></li>
+            <li class="nav-item"><a class="nav-link" href="#" onclick="showTab('stats')"><i class="fa-solid fa-chart-bar"></i> Statistics</a></li>
+        </ul>
+
+        <!-- SUBMIT REQUEST TAB -->
+        <div id="submitTab">
+            <div class="card request-form-card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-paper-plane"></i> Submit a New Request</div>
+                <div class="card-body">
+                    <form id="requestForm" onsubmit="return submitRequest(event)">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Employee Code</label>
+                                <input class="form-control" id="rCode" required placeholder="e.g. 1001">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Full Name</label>
+                                <input class="form-control" id="rName" required placeholder="e.g. Ahmed Ali">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Job Title</label>
+                                <input class="form-control" id="rJobTitle" required placeholder="e.g. Accountant">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Department</label>
+                                <select class="form-select" id="rDepartment" required>
+                                    <option value="">Select Department</option>
+                                    <option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option>
+                                    <option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option>
+                                    <option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option>
+                                    <option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option>
+                                    <option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option>
+                                    <option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option>
+                                    <option>الفنيه</option><option>المشاتل</option><option>الصيانة</option>
+                                    <option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Phone Number</label>
+                                <input class="form-control" id="rPhone" required placeholder="e.g. 01012345678">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label mandatory">Request Type</label>
+                                <select class="form-select" id="rType" required onchange="toggleDeviceField()">
+                                    <option value="">Select Type</option>
+                                    <option value="Mobile Phone">Mobile Phone (خط تليفون)</option>
+                                    <option value="Laptop">Laptop (لابتوب)</option>
+                                    <option value="Internet Package Upgrade">Internet Package Upgrade (ت علية باقة النت)</option>
+                                    <option value="Odoo Account Activation">Odoo Account Activation (تفعيل اكونت اودو)</option>
+                                    <option value="Mentor Account Activation">Mentor Account Activation (اكونت المنتور)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6" id="deviceModelField" style="display:none">
+                                <label class="form-label">Device Model</label>
+                                <input class="form-control" id="rDeviceModel" placeholder="e.g. iPhone 15, Dell Latitude 5520">
+                            </div>
+                            <div class="col-md-6" id="simNumberField" style="display:none">
+                                <label class="form-label">SIM / Line Number</label>
+                                <input class="form-control" id="rSimNumber" placeholder="e.g. 01012345678">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label mandatory">Request Description</label>
+                                <textarea class="form-control" id="rDescription" rows="3" required placeholder="Describe your request in detail..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Priority</label>
+                                <select class="form-select" id="rPriority">
+                                    <option value="Normal">Normal</option>
+                                    <option value="Urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="reset" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+                                <button type="submit" class="btn btn-success btn-lg"><i class="fa-solid fa-paper-plane"></i> Submit Request</button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
+
+        <!-- ALL REQUESTS TAB (HR VIEW) -->
+        <div id="listTab" style="display:none">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white d-flex justify-content-between">
+                    <span><i class="fa-solid fa-table"></i> All Requests</span>
+                    <span class="badge bg-light text-dark" id="totalReqsBadge">0 requests</span>
+                </div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" id="listFilterStatus" onchange="renderList()">
+                                <option value="">All Status</option>
+                                <option value="New">New</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Closed">Closed</option>
+                                <option value="Rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" id="listFilterType" onchange="renderList()">
+                                <option value="">All Types</option>
+                                <option>Mobile Phone</option><option>Laptop</option>
+                                <option>Internet Package Upgrade</option><option>Odoo Account Activation</option>
+                                <option>Mentor Account Activation</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select form-select-sm" id="listFilterDept" onchange="renderList()">
+                                <option value="">All Departments</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success">
+                                <tr><th>ID</th><th>Employee</th><th>Code</th><th>Department</th><th>Type</th><th>Phone</th><th>Date</th><th>Status</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="listTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS TAB -->
+        <div id="notificationsTab" style="display:none">
+            <div class="card">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-bell"></i> Incoming Requests (Notifications)</div>
+                <div class="card-body" id="notifList">
+                    <div class="text-center text-muted py-4">No new notifications</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STATISTICS TAB -->
+        <div id="statsTab" style="display:none">
+            <div class="row g-4">
+                <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Total Requests</h6><h2 id="statTotal">0</h2></div></div></div>
+                <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>New</h6><h2 id="statNew" style="color:#0d6efd">0</h2></div></div></div>
+                <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>In Progress</h6><h2 id="statProgress" style="color:#ffc107">0</h2></div></div></div>
+                <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Completed/Closed</h6><h2 id="statCompleted" style="color:#198754">0</h2></div></div></div>
+            </div>
+            <div class="row g-4 mt-2">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Type</div>
+                        <div class="card-body bar-chart" id="statTypeChart"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-bar"></i> By Status</div>
+                        <div class="card-body bar-chart" id="statStatusChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-4">
+                <div class="card-header bg-success text-white"><i class="fa-solid fa-clock-rotate-left"></i> Resolution Time (Days)</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-success"><tr><th>Request</th><th>Type</th><th>Submitted</th><th>Resolved</th><th>Days Taken</th><th>Status</th></tr></thead>
+                            <tbody id="resolutionTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<!-- VIEW / UPDATE MODAL -->
+<div class="modal fade" id="viewReqModal" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+    <div class="modal-header bg-success text-white"><h5 class="modal-title" id="viewReqTitle">Request Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="viewReqBody"></div>
+    <div class="modal-footer d-flex justify-content-between">
+        <button class="btn btn-danger" onclick="updateReqStatus('Rejected')"><i class="fa-solid fa-xmark"></i> Reject</button>
+        <div>
+            <button class="btn btn-warning" onclick="updateReqStatus('In Progress')"><i class="fa-solid fa-spinner"></i> In Progress</button>
+            <button class="btn btn-success" onclick="updateReqStatus('Completed')"><i class="fa-solid fa-check"></i> Complete</button>
+            <button class="btn btn-dark" onclick="updateReqStatus('Closed')"><i class="fa-solid fa-lock"></i> Close</button>
+        </div>
+    </div>
+</div></div></div>
+
+<script>
+let allRequests = [];
+let currentViewId = null;
+
+function loadRequests() {
+    const saved = localStorage.getItem("hrms_requests");
+    allRequests = saved ? JSON.parse(saved) : [];
+    updateBadges();
+    renderList();
+    renderNotifications();
+    renderStats();
+    populateDeptFilter();
+}
+
+function toggleDeviceField() {
+    const type = document.getElementById("rType").value;
+    document.getElementById("deviceModelField").style.display = ["Mobile Phone","Laptop"].includes(type) ? "block" : "none";
+    document.getElementById("simNumberField").style.display = type === "Mobile Phone" ? "block" : "none";
+}
+
+function submitRequest(e) {
+    e.preventDefault();
+    const req = {
+        id: "REQ-" + String(allRequests.length + 1).padStart(4, "0"),
+        code: document.getElementById("rCode").value.trim(),
+        name: document.getElementById("rName").value.trim(),
+        jobTitle: document.getElementById("rJobTitle").value.trim(),
+        department: document.getElementById("rDepartment").value,
+        phone: document.getElementById("rPhone").value.trim(),
+        type: document.getElementById("rType").value,
+        deviceModel: document.getElementById("rDeviceModel").value.trim(),
+        simNumber: document.getElementById("rSimNumber").value.trim(),
+        description: document.getElementById("rDescription").value.trim(),
+        priority: document.getElementById("rPriority").value,
+        status: "New",
+        date: new Date().toISOString().split("T")[0],
+        resolvedDate: "",
+        history: [{ status: "New", date: new Date().toISOString(), by: "Employee" }]
+    };
+    allRequests.push(req);
+    saveAll();
+    document.getElementById("requestForm").reset();
+    toggleDeviceField();
+    alert("Request submitted successfully! You will be notified when HR processes it.");
+    showTab("list");
+}
+
+function saveAll() {
+    localStorage.setItem("hrms_requests", JSON.stringify(allRequests));
+    updateBadges();
+    renderList();
+    renderNotifications();
+    renderStats();
+}
+
+function updateBadges() {
+    const newCount = allRequests.filter(r => r.status === "New").length;
+    document.getElementById("notifCount").textContent = newCount;
+    document.getElementById("notifBadge").textContent = newCount;
+    document.getElementById("listBadge").textContent = allRequests.length;
+}
+
+function populateDeptFilter() {
+    const depts = [...new Set(allRequests.map(r => r.department))].sort();
+    const sel = document.getElementById("listFilterDept");
+    sel.innerHTML = '<option value="">All Departments</option>';
+    depts.forEach(d => { sel.innerHTML += `<option>${d}</option>`; });
+}
+
+function renderList() {
+    const status = document.getElementById("listFilterStatus").value;
+    const type = document.getElementById("listFilterType").value;
+    const dept = document.getElementById("listFilterDept").value;
+    let data = allRequests;
+    if (status) data = data.filter(r => r.status === status);
+    if (type) data = data.filter(r => r.type === type);
+    if (dept) data = data.filter(r => r.department === dept);
+
+    document.getElementById("totalReqsBadge").textContent = data.length + " requests";
+
+    document.getElementById("listTableBody").innerHTML = data.length === 0
+        ? '<tr><td colspan="9" class="text-center text-muted py-4">No requests found</td></tr>'
+        : data.reverse().map(r => {
+        const badge = {New:"bg-primary","In Progress":"bg-warning text-dark",Completed:"bg-success",Closed:"bg-secondary",Rejected:"bg-danger"}[r.status] || "bg-secondary";
+        return `<tr>
+            <td><small class="fw-bold">${r.id}</small></td>
+            <td><strong>${r.name}</strong><br><small class="text-muted">${r.jobTitle}</small></td>
+            <td>${r.code}</td><td>${r.department}</td>
+            <td><small>${r.type}</small></td>
+            <td>${r.phone}</td><td>${r.date}</td>
+            <td><span class="badge ${badge}">${r.status}</span></td>
+            <td><button class="btn btn-sm btn-outline-success" onclick="viewRequest('${r.id}')"><i class="fa-solid fa-eye"></i></button></td>
+        </tr>`;
+    }).join("");
+}
+
+function renderNotifications() {
+    const newReqs = allRequests.filter(r => r.status === "New");
+    document.getElementById("notifList").innerHTML = newReqs.length === 0
+        ? '<div class="text-center text-muted py-4"><i class="fa-solid fa-check-circle" style="font-size:40px;color:#198754"></i><p class="mt-2">All caught up! No new requests.</p></div>'
+        : newReqs.map(r => `
+        <div class="d-flex align-items-center gap-3 p-3 mb-2" style="background:#f8f9fa;border-radius:10px;border-left:4px solid #0d6efd">
+            <div class="emp-avatar" style="background:#0d6efd;color:white">${r.name.split(" ").map(n=>n[0]).join("")}</div>
+            <div class="flex-grow-1">
+                <strong>${r.name}</strong> (${r.code}) - ${r.department}
+                <br><small class="text-muted">${r.type} | ${r.phone} | ${r.date}</small>
+                <br><small>${r.description.substring(0,80)}${r.description.length>80?'...':''}</small>
+            </div>
+            <button class="btn btn-sm btn-success" onclick="viewRequest('${r.id}')"><i class="fa-solid fa-eye"></i> View</button>
+        </div>`).join("");
+}
+
+function renderStats() {
+    document.getElementById("statTotal").textContent = allRequests.length;
+    document.getElementById("statNew").textContent = allRequests.filter(r => r.status === "New").length;
+    document.getElementById("statProgress").textContent = allRequests.filter(r => r.status === "In Progress").length;
+    document.getElementById("statCompleted").textContent = allRequests.filter(r => ["Completed","Closed"].includes(r.status)).length;
+
+    const types = {};
+    allRequests.forEach(r => { types[r.type] = (types[r.type]||0)+1; });
+    const maxT = Math.max(...Object.values(types),1);
+    document.getElementById("statTypeChart").innerHTML = Object.entries(types).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxT)*100}%"></div></div><span class="bar-value">${v}</span></div>`).join("") || '<div class="text-center text-muted">No data</div>';
+
+    const stats = {};
+    allRequests.forEach(r => { stats[r.status] = (stats[r.status]||0)+1; });
+    const maxS = Math.max(...Object.values(stats),1);
+    const sColors = {New:"#0d6efd","In Progress":"#ffc107",Completed:"#198754",Closed:"#6c757d",Rejected:"#dc3545"};
+    document.getElementById("statStatusChart").innerHTML = Object.entries(stats).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxS)*100}%;background:${sColors[k]||'#198754'}"></div></div><span class="bar-value">${v}</span></div>`).join("");
+
+    const resolved = allRequests.filter(r => r.resolvedDate);
+    document.getElementById("resolutionTable").innerHTML = resolved.length === 0
+        ? '<tr><td colspan="6" class="text-center text-muted">No resolved requests yet</td></tr>'
+        : resolved.map(r => {
+        const days = Math.round((new Date(r.resolvedDate) - new Date(r.date)) / 86400000);
+        const badge = {Completed:"bg-success",Closed:"bg-secondary",Rejected:"bg-danger"}[r.status] || "bg-secondary";
+        return `<tr><td>${r.id} - ${r.name}</td><td>${r.type}</td><td>${r.date}</td><td>${r.resolvedDate}</td><td><strong>${days} days</strong></td><td><span class="badge ${badge}">${r.status}</span></td></tr>`;
+    }).join("");
+}
+
+function viewRequest(id) {
+    currentViewId = id;
+    const r = allRequests.find(x => x.id === id);
+    if (!r) return;
+    const badge = {New:"bg-primary","In Progress":"bg-warning text-dark",Completed:"bg-success",Closed:"bg-secondary",Rejected:"bg-danger"}[r.status] || "bg-secondary";
+    document.getElementById("viewReqTitle").textContent = r.id + " - " + r.name;
+    document.getElementById("viewReqBody").innerHTML = `
+        <div class="row g-3">
+            <div class="col-md-4"><strong>Employee Code:</strong> ${r.code}</div>
+            <div class="col-md-4"><strong>Name:</strong> ${r.name}</div>
+            <div class="col-md-4"><strong>Status:</strong> <span class="badge ${badge}">${r.status}</span></div>
+            <div class="col-md-4"><strong>Job Title:</strong> ${r.jobTitle}</div>
+            <div class="col-md-4"><strong>Department:</strong> ${r.department}</div>
+            <div class="col-md-4"><strong>Phone:</strong> ${r.phone}</div>
+            <div class="col-md-4"><strong>Type:</strong> ${r.type}</div>
+            <div class="col-md-4"><strong>Priority:</strong> ${r.priority}</div>
+            <div class="col-md-4"><strong>Date:</strong> ${r.date}</div>
+            ${r.deviceModel ? `<div class="col-md-4"><strong>Device:</strong> ${r.deviceModel}</div>` : ""}
+            ${r.simNumber ? `<div class="col-md-4"><strong>SIM:</strong> ${r.simNumber}</div>` : ""}
+            <div class="col-12"><strong>Description:</strong><br>${r.description}</div>
+            <div class="col-12"><strong>Resolution Notes:</strong><textarea class="form-control" id="resolutionNotes" rows="2" placeholder="Add notes about this request...">${r.resolutionNotes || ''}</textarea></div>
+            <div class="col-12"><strong>History:</strong>
+                <ul class="list-group list-group-flush">${r.history.map(h => `<li class="list-group-item"><small>${h.status}</small> - <small class="text-muted">${new Date(h.date).toLocaleString()} by ${h.by}</small></li>`).join("")}</ul>
+            </div>
+        </div>`;
+    new bootstrap.Modal(document.getElementById("viewReqModal")).show();
+}
+
+function updateReqStatus(status) {
+    if (!currentViewId) return;
+    const r = allRequests.find(x => x.id === currentViewId);
+    if (!r) return;
+    r.status = status;
+    r.resolutionNotes = document.getElementById("resolutionNotes")?.value || "";
+    if (["Completed","Closed","Rejected"].includes(status)) {
+        r.resolvedDate = new Date().toISOString().split("T")[0];
+    }
+    r.history.push({ status, date: new Date().toISOString(), by: "HR Admin" });
+    saveAll();
+    bootstrap.Modal.getInstance(document.getElementById("viewReqModal")).hide();
+}
+
+function showTab(tab) {
+    document.getElementById("submitTab").style.display = tab === "submit" ? "block" : "none";
+    document.getElementById("listTab").style.display = tab === "list" ? "block" : "none";
+    document.getElementById("notificationsTab").style.display = tab === "notifications" ? "block" : "none";
+    document.getElementById("statsTab").style.display = tab === "stats" ? "block" : "none";
+    document.querySelectorAll("#reqTabs a").forEach(a => a.classList.remove("active"));
+    event.target.closest("a")?.classList.add("active");
+    if (tab === "list") renderList();
+    if (tab === "notifications") renderNotifications();
+    if (tab === "stats") renderStats();
+}
+
+loadRequests();
+</script>
 </body>
 </html>

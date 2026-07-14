@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Training</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="employees.html"><i class="fa-solid fa-users"></i>Employees</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="#"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="#"><i class="fa-solid fa-plane-departure"></i>Leave</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="training.html" class="active"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar"><h2>Training & Development</h2><div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div></div>
+
+    <div class="container-fluid p-4">
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Requests</h6><h2 id="trainTotal">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Pending</h6><h2 id="trainPending" style="color:#ffc107">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Approved</h6><h2 id="trainApproved" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Cost</h6><h2 id="trainCost" style="color:#0d6efd">0</h2></div></div></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Status</div>
+                    <div class="card-body bar-chart" id="trainStatusChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-bar"></i> By Category</div>
+                    <div class="card-body bar-chart" id="trainCategoryChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white d-flex justify-content-between">
+                <span><i class="fa-solid fa-table"></i> Training Requests</span>
+                <button class="btn btn-sm btn-light" onclick="openAddTraining()"><i class="fa-solid fa-plus"></i> New Request</button>
+            </div>
+            <div class="card-body">
+                <div class="row g-2 mb-3">
+                    <div class="col-md-3"><select class="form-select form-select-sm" id="trainFilterStatus"><option value="">All Status</option><option value="Pending">Pending</option><option value="Approved">Approved</option><option value="Rejected">Rejected</option><option value="Completed">Completed</option></select></div>
+                    <div class="col-md-3"><select class="form-select form-select-sm" id="trainFilterCat"><option value="">All Categories</option><option value="Technical">Technical</option><option value="Soft Skills">Soft Skills</option><option value="Safety">Safety</option><option value="Leadership">Leadership</option><option value="Compliance">Compliance</option></select></div>
+                    <div class="col-md-3"><button class="btn btn-sm btn-outline-success w-100" onclick="filterTraining()">Filter</button></div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success">
+                            <tr><th>#</th><th>Employee</th><th>Department</th><th>Course</th><th>Category</th><th>Provider</th><th>Cost</th><th>Start Date</th><th>Status</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="trainTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-success text-white"><i class="fa-solid fa-calendar"></i> Upcoming Courses</div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-success"><tr><th>Course</th><th>Provider</th><th>Category</th><th>Duration</th><th>Start Date</th><th>Spots</th><th>Cost/Person</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Safety First</strong></td><td>Linah Safety Academy</td><td>Safety</td><td>2 days</td><td>2026-08-01</td><td>20</td><td>Free</td></tr>
+                            <tr><td><strong>Advanced Excel</strong></td><td>Udemy Business</td><td>Technical</td><td>10 hours</td><td>2026-08-15</td><td>Unlimited</td><td>$15</td></tr>
+                            <tr><td><strong>Leadership Essentials</strong></td><td>IMD</td><td>Leadership</td><td>5 days</td><td>2026-09-01</td><td>15</td><td>$500</td></tr>
+                            <tr><td><strong>Communication Skills</strong></td><td>Coursera</td><td>Soft Skills</td><td>4 weeks</td><td>2026-09-10</td><td>Unlimited</td><td>$49</td></tr>
+                            <tr><td><td><strong>HSE Certification</strong></td><td>Safety Academy</td><td>Safety</td><td>3 days</td><td>2026-09-20</td><td>25</td><td>$200</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addTrainingModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header bg-success text-white"><h5 class="modal-title">New Training Request</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">Employee Name</label><input class="form-control" id="trainEmpName"></div>
+            <div class="col-md-6"><label class="form-label">Department</label><input class="form-control" id="trainEmpDept"></div>
+            <div class="col-md-6"><label class="form-label">Course Name</label><input class="form-control" id="trainCourse"></div>
+            <div class="col-md-6"><label class="form-label">Category</label><select class="form-select" id="trainCategory"><option>Technical</option><option>Soft Skills</option><option>Safety</option><option>Leadership</option><option>Compliance</option></select></div>
+            <div class="col-md-6"><label class="form-label">Provider</label><input class="form-control" id="trainProvider"></div>
+            <div class="col-md-6"><label class="form-label">Cost (EGP)</label><input type="number" class="form-control" id="trainCost2" value="0"></div>
+            <div class="col-md-6"><label class="form-label">Start Date</label><input type="date" class="form-control" id="trainStart"></div>
+            <div class="col-md-6"><label class="form-label">Duration</label><input class="form-control" id="trainDuration" placeholder="e.g. 3 days, 2 weeks"></div>
+            <div class="col-md-12"><label class="form-label">Justification</label><textarea class="form-control" id="trainJustification" rows="2"></textarea></div>
+        </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button class="btn btn-success" onclick="saveTraining()">Submit Request</button></div>
+</div></div></div>
+
+<div class="modal fade" id="viewTrainingModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header bg-success text-white"><h5 class="modal-title">Training Details</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="viewTrainBody"></div>
+    <div class="modal-footer"><button class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div>
+</div></div></div>
+
+<script>
+const DEPTS = ["المخازن","الانشاءات","الاداره الفنيه","الزراعه","الشؤون الاداريه","البيانات","البحث والتطوير","الميكنه الزراعيه","مراقبه التكاليف","الامن","الجوده","السلامه والصحه المهنيه","الموارد البشريه","الحسابات","المشتريات المخازن","الهندسيه","المكافحه","رى وتسميد","الفنيه","المشاتل","الصيانة","القطاع الزراعي","النخيل","الزيتون","التشغيل"];
+
+let trainingRequests = [];
+function loadTraining() {
+    const saved = localStorage.getItem("hrms_training");
+    if (saved) { trainingRequests = JSON.parse(saved); } else {
+        trainingRequests = generateSampleTraining();
+        localStorage.setItem("hrms_training", JSON.stringify(trainingRequests));
+    }
+    renderTraining(trainingRequests);
+}
+
+function generateSampleTraining() {
+    const names = ["Ahmed Ali","Mohamed Hassan","Fatma Ibrahim","Sara Mohamed","Omar Khalid","Nour Salem","Youssef Adel","Mona Said","Hany Mansour","Layla Karim","Tamer Rashed","Dina Naguib","Amr Wael","Hoda Fawzy","Khaled Mostafa"];
+    const courses = ["Advanced Excel","Safety First","Leadership Skills","Communication","Project Management","HSE Certification","Time Management","Data Analysis","Customer Service","Pest Control Training"];
+    const providers = ["Udemy","Coursera","Linah Academy","LinkedIn Learning","IMD","Google"];
+    const cats = ["Technical","Soft Skills","Safety","Leadership","Compliance"];
+    const statuses = ["Pending","Approved","Completed","Rejected"];
+    const requests = [];
+    for (let i = 0; i < 15; i++) {
+        requests.push({
+            id: `TRN-${String(i+1).padStart(3,"0")}`,
+            employee: names[i % names.length],
+            department: DEPTS[i % DEPTS.length],
+            course: courses[i % courses.length],
+            category: cats[Math.floor(Math.random() * cats.length)],
+            provider: providers[Math.floor(Math.random() * providers.length)],
+            cost: Math.floor(Math.random() * 5000) + 100,
+            startDate: new Date(2026, Math.floor(Math.random() * 6) + 6, Math.floor(Math.random() * 28) + 1).toISOString().split("T")[0],
+            duration: ["1 day","2 days","3 days","1 week","2 weeks","4 weeks"][Math.floor(Math.random() * 6)],
+            justification: "Professional development and skill enhancement",
+            status: statuses[Math.floor(Math.random() * statuses.length)]
+        });
+    }
+    return requests;
+}
+
+function renderTraining(data) {
+    document.getElementById("trainTotal").textContent = data.length;
+    document.getElementById("trainPending").textContent = data.filter(r => r.status === "Pending").length;
+    document.getElementById("trainApproved").textContent = data.filter(r => r.status === "Approved").length;
+    document.getElementById("trainCost").textContent = data.reduce((s,r) => s + r.cost, 0).toLocaleString() + " EGP";
+
+    const stats = {};
+    data.forEach(r => { stats[r.status] = (stats[r.status]||0)+1; });
+    const maxS = Math.max(...Object.values(stats),1);
+    const sColors = {"Pending":"#ffc107","Approved":"#198754","Rejected":"#dc3545","Completed":"#0d6efd"};
+    document.getElementById("trainStatusChart").innerHTML = Object.entries(stats).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxS)*100}%;background:${sColors[k]||'#666'}"></div></div><span class="bar-value">${v}</span></div>`).join("");
+
+    const cats = {};
+    data.forEach(r => { cats[r.category] = (cats[r.category]||0)+1; });
+    const maxC = Math.max(...Object.values(cats),1);
+    document.getElementById("trainCategoryChart").innerHTML = Object.entries(cats).map(([k,v]) => `
+        <div class="bar-row"><span class="bar-label">${k}</span><div class="bar-track"><div class="bar-fill" style="width:${(v/maxC)*100}%"></div></div><span class="bar-value">${v}</span></div>`).join("");
+
+    document.getElementById("trainTable").innerHTML = data.map(r => {
+        const badge = r.status === "Approved" ? "bg-success" : r.status === "Completed" ? "bg-primary" : r.status === "Rejected" ? "bg-danger" : "bg-warning text-dark";
+        return `<tr>
+            <td><small>${r.id}</small></td><td>${r.employee}</td><td>${r.department}</td><td>${r.course}</td><td>${r.category}</td>
+            <td>${r.provider}</td><td>${r.cost.toLocaleString()} EGP</td><td>${r.startDate}</td>
+            <td><span class="badge ${badge}">${r.status}</span></td>
+            <td><button class="btn btn-sm btn-outline-success" onclick="viewTraining('${r.id}')"><i class="fa-solid fa-eye"></i></button></td>
+        </tr>`;
+    }).join("");
+}
+
+function filterTraining() {
+    const status = document.getElementById("trainFilterStatus").value;
+    const cat = document.getElementById("trainFilterCat").value;
+    let filtered = trainingRequests;
+    if (status) filtered = filtered.filter(r => r.status === status);
+    if (cat) filtered = filtered.filter(r => r.category === cat);
+    renderTraining(filtered);
+}
+
+function openAddTraining() { new bootstrap.Modal(document.getElementById("addTrainingModal")).show(); }
+
+function saveTraining() {
+    const name = document.getElementById("trainEmpName").value.trim();
+    const dept = document.getElementById("trainEmpDept").value.trim();
+    const course = document.getElementById("trainCourse").value.trim();
+    const cat = document.getElementById("trainCategory").value;
+    const provider = document.getElementById("trainProvider").value.trim();
+    const cost = parseFloat(document.getElementById("trainCost2").value) || 0;
+    const start = document.getElementById("trainStart").value;
+    const duration = document.getElementById("trainDuration").value.trim();
+    const just = document.getElementById("trainJustification").value.trim();
+    if (!name || !course) return alert("Please fill required fields");
+
+    trainingRequests.push({
+        id: `TRN-${String(trainingRequests.length+1).padStart(3,"0")}`,
+        employee: name, department: dept, course, category: cat, provider, cost,
+        startDate: start, duration, justification: just, status: "Pending"
+    });
+    localStorage.setItem("hrms_training", JSON.stringify(trainingRequests));
+    renderTraining(trainingRequests);
+    bootstrap.Modal.getInstance(document.getElementById("addTrainingModal")).hide();
+}
+
+function viewTraining(id) {
+    const r = trainingRequests.find(x => x.id === id);
+    if (!r) return;
+    const badge = r.status === "Approved" ? "bg-success" : r.status === "Completed" ? "bg-primary" : r.status === "Rejected" ? "bg-danger" : "bg-warning text-dark";
+    document.getElementById("viewTrainBody").innerHTML = `
+        <div class="row g-3">
+            <div class="col-6"><strong>ID:</strong> ${r.id}</div>
+            <div class="col-6"><strong>Status:</strong> <span class="badge ${badge}">${r.status}</span></div>
+            <div class="col-6"><strong>Employee:</strong> ${r.employee}</div>
+            <div class="col-6"><strong>Department:</strong> ${r.department}</div>
+            <div class="col-6"><strong>Course:</strong> ${r.course}</div>
+            <div class="col-6"><strong>Category:</strong> ${r.category}</div>
+            <div class="col-6"><strong>Provider:</strong> ${r.provider}</div>
+            <div class="col-6"><strong>Cost:</strong> ${r.cost.toLocaleString()} EGP</div>
+            <div class="col-6"><strong>Start Date:</strong> ${r.startDate}</div>
+            <div class="col-6"><strong>Duration:</strong> ${r.duration}</div>
+            ${r.justification ? `<div class="col-12"><strong>Justification:</strong> ${r.justification}</div>` : ""}
+        </div>`;
+    new bootstrap.Modal(document.getElementById("viewTrainingModal")).show();
+}
+
+loadTraining();
+</script>
+</body>
+</html>

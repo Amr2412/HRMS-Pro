@@ -12,7 +12,7 @@ body {
 /* Sidebar */
 .sidebar {
     width: 260px;
-    min-height: 100vh;
+    height: 100vh;
     background: linear-gradient(180deg, #198754 0%, #146c43 100%);
     color: white;
     padding: 20px 0;
@@ -21,6 +21,7 @@ body {
     left: 0;
     z-index: 100;
     overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .sidebar .logo {
@@ -268,17 +269,25 @@ table td {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar {
-    width: 5px;
-}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 3px; }
 
-::-webkit-scrollbar-track {
-    background: transparent;
-}
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
 
-::-webkit-scrollbar-thumb {
-    background: #ccc;
-    border-radius: 3px;
+/* Notification badge */
+.notif-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #dc3545;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 700;
 }
 
 /* Responsive */
