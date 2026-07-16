@@ -47,15 +47,14 @@
             <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Total</h6><h2 id="totalEmployees">0</h2></div></div></div>
             <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Active</h6><h2 id="activeEmployees" style="color:#198754">0</h2></div></div></div>
             <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Inactive</h6><h2 id="inactiveEmployees" style="color:#dc3545">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>On Leave</h6><h2 id="onLeaveEmployees" style="color:#ffc107">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>White Collar</h6><h2 id="whiteCollar">0</h2></div></div></div>
-            <div class="col-md-2"><div class="card kpi"><div class="card-body text-center"><h6>Blue Collar</h6><h2 id="blueCollar">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>White Collar</h6><h2 id="whiteCollar">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Blue Collar</h6><h2 id="blueCollar">0</h2></div></div></div>
         </div>
 
         <!-- Row 2: Movement -->
         <h6 class="text-muted mb-2 text-uppercase" style="letter-spacing:1px;font-size:11px;">Movement</h6>
         <div class="row g-3 mb-4">
-            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>New Hires</h6><h2 id="newHires" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>New Hires (2026)</h6><h2 id="newHires" style="color:#198754">0</h2></div></div></div>
             <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Resignations</h6><h2 id="resignations" style="color:#dc3545">0</h2></div></div></div>
             <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Turnover Rate</h6><h2 id="turnoverRate" style="color:#dc3545">0%</h2></div></div></div>
             <div class="col-md-3"><div class="card kpi"><div class="card-body text-center"><h6>Probation</h6><h2 id="probationCount" style="color:#0d6efd">0</h2></div></div></div>
@@ -65,20 +64,20 @@
         <div class="row g-4 mb-4">
             <div class="col-md-4">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> By Department</div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-chart-pie"></i> Employees per Department</div>
                     <div class="card-body bar-chart" id="deptChart"></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-location-dot"></i> By Location</div>
-                    <div class="card-body bar-chart" id="locationChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-layer-group"></i> Employees per Section</div>
+                    <div class="card-body bar-chart" id="sectionChart"></div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-right-from-bracket"></i> Exit Reasons</div>
-                    <div class="card-body bar-chart" id="exitReasonsChart"></div>
+                    <div class="card-header bg-primary text-white"><i class="fa-solid fa-cake-candles"></i> Age Distribution</div>
+                    <div class="card-body bar-chart" id="ageChart"></div>
                 </div>
             </div>
         </div>
@@ -99,7 +98,7 @@
             </div>
         </div>
 
-        <!-- Row 5: Gender + Type -->
+        <!-- Row 5: Gender + Location -->
         <div class="row g-4 mb-4">
             <div class="col-md-6">
                 <div class="card">
@@ -109,8 +108,8 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-shield-halved"></i> By Employee Type</div>
-                    <div class="card-body bar-chart" id="typeChart"></div>
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-location-dot"></i> By Location</div>
+                    <div class="card-body bar-chart" id="locationChart"></div>
                 </div>
             </div>
         </div>
@@ -136,21 +135,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const EXIT_REASONS = [
-    "Better Job Opportunity","Higher Salary","Travel Abroad","Personal Business",
-    "Work Nature Unsuitable","Accommodation/Food/Restrooms","Poor Performance",
-    "Job Position Eliminated","Failed Probation","High Work Pressure",
-    "No Development Opportunities","Direct Manager Style","Total/Partial Disability",
-    "Death","Special Circumstances","Drugs","Long Commute Distance",
-    "Retirement Age","Legal Affairs","Uncomfortable Work Environment"
-];
-
 let employees = [];
 
 function syncStatuses() {
     employees.forEach(emp => {
-        if (emp.exitDate && emp.exitDate.trim() !== "") emp.status = "Inactive";
+        if (emp.resignationDate && emp.resignationDate.trim() !== "") emp.status = "Inactive";
     });
+}
+
+function calcAge(dob) {
+    if (!dob) return 0;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
 }
 
 function calcTenure(hireDate) {
@@ -203,15 +203,15 @@ async function loadDashboard() {
 
     const active = employees.filter(e => e.status === "Active");
     const inactive = employees.filter(e => e.status === "Inactive");
-    const exited = employees.filter(e => e.exitDate && e.exitDate.trim() !== "");
+    const exited = employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "");
 
     // Headcount
     document.getElementById("totalEmployees").textContent = employees.length;
     document.getElementById("activeEmployees").textContent = active.length;
     document.getElementById("inactiveEmployees").textContent = inactive.length;
-    document.getElementById("onLeaveEmployees").textContent = employees.filter(e => e.status === "On Leave").length;
     document.getElementById("whiteCollar").textContent = employees.filter(e => e.employeeType === "White Collar").length;
     document.getElementById("blueCollar").textContent = employees.filter(e => e.employeeType === "Blue Collar").length;
+    document.getElementById("probationCount").textContent = employees.filter(e => e.status === "Probation").length;
 
     // Movement
     const now = new Date();
@@ -220,25 +220,28 @@ async function loadDashboard() {
     document.getElementById("newHires").textContent = newHires.length;
     document.getElementById("resignations").textContent = exited.length;
     document.getElementById("turnoverRate").textContent = employees.length > 0 ? ((exited.length / employees.length) * 100).toFixed(1) + "%" : "0%";
-    document.getElementById("probationCount").textContent = employees.filter(e => e.status === "Probation").length;
 
     // Charts
     renderBar("deptChart", active, "department");
-    renderBar("locationChart", active, "location");
+    renderBar("sectionChart", active, "section");
     renderBar("genderChart", active, "gender");
-    renderBar("typeChart", active, "employeeType");
+    renderBar("locationChart", active, "location");
 
-    // Exit Reasons
-    const exitCounts = {};
-    exited.forEach(e => { const r = e.exitReason || "Unknown"; exitCounts[r] = (exitCounts[r] || 0) + 1; });
-    const exitSorted = Object.entries(exitCounts).sort((a,b) => b[1]-a[1]);
-    const exitMax = Math.max(...exitSorted.map(x=>x[1]), 1);
-    document.getElementById("exitReasonsChart").innerHTML = exitSorted.length === 0
-        ? '<div class="text-center text-muted py-4">No exits recorded</div>'
-        : exitSorted.map(([k,v]) => `
+    // Age Distribution
+    const ageBuckets = {"20-29": 0, "30-39": 0, "40-49": 0, "50-59": 0, "60+": 0};
+    employees.forEach(e => {
+        const age = calcAge(e.dateOfBirth);
+        if (age >= 20 && age <= 29) ageBuckets["20-29"]++;
+        else if (age >= 30 && age <= 39) ageBuckets["30-39"]++;
+        else if (age >= 40 && age <= 49) ageBuckets["40-49"]++;
+        else if (age >= 50 && age <= 59) ageBuckets["50-59"]++;
+        else if (age >= 60) ageBuckets["60+"]++;
+    });
+    const ageMax = Math.max(...Object.values(ageBuckets), 1);
+    document.getElementById("ageChart").innerHTML = Object.entries(ageBuckets).map(([k,v]) => `
         <div class="bar-row">
-            <span class="bar-label" style="width:160px">${k}</span>
-            <div class="bar-track"><div class="bar-fill" style="width:${(v/exitMax)*100}%;background:#dc3545"></div></div>
+            <span class="bar-label">${k} yrs</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(v/ageMax)*100}%;background:#6f42c1"></div></div>
             <span class="bar-value">${v}</span>
         </div>`).join("");
 
@@ -258,7 +261,7 @@ async function loadDashboard() {
     const resTenureBuckets = {};
     exited.forEach(e => {
         const h = new Date(e.hireDate);
-        const ex = new Date(e.exitDate);
+        const ex = new Date(e.resignationDate);
         const months = (ex - h) / (1000 * 60 * 60 * 24 * 30.44);
         const label = resignationTenureLabel(months);
         resTenureBuckets[label] = (resTenureBuckets[label] || 0) + 1;

@@ -7,10 +7,20 @@ function saveToStorage() {
 
 function syncStatuses() {
     employees.forEach(emp => {
-        if (emp.exitDate && emp.exitDate.trim() !== "") {
+        if (emp.resignationDate && emp.resignationDate.trim() !== "") {
             emp.status = "Inactive";
         }
     });
+}
+
+function calcAge(dob) {
+    if (!dob) return 0;
+    const birth = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age;
 }
 
 async function loadEmployees() {
@@ -56,18 +66,6 @@ function updateDashboard() {
     setValue("activeEmployees", employees.filter(e => e.status === "Active").length);
     setValue("maleEmployees", employees.filter(e => e.gender === "Male").length);
     setValue("femaleEmployees", employees.filter(e => e.gender === "Female").length);
-
-    const departments = [...new Set(employees.map(e => e.department))];
-    setValue("totalDepartments", departments.length);
-
-    const sections = [...new Set(employees.map(e => e.section).filter(Boolean))];
-    setValue("totalSections", sections.length);
-
-    const onLeave = employees.filter(e => e.status === "On Leave").length;
-    setValue("onLeaveEmployees", onLeave);
-
-    const inactive = employees.filter(e => e.status === "Inactive").length;
-    setValue("inactiveEmployees", inactive);
 }
 
 function setValue(id, value) {
@@ -99,8 +97,6 @@ function renderEmployees(list) {
                 </div>
             </td>
             <td>${emp.department}</td>
-            <td>${emp.jobTitle}</td>
-            <td>${emp.manager}</td>
             <td>${emp.location}</td>
             <td>${getStatusBadge(emp.status)}</td>
             <td>
@@ -148,10 +144,22 @@ function addEmployee() {
     const name = document.getElementById("empName").value.trim();
     const department = document.getElementById("empDepartment").value;
     const section = document.getElementById("empSection").value.trim();
+    const positionCode = document.getElementById("empPositionCode").value.trim();
     const jobTitle = document.getElementById("empJob").value.trim();
+    const employeeType = document.getElementById("empType").value;
+    const grade = document.getElementById("empGrade").value.trim();
+    const unit = document.getElementById("empUnit").value.trim();
     const location = document.getElementById("empLocation").value.trim();
+    const email = document.getElementById("empEmail").value.trim();
+    const mobile = document.getElementById("empMobile").value.trim();
+    const dob = document.getElementById("empDob").value;
+    const age = calcAge(dob);
     const gender = document.getElementById("empGender").value;
-    const empType = document.getElementById("empType").value;
+    const directManager = document.getElementById("empDirectManager").value.trim();
+    const headOfDepartment = document.getElementById("empHeadDept").value.trim();
+    const education = document.getElementById("empEducation").value.trim();
+    const resignationDate = document.getElementById("empResignationDate").value || "";
+    const resignationReason = document.getElementById("empResignationReason") ? document.getElementById("empResignationReason").value : "";
 
     if (!code || !name || !department || !jobTitle || !location) {
         alert("Please fill all required fields");
@@ -163,13 +171,14 @@ function addEmployee() {
         return;
     }
 
+    const status = document.getElementById("empStatus").value;
+    const finalStatus = resignationDate ? "Inactive" : status;
+
     employees.push({
-        code, name, department, section: section || department, jobTitle,
-        manager: "-", location, status: "Active",
-        hireDate: new Date().toISOString().split("T")[0],
-        age: 0, gender, employeeType: empType,
-        grade: "G5", performance2023: 0, performance2024: 0, performance2025: 0,
-        promotionDate: "", pip: false, retirementDate: "", exitDate: "", exitReason: ""
+        code, name, department, section: section || department, positionCode, jobTitle,
+        employeeType, grade, unit, location, status: finalStatus, hireDate: document.getElementById("empHireDate").value || new Date().toISOString().split("T")[0],
+        resignationDate, resignationReason, email, mobile, dateOfBirth: dob, age, gender,
+        directManager, headOfDepartment, education
     });
 
     saveToStorage();
@@ -182,7 +191,9 @@ function addEmployee() {
 }
 
 function clearForm() {
-    ["empCode", "empName", "empJob", "empLocation", "empSection"].forEach(id => {
+    ["empCode", "empName", "empJob", "empLocation", "empSection", "empPositionCode",
+     "empGrade", "empUnit", "empEmail", "empMobile", "empDob", "empDirectManager",
+     "empHeadDept", "empEducation", "empType", "empHireDate", "empResignationDate"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
     });
@@ -190,8 +201,12 @@ function clearForm() {
     if (dept) dept.selectedIndex = 0;
     const gender = document.getElementById("empGender");
     if (gender) gender.selectedIndex = 0;
-    const type = document.getElementById("empType");
-    if (type) type.selectedIndex = 0;
+    const empType = document.getElementById("empType");
+    if (empType) empType.selectedIndex = 0;
+    const status = document.getElementById("empStatus");
+    if (status) status.selectedIndex = 0;
+    const resReason = document.getElementById("empResignationReason");
+    if (resReason) resReason.selectedIndex = 0;
 }
 
 function viewEmployee(code) {
@@ -199,8 +214,7 @@ function viewEmployee(code) {
     if (!emp) return;
 
     const modal = new bootstrap.Modal(document.getElementById("viewEmployeeModal"));
-    const activeCount = employees.filter(e => e.status === "Active").length;
-    const inactiveCount = employees.filter(e => e.status === "Inactive").length;
+    const age = calcAge(emp.dateOfBirth);
 
     document.getElementById("viewModalBody").innerHTML = `
         <div class="text-center mb-3">
@@ -208,27 +222,28 @@ function viewEmployee(code) {
             <h4 class="mt-2 mb-0">${emp.name}</h4>
             <small class="text-muted">${emp.jobTitle} | ${emp.department}</small>
         </div>
-        <div class="d-flex justify-content-center gap-3 mb-3">
-            <span class="badge bg-success">Active: ${activeCount}</span>
-            <span class="badge bg-danger">Inactive: ${inactiveCount}</span>
-            <span class="badge bg-secondary">Total: ${employees.length}</span>
-        </div>
         <table class="table table-borderless mb-0">
             <tr><td class="text-muted" style="width:40%">Code</td><td><strong>${emp.code}</strong></td></tr>
             <tr><td class="text-muted">Department</td><td>${emp.department}</td></tr>
             <tr><td class="text-muted">Section</td><td>${emp.section || "-"}</td></tr>
-            <tr><td class="text-muted">Location</td><td>${emp.location}</td></tr>
-            <tr><td class="text-muted">Manager</td><td>${emp.manager}</td></tr>
+            <tr><td class="text-muted">Position Code</td><td>${emp.positionCode || "-"}</td></tr>
+            <tr><td class="text-muted">Job Title</td><td>${emp.jobTitle}</td></tr>
+            <tr><td class="text-muted">Type</td><td>${emp.employeeType || "-"}</td></tr>
             <tr><td class="text-muted">Grade</td><td>${emp.grade}</td></tr>
-            <tr><td class="text-muted">Type</td><td>${emp.employeeType}</td></tr>
-            <tr><td class="text-muted">Gender</td><td>${emp.gender}</td></tr>
-            <tr><td class="text-muted">Age</td><td>${emp.age}</td></tr>
+            <tr><td class="text-muted">Unit</td><td>${emp.unit || "-"}</td></tr>
+            <tr><td class="text-muted">Location</td><td>${emp.location}</td></tr>
             <tr><td class="text-muted">Status</td><td>${getStatusBadge(emp.status)}</td></tr>
             <tr><td class="text-muted">Hire Date</td><td>${emp.hireDate}</td></tr>
-            <tr><td class="text-muted">Performance 2025</td><td>${emp.performance2025 ? emp.performance2025 + "/5" : "N/A"}</td></tr>
-            <tr><td class="text-muted">PIP</td><td>${emp.pip ? '<span class="badge bg-danger">Yes</span>' : '<span class="badge bg-success">No</span>'}</td></tr>
-            ${emp.exitDate ? `<tr><td class="text-muted">Exit Date</td><td>${emp.exitDate}</td></tr>
-            <tr><td class="text-muted">Exit Reason</td><td>${emp.exitReason}</td></tr>` : ""}
+            <tr><td class="text-muted">Resignation Date</td><td>${emp.resignationDate || "-"}</td></tr>
+            <tr><td class="text-muted">Resignation Reason</td><td>${emp.resignationReason || "-"}</td></tr>
+            <tr><td class="text-muted">Email</td><td>${emp.email || "-"}</td></tr>
+            <tr><td class="text-muted">Mobile</td><td>${emp.mobile || "-"}</td></tr>
+            <tr><td class="text-muted">Date of Birth</td><td>${emp.dateOfBirth || "-"}</td></tr>
+            <tr><td class="text-muted">Age</td><td>${age}</td></tr>
+            <tr><td class="text-muted">Gender</td><td>${emp.gender}</td></tr>
+            <tr><td class="text-muted">Direct Manager</td><td>${emp.directManager || "-"}</td></tr>
+            <tr><td class="text-muted">Head of Department</td><td>${emp.headOfDepartment || "-"}</td></tr>
+            <tr><td class="text-muted">Education</td><td>${emp.education || "-"}</td></tr>
         </table>`;
     modal.show();
 }
@@ -241,12 +256,25 @@ function editEmployee(code) {
     document.getElementById("editEmpName").value = emp.name;
     document.getElementById("editEmpDepartment").value = emp.department;
     document.getElementById("editEmpJob").value = emp.jobTitle;
+    document.getElementById("editEmpType").value = emp.employeeType || "White Collar";
     document.getElementById("editEmpLocation").value = emp.location;
     document.getElementById("editEmpGender").value = emp.gender;
+    document.getElementById("editEmpPositionCode").value = emp.positionCode || "";
     document.getElementById("editEmpGrade").value = emp.grade;
-    document.getElementById("editEmpType").value = emp.employeeType;
-    document.getElementById("editEmpExitDate").value = emp.exitDate || "";
-    document.getElementById("editEmpExitReason").value = emp.exitReason || "";
+    document.getElementById("editEmpUnit").value = emp.unit || "";
+    document.getElementById("editEmpEmail").value = emp.email || "";
+    document.getElementById("editEmpMobile").value = emp.mobile || "";
+    document.getElementById("editEmpDob").value = emp.dateOfBirth || "";
+    document.getElementById("editEmpDirectManager").value = emp.directManager || "";
+    document.getElementById("editEmpHeadDept").value = emp.headOfDepartment || "";
+    document.getElementById("editEmpEducation").value = emp.education || "";
+    document.getElementById("editEmpResignationDate").value = emp.resignationDate || "";
+    if (document.getElementById("editEmpResignationReason")) {
+        document.getElementById("editEmpResignationReason").value = emp.resignationReason || "";
+    }
+    document.getElementById("editEmpSection").value = emp.section || "";
+    document.getElementById("editEmpHireDate").value = emp.hireDate || "";
+    document.getElementById("editEmpStatus").value = emp.status || "Active";
 
     new bootstrap.Modal(document.getElementById("editEmployeeModal")).show();
 }
@@ -259,17 +287,28 @@ function saveEdit() {
     emp.name = document.getElementById("editEmpName").value.trim();
     emp.department = document.getElementById("editEmpDepartment").value;
     emp.jobTitle = document.getElementById("editEmpJob").value.trim();
+    emp.employeeType = document.getElementById("editEmpType").value;
     emp.location = document.getElementById("editEmpLocation").value.trim();
     emp.gender = document.getElementById("editEmpGender").value;
-    emp.grade = document.getElementById("editEmpGrade").value;
-    emp.employeeType = document.getElementById("editEmpType").value;
-    emp.exitDate = document.getElementById("editEmpExitDate").value || "";
-    emp.exitReason = document.getElementById("editEmpExitReason").value.trim();
+    emp.positionCode = document.getElementById("editEmpPositionCode").value.trim();
+    emp.grade = document.getElementById("editEmpGrade").value.trim();
+    emp.unit = document.getElementById("editEmpUnit").value.trim();
+    emp.email = document.getElementById("editEmpEmail").value.trim();
+    emp.mobile = document.getElementById("editEmpMobile").value.trim();
+    emp.dateOfBirth = document.getElementById("editEmpDob").value;
+    emp.age = calcAge(emp.dateOfBirth);
+    emp.directManager = document.getElementById("editEmpDirectManager").value.trim();
+    emp.headOfDepartment = document.getElementById("editEmpHeadDept").value.trim();
+    emp.education = document.getElementById("editEmpEducation").value.trim();
+    emp.resignationDate = document.getElementById("editEmpResignationDate").value || "";
+    emp.resignationReason = document.getElementById("editEmpResignationReason") ? document.getElementById("editEmpResignationReason").value : "";
+    emp.section = document.getElementById("editEmpSection").value.trim() || emp.department;
+    emp.hireDate = document.getElementById("editEmpHireDate").value || emp.hireDate;
 
-    if (emp.exitDate && emp.exitDate.trim() !== "") {
+    if (emp.resignationDate && emp.resignationDate.trim() !== "") {
         emp.status = "Inactive";
     } else {
-        emp.status = "Active";
+        emp.status = document.getElementById("editEmpStatus").value;
     }
 
     saveToStorage();
@@ -291,8 +330,13 @@ function deleteEmployee(code) {
 
 function exportToCSV() {
     if (!employees.length) { alert("No data to export"); return; }
-    const headers = ["Code", "Name", "Department", "Section", "Job Title", "Manager", "Location", "Grade", "Type", "Status", "Gender", "Age", "Hire Date", "Performance 2025"];
-    const rows = employees.map(e => [e.code, e.name, e.department, e.section, e.jobTitle, e.manager, e.location, e.grade, e.employeeType, e.status, e.gender, e.age, e.hireDate, e.performance2025]);
+    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
+    const rows = employees.map(e => [
+        e.status, e.code, e.name, e.hireDate, e.resignationDate, e.resignationReason || "",
+        e.positionCode, e.jobTitle, e.employeeType, e.grade, e.department, e.section,
+        e.unit, e.location, e.email, e.mobile, e.dateOfBirth,
+        e.gender, e.directManager, e.headOfDepartment, e.education
+    ]);
     let csv = headers.join(",") + "\n";
     rows.forEach(row => { csv += row.map(v => `"${v}"`).join(",") + "\n"; });
     const blob = new Blob([csv], { type: "text/csv" });
@@ -306,34 +350,34 @@ function exportToCSV() {
 let pendingImport = [];
 
 const columnMap = {
-    "code": "code", "employee code": "code", "emp code": "code", "empcode": "code", "id": "code", "رقم": "code", "كود": "code",
-    "name": "name", "employee name": "name", "emp name": "name", "full name": "name", "الاسم": "name", "اسم": "name",
-    "department": "department", "dept": "department", "القسم": "department", "الادارة": "department",
-    "section": "section", "الشعبة": "section",
-    "jobtitle": "jobTitle", "job title": "jobTitle", "position": "jobTitle", "title": "jobTitle", "المنصب": "jobTitle", "المسمى": "jobTitle",
-    "manager": "manager", "supervisor": "manager", "المدير": "manager",
-    "location": "location", "office": "location", "branch": "location", "الموقع": "location", "الفرع": "location",
-    "gender": "gender", "sex": "gender", "الجنس": "gender",
-    "status": "status", "الحالة": "status",
-    "grade": "grade", "level": "grade", "المستوى": "grade", "الدرجة": "grade",
-    "employeetype": "employeeType", "employee type": "employeeType", "type": "employeeType", "نوع الموظف": "employeeType", "النوع": "employeeType",
-    "hiredate": "hireDate", "hire date": "hireDate", "start date": "hireDate", "تاريخ التعيين": "hireDate",
-    "age": "age", "العمر": "age",
-    "performance2025": "performance2025", "performance 2025": "performance2025", "perf 2025": "performance2025", "التقييم 2025": "performance2025",
-    "performance2024": "performance2024", "performance 2024": "performance2024", "التقييم 2024": "performance2024",
-    "performance2023": "performance2023", "performance 2023": "performance2023", "التقييم 2023": "performance2023",
-    "pip": "pip",
-    "promotiondate": "promotionDate", "promotion date": "promotionDate", "تاريخ الترقية": "promotionDate",
-    "retirementdate": "retirementDate", "retirement date": "retirementDate", "تاريخ التقاعد": "retirementDate",
-    "exitdate": "exitDate", "exit date": "exitDate", "تاريخ المغادرة": "exitDate",
-    "exitreason": "exitReason", "exit reason": "exitReason", "سبب المغادرة": "exitReason"
+    "code": "code", "employee code": "code", "emp code": "code", "empcode": "code", "id": "code", "رقم": "code", "كود": "code", "employee code ": "code",
+    "name": "name", "employee name": "name", "emp name": "name", "full name": "name", "الاسم": "name", "اسم": "name", "emp name ": "name",
+    "department": "department", "dept": "department", "القسم": "department", "الادارة": "department", "department ": "department",
+    "section": "section", "الشعبة": "section", "section ": "section",
+    "position code": "positionCode", "positioncode": "positionCode", "كود المنصب": "positionCode",
+    "jobtitle": "jobTitle", "job title": "jobTitle", "position": "jobTitle", "title": "jobTitle", "المنصب": "jobTitle", "المسمى": "jobTitle", "job title ": "jobTitle",
+    "type": "employeeType", "employee type": "employeeType", "employeetype": "employeeType", "النوع": "employeeType", "نوع الموظف": "employeeType", "employee type ": "employeeType",
+    "grade": "grade", "level": "grade", "المستوى": "grade", "الدرجة": "grade", "grade ": "grade",
+    "unit": "unit", "الوحدة": "unit", "unit ": "unit",
+    "location": "location", "office": "location", "branch": "location", "الموقع": "location", "الفرع": "location", "location ": "location",
+    "email": "email", "البريد": "email", "ايميل": "email", "email ": "email",
+    "mobile": "mobile", "phone": "mobile", "الموبايل": "mobile", "التليفون": "mobile", "جوال": "mobile", "mobile ": "mobile",
+    "date of birth": "dateOfBirth", "dateofbirth": "dateOfBirth", "dob": "dateOfBirth", "تاريخ الميلاد": "dateOfBirth", "birth date": "dateOfBirth",
+    "gender": "gender", "sex": "gender", "الجنس": "gender", "gender ": "gender",
+    "direct manager": "directManager", "directmanager": "directManager", "manager": "directManager", "supervisor": "directManager", "المدير المباشر": "directManager", "direct manager ": "directManager",
+    "head of department": "headOfDepartment", "headofdepartment": "headOfDepartment", "head dept": "headOfDepartment", "مدير القسم": "headOfDepartment", "head of department ": "headOfDepartment",
+    "education": "education", "المؤهل": "education", "المؤهل": "education", "education ": "education",
+    "status": "status", "الحالة": "status", "status ": "status",
+    "hiredate": "hireDate", "hire date": "hireDate", "start date": "hireDate", "تاريخ التعيين": "hireDate", "hiring date": "hireDate", "hire date ": "hireDate", "hiring date ": "hireDate",
+    "resignation date": "resignationDate", "resignationdate": "resignationDate", "تاريخ المغادرة": "resignationDate", "تاريخ الاستقالة": "resignationDate", "resignation date ": "resignationDate",
+    "resignation reason": "resignationReason", "resignationreason": "resignationReason", "سبب الاستقالة": "resignationReason", "سبب المغادرة": "resignationReason", "resignation reason ": "resignationReason"
 };
 
 const defaultValues = {
-    code: "", name: "", department: "", section: "", jobTitle: "", manager: "-",
-    location: "", status: "Active", hireDate: "", age: 0, gender: "Male",
-    employeeType: "White Collar", grade: "G5", performance2023: 0, performance2024: 0,
-    performance2025: 0, promotionDate: "", pip: false, retirementDate: "", exitDate: "", exitReason: ""
+    code: "", name: "", department: "", section: "", positionCode: "", jobTitle: "",
+    employeeType: "White Collar", grade: "G5", unit: "", location: "", status: "Active", hireDate: "",
+    resignationDate: "", resignationReason: "", email: "", mobile: "", dateOfBirth: "", gender: "Male",
+    directManager: "", headOfDepartment: "", education: "Bachelor's"
 };
 
 const validLocations = ["H.O Dokki","Wahat Bahreya","Minya","Khtara","Orabi","Sadat","October","Dokki Store","Helioplies","Shooting Club"];
@@ -341,6 +385,11 @@ const validLocations = ["H.O Dokki","Wahat Bahreya","Minya","Khtara","Orabi","Sa
 function handleExcelFile(event) {
     const file = event.target.files[0];
     if (!file) return;
+
+    if (typeof XLSX === 'undefined') {
+        alert("Error: Excel library not loaded. Please refresh the page and try again.");
+        return;
+    }
 
     const reader = new FileReader();
     reader.onload = function(e) {
@@ -357,20 +406,26 @@ function handleExcelFile(event) {
             }
 
             const headers = jsonData[0];
+            alert("Found " + (jsonData.length - 1) + " data rows.\n\nExcel Headers:\n" + headers.map((h,i) => (i+1) + ". " + h).join("\n"));
+
             const mappedHeaders = headers.map(h => {
                 const key = String(h).trim().toLowerCase().replace(/[\s_]+/g, " ");
                 return columnMap[key] || key;
             });
 
+            // Debug: show mapped headers
+            console.log("Excel Headers:", headers);
+            console.log("Mapped Headers:", mappedHeaders);
+
             pendingImport = [];
             for (let i = 1; i < jsonData.length; i++) {
                 const row = jsonData[i];
-                if (!row || row.length === 0 || !row[0]) continue;
+                if (!row || row.length === 0) continue;
 
                 const emp = { ...defaultValues };
                 mappedHeaders.forEach((field, idx) => {
-                    if (row[idx] !== undefined && row[idx] !== null && row[idx] !== "") {
-                        emp[field] = row[idx];
+                    if (row[idx] !== undefined && row[idx] !== null && String(row[idx]).trim() !== "") {
+                        emp[field] = String(row[idx]).trim();
                     }
                 });
 
@@ -384,25 +439,21 @@ function handleExcelFile(event) {
                     if (match) emp.location = match;
                 }
 
-                if (typeof emp.age === "string") emp.age = parseInt(emp.age) || 0;
-                if (typeof emp.performance2023 === "string") emp.performance2023 = parseInt(emp.performance2023) || 0;
-                if (typeof emp.performance2024 === "string") emp.performance2024 = parseInt(emp.performance2024) || 0;
-                if (typeof emp.performance2025 === "string") emp.performance2025 = parseInt(emp.performance2025) || 0;
-                if (typeof emp.pip === "string") emp.pip = emp.pip.toLowerCase() === "true" || emp.pip === "1" || emp.pip === "yes";
+                emp.age = calcAge(emp.dateOfBirth);
 
                 pendingImport.push(emp);
             }
 
             if (pendingImport.length === 0) {
-                alert("No valid employees found. Make sure your Excel has 'Code' and 'Name' columns.");
+                alert("No valid employees found.\n\nExcel Headers found:\n" + headers.join(", ") + "\n\nMapped to:\n" + mappedHeaders.join(", ") + "\n\nMake sure 'Code' and 'Name' columns exist.");
                 return;
             }
 
             document.getElementById("importCount").textContent = pendingImport.length;
-            document.getElementById("previewHead").innerHTML = "<tr><th>Code</th><th>Name</th><th>Department</th><th>Location</th><th>Status</th></tr>";
+            document.getElementById("previewHead").innerHTML = "<tr><th>Code</th><th>Name</th><th>Department</th><th>Position</th><th>Location</th><th>Status</th></tr>";
             document.getElementById("previewBody").innerHTML = pendingImport.slice(0, 20).map(e => `
-                <tr><td>${e.code}</td><td>${e.name}</td><td>${e.department || "-"}</td><td>${e.location || "-"}</td><td>${e.status}</td></tr>
-            `).join("") + (pendingImport.length > 20 ? `<tr><td colspan="5" class="text-center text-muted">...and ${pendingImport.length - 20} more</td></tr>` : "");
+                <tr><td>${e.code}</td><td>${e.name}</td><td>${e.department || "-"}</td><td>${e.jobTitle || "-"}</td><td>${e.location || "-"}</td><td>${e.status}</td></tr>
+            `).join("") + (pendingImport.length > 20 ? `<tr><td colspan="6" class="text-center text-muted">...and ${pendingImport.length - 20} more</td></tr>` : "");
 
             document.getElementById("importPreview").style.display = "block";
             document.getElementById("confirmImportBtn").disabled = false;
@@ -416,33 +467,13 @@ function handleExcelFile(event) {
 function confirmImport() {
     if (!pendingImport.length) return;
 
-    let imported = 0;
-    let skipped = 0;
+    if (!confirm(`This will replace ALL current employees (${employees.length}) with ${pendingImport.length} employees from the Excel file. Continue?`)) return;
 
-    pendingImport.forEach(emp => {
-        const exists = employees.find(e => e.code === emp.code);
-        if (exists) {
-            skipped++;
-        } else {
-            employees.push(emp);
-            imported++;
-        }
-    });
-
+    employees = [...pendingImport];
     saveToStorage();
-    syncStatuses();
-    renderEmployees();
-    updateDashboard();
 
-    const modal = bootstrap.Modal.getInstance(document.getElementById("importModal"));
-    if (modal) modal.hide();
-
-    document.getElementById("excelFile").value = "";
-    document.getElementById("importPreview").style.display = "none";
-    document.getElementById("confirmImportBtn").disabled = true;
-    pendingImport = [];
-
-    alert(`Import complete!\n${imported} employees added\n${skipped} skipped (duplicate codes)`);
+    alert(`Import complete! ${employees.length} employees saved.\nPage will now refresh.`);
+    location.reload();
 }
 
 function resetData() {
