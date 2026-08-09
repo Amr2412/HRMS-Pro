@@ -55,6 +55,107 @@ async function loadEmployees() {
     syncStatuses();
     updateDashboard();
     renderEmployees();
+    renderCharts();
+}
+
+function calcYears(dateStr, from) {
+    if (!dateStr) return 0;
+    const d = new Date(dateStr);
+    if (isNaN(d)) return 0;
+    const now = from ? new Date(from) : new Date();
+    return Math.floor((now - d) / (1000 * 60 * 60 * 24 * 365.25));
+}
+
+function countBy(list, keyFn) {
+    const map = {};
+    list.forEach(e => {
+        const k = keyFn(e);
+        const label = k || "N/A";
+        map[label] = (map[label] || 0) + 1;
+    });
+    return map;
+}
+
+function renderBarChart(elId, dataObj, color) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const entries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+    if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
+    const max = Math.max(...entries.map(x => x[1]), 1);
+    el.innerHTML = entries.map(([k, v]) => `
+        <div class="bar-row">
+            <span class="bar-label">${k}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color || '#198754'}"></div></div>
+            <span class="bar-value">${v}</span>
+        </div>`).join("");
+}
+
+function renderCharts() {
+    if (!document.getElementById("chartDept")) return;
+
+    // Department
+    renderBarChart("chartDept", countBy(employees, e => e.department), "#198754");
+
+    // Job Title
+    renderBarChart("chartJob", countBy(employees, e => e.jobTitle), "#0d6efd");
+
+    // Location
+    renderBarChart("chartLoc", countBy(employees, e => e.location), "#fd7e14");
+
+    // Years of Service (tenure)
+    const tenureBuckets = {
+        "< 6 months": 0, "6 months - 1 year": 0, "1 year": 0, "2 years": 0, "3 years": 0,
+        "4 years": 0, "5 years": 0, "6 years": 0, "7 years": 0, "8 years": 0, "9 years": 0,
+        "10 years": 0, "11-15 years": 0, "16-20 years": 0, "> 20 years": 0
+    };
+    employees.forEach(e => {
+        const y = calcYears(e.hireDate);
+        if (y < 0.5) tenureBuckets["< 6 months"]++;
+        else if (y < 1) tenureBuckets["6 months - 1 year"]++;
+        else if (y < 2) tenureBuckets["1 year"]++;
+        else if (y < 3) tenureBuckets["2 years"]++;
+        else if (y < 4) tenureBuckets["3 years"]++;
+        else if (y < 5) tenureBuckets["4 years"]++;
+        else if (y < 6) tenureBuckets["5 years"]++;
+        else if (y < 7) tenureBuckets["6 years"]++;
+        else if (y < 8) tenureBuckets["7 years"]++;
+        else if (y < 9) tenureBuckets["8 years"]++;
+        else if (y < 10) tenureBuckets["9 years"]++;
+        else if (y < 11) tenureBuckets["10 years"]++;
+        else if (y < 16) tenureBuckets["11-15 years"]++;
+        else if (y < 21) tenureBuckets["16-20 years"]++;
+        else tenureBuckets["> 20 years"]++;
+    });
+    renderBarChart("chartTenure", tenureBuckets, "#6f42c1");
+
+    // Age distribution
+    const ageBuckets = {
+        "< 22": 0, "22-25": 0, "26-30": 0, "31-35": 0, "36-40": 0, "41-45": 0,
+        "46-50": 0, "51-55": 0, "56-60": 0, "> 60": 0
+    };
+    employees.forEach(e => {
+        const a = calcAge(e.dateOfBirth);
+        if (a === 0) return;
+        if (a < 22) ageBuckets["< 22"]++;
+        else if (a < 26) ageBuckets["22-25"]++;
+        else if (a < 31) ageBuckets["26-30"]++;
+        else if (a < 36) ageBuckets["31-35"]++;
+        else if (a < 41) ageBuckets["36-40"]++;
+        else if (a < 46) ageBuckets["41-45"]++;
+        else if (a < 51) ageBuckets["46-50"]++;
+        else if (a < 56) ageBuckets["51-55"]++;
+        else if (a < 61) ageBuckets["56-60"]++;
+        else ageBuckets["> 60"]++;
+    });
+    renderBarChart("chartAge", ageBuckets, "#dc3545");
+
+    // Type & Grade
+    const typeGrade = {};
+    employees.forEach(e => {
+        const k = `${e.employeeType || "N/A"} - ${e.grade || "N/A"}`;
+        typeGrade[k] = (typeGrade[k] || 0) + 1;
+    });
+    renderBarChart("chartGrade", typeGrade, "#20c997");
 }
 
 function resetData() {
@@ -75,8 +176,16 @@ function getStatusBadge(status) {
 function updateDashboard() {
     setValue("totalEmployees", employees.length);
     setValue("activeEmployees", employees.filter(e => e.status === "Active").length);
+    setValue("inactiveEmployees", employees.filter(e => e.status === "Inactive").length);
+    setValue("leaveEmployees", employees.filter(e => e.status === "On Leave").length);
+    setValue("probationEmployees", employees.filter(e => e.status === "Probation").length);
+    setValue("whiteCollar", employees.filter(e => e.employeeType === "White Collar").length);
+    setValue("blueCollar", employees.filter(e => e.employeeType === "Blue Collar").length);
     setValue("maleEmployees", employees.filter(e => e.gender === "Male").length);
     setValue("femaleEmployees", employees.filter(e => e.gender === "Female").length);
+    setValue("deptCount", new Set(employees.map(e => e.department).filter(Boolean)).size);
+    setValue("locationCount", new Set(employees.map(e => e.location).filter(Boolean)).size);
+    setValue("exitCount", employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "").length);
 }
 
 function setValue(id, value) {
@@ -90,7 +199,7 @@ function renderEmployees(list) {
     if (!tbody) return;
 
     if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center text-muted py-4">
+        tbody.innerHTML = `<tr><td colspan="13" class="text-center text-muted py-4">
             <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>No employees found</td></tr>`;
         return;
     }
@@ -107,9 +216,16 @@ function renderEmployees(list) {
                     </div>
                 </div>
             </td>
+            <td>${emp.jobTitle}${emp.positionCode ? `<small class="d-block text-muted">${emp.positionCode}</small>` : ""}</td>
+            <td>${emp.employeeType}</td>
+            <td>${emp.grade}</td>
             <td>${emp.department}</td>
+            <td>${emp.section || "-"}</td>
+            <td>${emp.unit || "-"}</td>
             <td>${emp.location}</td>
             <td>${getStatusBadge(emp.status)}</td>
+            <td>${emp.directManager || "-"}</td>
+            <td>${emp.hireDate || "-"}</td>
             <td>
                 <div class="action-btns">
                     <button class="btn btn-sm btn-outline-primary" onclick="viewEmployee('${emp.code}')" title="View"><i class="fa-solid fa-eye"></i></button>
@@ -122,15 +238,7 @@ function renderEmployees(list) {
 }
 
 function searchEmployees() {
-    const keyword = document.getElementById("searchEmployee").value.toLowerCase();
-    const filtered = employees.filter(emp =>
-        emp.name.toLowerCase().includes(keyword) ||
-        emp.department.toLowerCase().includes(keyword) ||
-        emp.jobTitle.toLowerCase().includes(keyword) ||
-        emp.location.toLowerCase().includes(keyword) ||
-        emp.code.includes(keyword)
-    );
-    renderEmployees(filtered);
+    applyFilters();
 }
 
 function filterDepartment() {
@@ -147,6 +255,24 @@ function applyFilters() {
     let filtered = employees;
     if (dept) filtered = filtered.filter(e => e.department === dept);
     if (loc) filtered = filtered.filter(e => e.location === loc);
+    const keyword = document.getElementById("searchEmployee")?.value.toLowerCase() || "";
+    if (keyword) {
+        filtered = filtered.filter(emp =>
+            (emp.name || "").toLowerCase().includes(keyword) ||
+            (emp.department || "").toLowerCase().includes(keyword) ||
+            (emp.jobTitle || "").toLowerCase().includes(keyword) ||
+            (emp.location || "").toLowerCase().includes(keyword) ||
+            (emp.code || "").includes(keyword) ||
+            (emp.section || "").toLowerCase().includes(keyword) ||
+            (emp.employeeType || "").toLowerCase().includes(keyword) ||
+            (emp.grade || "").toLowerCase().includes(keyword) ||
+            (emp.directManager || "").toLowerCase().includes(keyword) ||
+            (emp.headOfDepartment || "").toLowerCase().includes(keyword) ||
+            (emp.education || "").toLowerCase().includes(keyword) ||
+            (emp.gender || "").toLowerCase().includes(keyword) ||
+            (emp.status || "").toLowerCase().includes(keyword)
+        );
+    }
     renderEmployees(filtered);
 }
 
@@ -195,6 +321,7 @@ function addEmployee() {
     saveToStorage();
     renderEmployees();
     updateDashboard();
+    renderCharts();
     clearForm();
     logActivity("Employee Added", `Added employee <strong>${name}</strong> (${code})`, "fa-user-plus");
 
@@ -327,6 +454,7 @@ function saveEdit() {
     syncStatuses();
     renderEmployees();
     updateDashboard();
+    renderCharts();
     logActivity("Employee Updated", `Updated employee <strong>${emp.name}</strong> (${emp.code})`, "fa-user-pen");
 
     const modal = bootstrap.Modal.getInstance(document.getElementById("editEmployeeModal"));
@@ -340,6 +468,7 @@ function deleteEmployee(code) {
     saveToStorage();
     renderEmployees();
     updateDashboard();
+    renderCharts();
     if (emp) logActivity("Employee Deleted", `Deleted employee <strong>${emp.name}</strong> (${code})`, "fa-user-xmark");
 }
 

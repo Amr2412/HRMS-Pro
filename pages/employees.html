@@ -53,7 +53,7 @@
         </div>
 
         <div class="row mb-4">
-            <div class="col-md-3"><input type="text" id="searchEmployee" class="form-control" placeholder="Search by name, dept..."></div>
+            <div class="col-md-3"><input type="text" id="searchEmployee" class="form-control" placeholder="Search by name, code, dept, job, section, manager..." oninput="searchEmployees()"></div>
             <div class="col-md-2">
                 <select class="form-select" id="departmentFilter">
                     <option value="">All Departments</option>
@@ -71,9 +71,57 @@
 
         <div class="row g-3 mb-4">
             <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Employees</h6><h2 id="totalEmployees">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Active</h6><h2 id="activeEmployees">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Male</h6><h2 id="maleEmployees">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Female</h6><h2 id="femaleEmployees">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Active</h6><h2 id="activeEmployees" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Inactive</h6><h2 id="inactiveEmployees" style="color:#dc3545">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>On Leave</h6><h2 id="leaveEmployees" style="color:#ffc107">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>White Collar</h6><h2 id="whiteCollar" style="color:#0d6efd">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Blue Collar</h6><h2 id="blueCollar" style="color:#6f42c1">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Male</h6><h2 id="maleEmployees" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Female</h6><h2 id="femaleEmployees" style="color:#dc3545">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Probation</h6><h2 id="probationEmployees" style="color:#0dcaf0">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Departments</h6><h2 id="deptCount" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Locations</h6><h2 id="locationCount" style="color:#fd7e14">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Exits</h6><h2 id="exitCount" style="color:#6c757d">0</h2></div></div></div>
+        </div>
+
+        <!-- Distribution Charts -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-building"></i> Employees by Department</div>
+                    <div class="card-body bar-chart" id="chartDept"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-briefcase"></i> Employees by Job Title</div>
+                    <div class="card-body bar-chart" id="chartJob"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-location-dot"></i> Employees by Location</div>
+                    <div class="card-body bar-chart" id="chartLoc"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-arrow-trend-up"></i> Years of Service</div>
+                    <div class="card-body bar-chart" id="chartTenure"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-cake-candles"></i> Age Distribution</div>
+                    <div class="card-body bar-chart" id="chartAge"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-success text-white"><i class="fa-solid fa-users"></i> Employee Type & Grade</div>
+                    <div class="card-body bar-chart" id="chartGrade"></div>
+                </div>
+            </div>
         </div>
 
         <div class="card">
@@ -82,7 +130,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover align-middle">
                         <thead class="table-success">
-                            <tr><th>Code</th><th>Employee</th><th>Position</th><th>Type</th><th>Grade</th><th>Department</th><th>Location</th><th>Status</th><th width="150">Actions</th></tr>
+                            <tr><th>Code</th><th>Employee</th><th>Position</th><th>Type</th><th>Grade</th><th>Department</th><th>Section</th><th>Unit</th><th>Location</th><th>Status</th><th>Direct Manager</th><th>Hire Date</th><th width="150">Actions</th></tr>
                         </thead>
                         <tbody id="employeesTable"></tbody>
                     </table>
