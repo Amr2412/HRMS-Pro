@@ -156,6 +156,66 @@ function renderCharts() {
         typeGrade[k] = (typeGrade[k] || 0) + 1;
     });
     renderBarChart("chartGrade", typeGrade, "#20c997");
+
+    renderBreakdown();
+}
+
+function getMonthNum(dateStr) {
+    if (!dateStr) return -1;
+    const d = new Date(dateStr);
+    if (isNaN(d)) return -1;
+    return d.getMonth();
+}
+
+function renderBreakdown() {
+    const el = document.getElementById("breakdownBoxes");
+    if (!el) return;
+    const sel = document.getElementById("breakdownSelect");
+    const mode = sel ? sel.value : "location";
+
+    if (mode === "location") {
+        const countBy = {};
+        employees.forEach(e => {
+            const loc = e.location || "N/A";
+            countBy[loc] = (countBy[loc] || 0) + 1;
+        });
+        el.innerHTML = `<div class="row g-3">
+            <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+            <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+            <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0)}</div><div class="job-mini">Khtara: ${countBy["Khtara"] || 0} + Orabi: ${countBy["Orabi"] || 0}</div></div></div>
+            <div class="col"><div class="breakdown-box"><h6>Other Locations</h6><div class="num" style="color:#6c757d">${Object.entries(countBy).filter(([k]) => !["Wahat Bahreya", "Minya", "Khtara", "Orabi"].includes(k)).reduce((a, [, v]) => a + v, 0)}</div><div class="job-mini">H.O Dokki, Sadat, October, ...</div></div></div>
+        </div>`;
+    } else {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const useResign = mode === "resignation";
+        const dateField = useResign ? "resignationDate" : "hireDate";
+
+        const byMonth = Array.from({ length: 12 }, () => ({}));
+        employees.forEach(e => {
+            const m = getMonthNum(e[dateField]);
+            if (m < 0) return;
+            const job = e.jobTitle || "N/A";
+            byMonth[m][job] = (byMonth[m][job] || 0) + 1;
+        });
+
+        const totals = byMonth.map(x => Object.values(x).reduce((a, b) => a + b, 0));
+        const maxTotal = Math.max(...totals, 1);
+
+        el.innerHTML = `<div class="row g-3">
+            ${months.map((name, i) => `
+            <div class="col-6 col-md-3 col-xl">
+                <div class="breakdown-box">
+                    <h6>${name}</h6>
+                    <div class="num" style="color:${useResign ? "#dc3545" : "#198754"}">${totals[i]}</div>
+                    <div class="job-mini">
+                        ${Object.entries(byMonth[i]).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([j, v]) => `${v} ${j}`).join("<br>") || "-"}
+                        ${Object.keys(byMonth[i]).length > 4 ? `<br>+${Object.keys(byMonth[i]).length - 4} more` : ""}
+                    </div>
+                    <div class="progress mt-2" style="height:4px"><div class="progress-bar" style="width:${(totals[i] / maxTotal) * 100}%;background:${useResign ? "#dc3545" : "#198754"}"></div></div>
+                </div>
+            </div>`).join("")}
+        </div>`;
+    }
 }
 
 function resetData() {
@@ -177,15 +237,8 @@ function updateDashboard() {
     setValue("totalEmployees", employees.length);
     setValue("activeEmployees", employees.filter(e => e.status === "Active").length);
     setValue("inactiveEmployees", employees.filter(e => e.status === "Inactive").length);
-    setValue("leaveEmployees", employees.filter(e => e.status === "On Leave").length);
-    setValue("probationEmployees", employees.filter(e => e.status === "Probation").length);
     setValue("whiteCollar", employees.filter(e => e.employeeType === "White Collar").length);
     setValue("blueCollar", employees.filter(e => e.employeeType === "Blue Collar").length);
-    setValue("maleEmployees", employees.filter(e => e.gender === "Male").length);
-    setValue("femaleEmployees", employees.filter(e => e.gender === "Female").length);
-    setValue("deptCount", new Set(employees.map(e => e.department).filter(Boolean)).size);
-    setValue("locationCount", new Set(employees.map(e => e.location).filter(Boolean)).size);
-    setValue("exitCount", employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "").length);
 }
 
 function setValue(id, value) {
@@ -199,33 +252,39 @@ function renderEmployees(list) {
     if (!tbody) return;
 
     if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="13" class="text-center text-muted py-4">
+        tbody.innerHTML = `<tr><td colspan="22" class="text-center text-muted py-4">
             <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>No employees found</td></tr>`;
         return;
     }
 
     tbody.innerHTML = data.map(emp => `
         <tr>
+            <td>${getStatusBadge(emp.status)}</td>
             <td><strong>${emp.code}</strong></td>
             <td>
                 <div class="d-flex align-items-center gap-2">
                     <div class="emp-avatar">${getInitials(emp.name)}</div>
-                    <div>
-                        <div class="fw-semibold">${emp.name}</div>
-                        <small class="text-muted">${emp.jobTitle}</small>
-                    </div>
+                    <div class="fw-semibold">${emp.name}</div>
                 </div>
             </td>
-            <td>${emp.jobTitle}${emp.positionCode ? `<small class="d-block text-muted">${emp.positionCode}</small>` : ""}</td>
+            <td>${emp.hireDate || "-"}</td>
+            <td>${emp.resignationDate || "-"}</td>
+            <td>${emp.resignationReason || "-"}</td>
+            <td>${emp.positionCode || "-"}</td>
+            <td>${emp.jobTitle}</td>
             <td>${emp.employeeType}</td>
             <td>${emp.grade}</td>
             <td>${emp.department}</td>
             <td>${emp.section || "-"}</td>
             <td>${emp.unit || "-"}</td>
             <td>${emp.location}</td>
-            <td>${getStatusBadge(emp.status)}</td>
+            <td>${emp.email || "-"}</td>
+            <td>${emp.mobile || "-"}</td>
+            <td>${emp.dateOfBirth || "-"}</td>
+            <td>${emp.gender || "-"}</td>
             <td>${emp.directManager || "-"}</td>
-            <td>${emp.hireDate || "-"}</td>
+            <td>${emp.headOfDepartment || "-"}</td>
+            <td>${emp.education || "-"}</td>
             <td>
                 <div class="action-btns">
                     <button class="btn btn-sm btn-outline-primary" onclick="viewEmployee('${emp.code}')" title="View"><i class="fa-solid fa-eye"></i></button>
