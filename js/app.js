@@ -90,17 +90,18 @@ function renderBarChart(elId, dataObj, color) {
         </div>`).join("");
 }
 
-function renderCharts() {
+function renderCharts(list) {
     if (!document.getElementById("chartDept")) return;
+    const data = list || employees;
 
     // Department
-    renderBarChart("chartDept", countBy(employees, e => e.department), "#198754");
+    renderBarChart("chartDept", countBy(data, e => e.department), "#198754");
 
     // Job Title
-    renderBarChart("chartJob", countBy(employees, e => e.jobTitle), "#0d6efd");
+    renderBarChart("chartJob", countBy(data, e => e.jobTitle), "#0d6efd");
 
     // Location
-    renderBarChart("chartLoc", countBy(employees, e => e.location), "#fd7e14");
+    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14");
 
     // Years of Service (tenure)
     const tenureBuckets = {
@@ -108,7 +109,7 @@ function renderCharts() {
         "4 years": 0, "5 years": 0, "6 years": 0, "7 years": 0, "8 years": 0, "9 years": 0,
         "10 years": 0, "11-15 years": 0, "16-20 years": 0, "> 20 years": 0
     };
-    employees.forEach(e => {
+    data.forEach(e => {
         const y = calcYears(e.hireDate);
         if (y < 0.5) tenureBuckets["< 6 months"]++;
         else if (y < 1) tenureBuckets["6 months - 1 year"]++;
@@ -133,7 +134,7 @@ function renderCharts() {
         "< 22": 0, "22-25": 0, "26-30": 0, "31-35": 0, "36-40": 0, "41-45": 0,
         "46-50": 0, "51-55": 0, "56-60": 0, "> 60": 0
     };
-    employees.forEach(e => {
+    data.forEach(e => {
         const a = calcAge(e.dateOfBirth);
         if (a === 0) return;
         if (a < 22) ageBuckets["< 22"]++;
@@ -151,13 +152,13 @@ function renderCharts() {
 
     // Type & Grade
     const typeGrade = {};
-    employees.forEach(e => {
+    data.forEach(e => {
         const k = `${e.employeeType || "N/A"} - ${e.grade || "N/A"}`;
         typeGrade[k] = (typeGrade[k] || 0) + 1;
     });
     renderBarChart("chartGrade", typeGrade, "#20c997");
 
-    renderBreakdown();
+    renderBreakdown(data);
 }
 
 function getMonthNum(dateStr) {
@@ -167,15 +168,16 @@ function getMonthNum(dateStr) {
     return d.getMonth();
 }
 
-function renderBreakdown() {
+function renderBreakdown(list) {
     const el = document.getElementById("breakdownBoxes");
     if (!el) return;
     const sel = document.getElementById("breakdownSelect");
     const mode = sel ? sel.value : "location";
+    const data = list || employees;
 
     if (mode === "location") {
         const countBy = {};
-        employees.forEach(e => {
+        data.forEach(e => {
             const loc = e.location || "N/A";
             countBy[loc] = (countBy[loc] || 0) + 1;
         });
@@ -191,7 +193,7 @@ function renderBreakdown() {
         const dateField = useResign ? "resignationDate" : "hireDate";
 
         const byMonth = Array.from({ length: 12 }, () => ({}));
-        employees.forEach(e => {
+        data.forEach(e => {
             const m = getMonthNum(e[dateField]);
             if (m < 0) return;
             const job = e.jobTitle || "N/A";
@@ -233,12 +235,13 @@ function getStatusBadge(status) {
     return `<span class="badge bg-${map[status] || 'secondary'}">${status}</span>`;
 }
 
-function updateDashboard() {
-    setValue("totalEmployees", employees.length);
-    setValue("activeEmployees", employees.filter(e => e.status === "Active").length);
-    setValue("inactiveEmployees", employees.filter(e => e.status === "Inactive").length);
-    setValue("whiteCollar", employees.filter(e => e.employeeType === "White Collar").length);
-    setValue("blueCollar", employees.filter(e => e.employeeType === "Blue Collar").length);
+function updateDashboard(list) {
+    const data = list || employees;
+    setValue("totalEmployees", data.length);
+    setValue("activeEmployees", data.filter(e => e.status === "Active").length);
+    setValue("inactiveEmployees", data.filter(e => e.status === "Inactive").length);
+    setValue("whiteCollar", data.filter(e => e.employeeType === "White Collar").length);
+    setValue("blueCollar", data.filter(e => e.employeeType === "Blue Collar").length);
 }
 
 function setValue(id, value) {
@@ -313,7 +316,13 @@ function applyFilters() {
     const loc = document.getElementById("locationFilter")?.value || "";
     let filtered = employees;
     if (dept) filtered = filtered.filter(e => e.department === dept);
-    if (loc) filtered = filtered.filter(e => e.location === loc);
+    if (loc) {
+        if (loc === "Khtara & Orabi") {
+            filtered = filtered.filter(e => e.location === "Khtara" || e.location === "Orabi");
+        } else {
+            filtered = filtered.filter(e => e.location === loc);
+        }
+    }
     const keyword = document.getElementById("searchEmployee")?.value.toLowerCase() || "";
     if (keyword) {
         filtered = filtered.filter(emp =>
@@ -332,6 +341,8 @@ function applyFilters() {
             (emp.status || "").toLowerCase().includes(keyword)
         );
     }
+    updateDashboard(filtered);
+    renderCharts(filtered);
     renderEmployees(filtered);
 }
 

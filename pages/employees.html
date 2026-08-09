@@ -65,15 +65,17 @@
         <div class="row mb-4">
             <div class="col-md-3"><input type="text" id="searchEmployee" class="form-control" placeholder="Search by name, code, dept, job, section, manager..." oninput="searchEmployees()"></div>
             <div class="col-md-2">
-                <select class="form-select" id="departmentFilter">
+                <select class="form-select" id="departmentFilter" onchange="applyFilters()">
                     <option value="">All Departments</option>
                     <option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option><option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option><option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option><option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option><option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option><option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option><option>الفنيه</option><option>المشاتل</option><option>الصيانة</option><option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option>
                 </select>
             </div>
             <div class="col-md-2">
-                <select class="form-select" id="locationFilter">
+                <select class="form-select" id="locationFilter" onchange="applyFilters()">
                     <option value="">All Locations</option>
-                    <option>H.O Dokki</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara</option><option>Orabi</option><option>Sadat</option><option>October</option><option>Dokki Store</option><option>Helioplies</option><option>Shooting Club</option>
+                    <option value="Wahat Bahreya">Wahat Bahreya</option>
+                    <option value="Minya">Minya</option>
+                    <option value="Khtara & Orabi">Khtara & Orabi</option>
                 </select>
             </div>
             <div class="col-md-2"><button class="btn btn-success w-100" onclick="exportToCSV()"><i class="fa-solid fa-file-excel"></i> Export</button></div>
@@ -91,7 +93,7 @@
         <div class="card mb-4">
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
                 <span><i class="fa-solid fa-sliders"></i> Breakdown by</span>
-                <select class="form-select form-select-sm d-inline-block" id="breakdownSelect" style="width:auto" onchange="renderBreakdown()">
+                <select class="form-select form-select-sm d-inline-block" id="breakdownSelect" style="width:auto" onchange="applyFilters()">
                     <option value="location">Location</option>
                     <option value="hiring">Hiring (by month)</option>
                     <option value="resignation">Resignations (by month)</option>
