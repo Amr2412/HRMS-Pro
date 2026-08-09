@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,12 +16,14 @@
         <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -29,6 +31,7 @@
         <li><a href="database.html" class="active"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -54,14 +57,14 @@
                             <div class="col-md-3"><input class="form-control form-control-sm" id="dbSearch" placeholder="Search name, code..." oninput="filterDB()"></div>
                             <div class="col-md-2"><select class="form-select form-select-sm" id="dbDept" onchange="filterDB()"><option value="">All Departments</option></select></div>
                             <div class="col-md-2"><select class="form-select form-select-sm" id="dbStatus" onchange="filterDB()"><option value="">All Status</option><option>Active</option><option>Inactive</option><option>On Leave</option><option>Probation</option></select></div>
-                            <div class="col-md-2"><select class="form-select form-select-sm" id="dbType" onchange="filterDB()"><option value="">All Types</option><option>White Collar</option><option>Blue Collar</option></select></div>
+                            <div class="col-md-2"><select class="form-select form-select-sm" id="dbType" onchange="filterDB()"><option value="">All Education</option><option>Bachelor</option><option>Master</option><option>PhD</option><option>Diploma</option><option>High School</option></select></div>
                             <div class="col-md-1"><button class="btn btn-sm btn-outline-success w-100" onclick="filterDB()">Filter</button></div>
                             <div class="col-md-2"><button class="btn btn-sm btn-success w-100" onclick="exportDB()"><i class="fa-solid fa-download"></i> Export CSV</button></div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead class="table-success">
-                                    <tr><th>Code</th><th>Name</th><th>Department</th><th>Section</th><th>Job Title</th><th>Location</th><th>Grade</th><th>Type</th><th>Status</th><th>Hire Date</th><th>Actions</th></tr>
+                                    <tr><th>Status</th><th>Code</th><th>Name</th><th>Hiring Date</th><th>Resignation Date</th><th>Position Code</th><th>Position</th><th>Type</th><th>Grade</th><th>Department</th><th>Section</th><th>Unit</th><th>Location</th><th>Email</th><th>Mobile</th><th>Date of Birth</th><th>Gender</th><th>Direct Manager</th><th>Head of Dept</th><th>Education</th><th>Actions</th></tr>
                                 </thead>
                                 <tbody id="dbTable"></tbody>
                             </table>
@@ -86,7 +89,7 @@ async function loadDB() {
     try { const r = await fetch("../data/employees.json"); allEmps = await r.json(); } catch { allEmps = []; }
     const saved = localStorage.getItem("hrms_employees");
     if (saved) allEmps = JSON.parse(saved);
-    allEmps.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
+    allEmps.forEach(e => { if (e.resignationDate && e.resignationDate.trim()) e.status = "Inactive"; });
 
     const depts = [...new Set(allEmps.map(e => e.department))].sort();
     const sel = document.getElementById("dbDept");
@@ -104,7 +107,7 @@ function filterDB() {
     if (search) data = data.filter(e => e.name.toLowerCase().includes(search) || e.code.includes(search) || e.jobTitle.toLowerCase().includes(search));
     if (dept) data = data.filter(e => e.department === dept);
     if (status) data = data.filter(e => e.status === status);
-    if (type) data = data.filter(e => e.employeeType === type);
+    if (type) data = data.filter(e => e.education === type);
 
     document.getElementById("dbCount").textContent = data.length + " employees";
     currentPage = 1;
@@ -118,14 +121,28 @@ function renderDB(data) {
 
     const sColors = {Active:"bg-success",Inactive:"bg-danger","On Leave":"bg-warning text-dark",Probation:"bg-info"};
     document.getElementById("dbTable").innerHTML = page.map(e => `<tr>
-        <td><small>${e.code}</small></td>
-        <td><strong>${e.name}</strong></td><td>${e.department}</td><td>${e.section}</td>
-        <td>${e.jobTitle}</td><td>${e.location}</td><td>${e.grade}</td>
-        <td><small>${e.employeeType}</small></td>
         <td><span class="badge ${sColors[e.status]||'bg-secondary'}">${e.status}</span></td>
-        <td>${e.hireDate}</td>
+        <td><small>${e.code}</small></td>
+        <td><strong>${e.name}</strong></td>
+        <td>${e.hireDate || '-'}</td>
+        <td>${e.resignationDate || '-'}</td>
+        <td><small>${e.positionCode || '-'}</small></td>
+        <td>${e.jobTitle}</td>
+        <td><small>${e.employeeType || '-'}</small></td>
+        <td>${e.grade}</td>
+        <td>${e.department}</td>
+        <td>${e.section || '-'}</td>
+        <td>${e.unit || '-'}</td>
+        <td>${e.location}</td>
+        <td><small>${e.email || '-'}</small></td>
+        <td><small>${e.mobile || '-'}</small></td>
+        <td>${e.dateOfBirth || '-'}</td>
+        <td>${e.gender}</td>
+        <td>${e.directManager || '-'}</td>
+        <td>${e.headOfDepartment || '-'}</td>
+        <td>${e.education || '-'}</td>
         <td><button class="btn btn-sm btn-outline-success" onclick="viewEmp('${e.code}')"><i class="fa-solid fa-eye"></i></button></td>
-    </tr>`).join("") || '<tr><td colspan="11" class="text-center text-muted">No employees found</td></tr>';
+    </tr>`).join("") || '<tr><td colspan="21" class="text-center text-muted">No employees found</td></tr>';
 
     let pagHtml = '';
     for (let i = 1; i <= totalPages; i++) {
@@ -140,14 +157,14 @@ function goPage(p) { currentPage = p; renderDB(window._dbData); }
 function viewEmp(code) {
     const e = allEmps.find(x => x.code === code);
     if (!e) return;
-    alert(`${e.name}\nCode: ${e.code}\nDept: ${e.department}\nTitle: ${e.jobTitle}\nGrade: ${e.grade}\nLocation: ${e.location}\nStatus: ${e.status}\nHire Date: ${e.hireDate}`);
+    alert(`Code: ${e.code}\nName: ${e.name}\nStatus: ${e.status}\nPosition: ${e.jobTitle} (${e.positionCode})\nType: ${e.employeeType}\nGrade: ${e.grade}\nDepartment: ${e.department}\nSection: ${e.section}\nUnit: ${e.unit}\nLocation: ${e.location}\nEmail: ${e.email}\nMobile: ${e.mobile}\nDOB: ${e.dateOfBirth}\nGender: ${e.gender}\nDirect Manager: ${e.directManager}\nHead of Dept: ${e.headOfDepartment}\nEducation: ${e.education}\nHire Date: ${e.hireDate}\nResignation Date: ${e.resignationDate || 'N/A'}\nResignation Reason: ${e.resignationReason || 'N/A'}`);
 }
 
 function exportDB() {
-    const headers = ["Code","Name","Department","Section","Job Title","Manager","Location","Grade","Type","Status","Hire Date","Age","Gender","Performance 2023","Performance 2024","Performance 2025","Exit Date","Exit Reason"];
+    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
     const csv = [headers.join(",")];
     allEmps.forEach(e => {
-        csv.push([e.code,`"${e.name}"`,`"${e.department}"`,`"${e.section}"`,`"${e.jobTitle}"`,`"${e.manager}"`,`"${e.location}"`,e.grade,`"${e.employeeType}"`,`"${e.status}"`,e.hireDate,e.age,e.gender,e.performance2023,e.performance2024,e.performance2025,e.exitDate,`"${e.exitReason||''}"`].join(","));
+        csv.push([`"${e.status}"`,e.code,`"${e.name}"`,e.hireDate,e.resignationDate||'',`"${e.resignationReason||''}"`,`"${e.positionCode||''}"`,`"${e.jobTitle}"`,`"${e.employeeType||''}"`,e.grade,`"${e.department}"`,`"${e.section||''}"`,`"${e.unit||''}"`,`"${e.location}"`,`"${e.email||''}"`,`"${e.mobile||''}"`,e.dateOfBirth,e.gender,`"${e.directManager||''}"`,`"${e.headOfDepartment||''}"`,`"${e.education||''}"`].join(","));
     });
     const blob = new Blob(["\uFEFF"+csv.join("\n")], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -158,3 +175,5 @@ loadDB();
 </script>
 </body>
 </html>
+
+

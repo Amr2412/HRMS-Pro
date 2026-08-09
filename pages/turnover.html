@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Pro - Turnover</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="logo"><i class="fa-solid fa-leaf"></i> HRMS Pro<small>Linah Farms</small></div>
+    <ul>
+        <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
+        <li class="nav-section">Modules</li>
+        <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
+        <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
+        <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
+        <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
+        <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
+        <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
+        <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
+        <li class="nav-section">Requests</li>
+        <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
+        <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
+        <li class="nav-section">System</li>
+        <li><a href="database.html"><i class="fa-solid fa-database"></i>Database</a></li>
+        <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
+        <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
+        <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
+    </ul>
+</aside>
+
+<div class="main-content">
+    <div class="topbar">
+        <h2><i class="fa-solid fa-arrow-trend-down text-success"></i> Turnover Analysis</h2>
+        <div class="topbar-actions"><i class="fa-solid fa-bell"></i><i class="fa-solid fa-user"></i></div>
+    </div>
+
+    <div class="container-fluid p-4">
+
+        <div class="row g-3 mb-4">
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Overall Turnover</h6><h2 id="turnoverOverall" style="color:#dc3545">0%</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Total Exits</h6><h2 id="turnoverExits" style="color:#dc3545">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>New Hires</h6><h2 id="turnoverHires" style="color:#198754">0</h2></div></div></div>
+            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Headcount</h6><h2 id="turnoverHeadcount" style="color:#0d6efd">0</h2></div></div></div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-7">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-chart-column"></i> Monthly Turnover Rate</div>
+                    <div class="card-body bar-chart" id="monthlyTurnoverChart"></div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="card" style="height:100%">
+                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-right-from-bracket"></i> Exit Reasons</div>
+                    <div class="card-body bar-chart" id="reasonChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header bg-danger text-white"><i class="fa-solid fa-arrow-trend-down"></i> Turnover by Department</div>
+            <div class="card-body bar-chart" id="deptTurnoverChart"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+let employees = [];
+
+async function loadTurnover() {
+    try {
+        const saved = localStorage.getItem("hrms_employees");
+        if (saved) {
+            employees = JSON.parse(saved);
+        } else {
+            const r = await fetch("../data/employees.json");
+            employees = await r.json();
+        }
+    } catch { employees = []; }
+
+    employees.forEach(e => { if (e.resignationDate && e.resignationDate.trim()) e.status = "Inactive"; });
+
+    const active = employees.filter(e => e.status === "Active");
+    const exited = employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "");
+
+    // Overall turnover = total exits / headcount
+    const overall = employees.length > 0 ? ((exited.length / employees.length) * 100).toFixed(1) : "0";
+    document.getElementById("turnoverOverall").textContent = overall + "%";
+    document.getElementById("turnoverExits").textContent = exited.length;
+    document.getElementById("turnoverHires").textContent = active.filter(e => e.hireDate && new Date(e.hireDate).getFullYear() === new Date().getFullYear()).length;
+    document.getElementById("turnoverHeadcount").textContent = employees.length;
+
+    // Monthly turnover (last 12 months)
+    const months = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        months.push({ key: d.getFullYear() + "-" + d.getMonth(), label: d.toLocaleString("en", { month: "short" }) });
+    }
+    const monthRates = months.map(m => {
+        const exitsM = exited.filter(e => {
+            const rd = new Date(e.resignationDate);
+            return rd.getFullYear() + "-" + rd.getMonth() === m.key;
+        }).length;
+        const rate = employees.length > 0 ? ((exitsM / employees.length) * 100).toFixed(1) : "0";
+        return { label: m.label, value: parseFloat(rate), exits: exitsM };
+    });
+    const maxRate = Math.max(...monthRates.map(x => x.value), 1);
+    document.getElementById("monthlyTurnoverChart").innerHTML = monthRates.map(x => `
+        <div class="bar-row">
+            <span class="bar-label" style="width:60px">${x.label}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(x.value / maxRate) * 100}%;background:#dc3545" title="${x.exits} exits"></div></div>
+            <span class="bar-value">${x.value}%</span>
+        </div>`).join("");
+
+    // Reasons
+    const reasons = {};
+    exited.forEach(e => {
+        const r = e.resignationReason || "Not Specified";
+        reasons[r] = (reasons[r] || 0) + 1;
+    });
+    const rSorted = Object.entries(reasons).sort((a, b) => b[1] - a[1]);
+    const rMax = Math.max(...rSorted.map(x => x[1]), 1);
+    document.getElementById("reasonChart").innerHTML = rSorted.length === 0
+        ? '<div class="text-center text-muted py-4">No exits recorded</div>'
+        : rSorted.map(([k, v]) => `
+        <div class="bar-row">
+            <span class="bar-label" style="width:150px">${k}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(v / rMax) * 100}%;background:#dc3545"></div></div>
+            <span class="bar-value">${v}</span>
+        </div>`).join("");
+
+    // By department
+    const deptData = {};
+    exited.forEach(e => {
+        const dept = e.department || "N/A";
+        if (!deptData[dept]) deptData[dept] = { exits: 0, total: 0 };
+        deptData[dept].exits++;
+    });
+    active.concat(exited).forEach(e => {
+        const dept = e.department || "N/A";
+        if (!deptData[dept]) deptData[dept] = { exits: 0, total: 0 };
+        deptData[dept].total++;
+    });
+    const deptRates = Object.entries(deptData).map(([dept, d]) => ({
+        dept, rate: d.total > 0 ? parseFloat(((d.exits / d.total) * 100).toFixed(1)) : 0, exits: d.exits
+    })).sort((a, b) => b.rate - a.rate);
+    const dMax = Math.max(...deptRates.map(x => x.rate), 1);
+    document.getElementById("deptTurnoverChart").innerHTML = deptRates.length === 0
+        ? '<div class="text-center text-muted py-4">No data</div>'
+        : deptRates.map(x => `
+        <div class="bar-row">
+            <span class="bar-label">${x.dept}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(x.rate / dMax) * 100}%;background:#dc3545"></div></div>
+            <span class="bar-value">${x.rate}% (${x.exits})</span>
+        </div>`).join("");
+}
+
+loadTurnover();
+</script>
+</body>
+</html>
+
+

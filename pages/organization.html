@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,12 +16,14 @@
         <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="organization.html" class="active"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -29,6 +31,7 @@
         <li><a href="database.html"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -59,7 +62,7 @@
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
-                        <thead class="table-success"><tr><th>Department</th><th>Employees</th><th>Sections</th><th>White</th><th>Blue</th><th>Avg Age</th></tr></thead>
+                        <thead class="table-success"><tr><th>Department</th><th>Employees</th><th>White</th><th>Blue</th><th>Sections</th><th>Avg Age</th></tr></thead>
                         <tbody id="deptTable"></tbody>
                     </table>
                 </div>
@@ -86,7 +89,7 @@ async function loadOrg() {
     try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
     const saved = localStorage.getItem("hrms_employees");
     if (saved) employees = JSON.parse(saved);
-    employees.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
+    employees.forEach(e => { if (e.resignationDate && e.resignationDate.trim()) e.status = "Inactive"; });
 
     const active = employees.filter(e => e.status !== "Inactive");
     document.getElementById("orgTotal").textContent = employees.length;
@@ -165,17 +168,17 @@ function renderOrgChart(active, deptFilter) {
 function renderDeptTable(active) {
     const departments = {};
     active.forEach(e => {
-        if (!departments[e.department]) departments[e.department] = {count:0,sections:new Set(),white:0,blue:0,ages:[]};
+        if (!departments[e.department]) departments[e.department] = {count:0,white:0,blue:0,sections:new Set(),ages:[]};
         departments[e.department].count++;
-        if (e.section) departments[e.department].sections.add(e.section);
         if (e.employeeType === "White Collar") departments[e.department].white++;
         if (e.employeeType === "Blue Collar") departments[e.department].blue++;
+        if (e.section) departments[e.department].sections.add(e.section);
         if (e.age > 0) departments[e.department].ages.push(e.age);
     });
 
     document.getElementById("deptTable").innerHTML = Object.entries(departments).sort((a,b) => b[1].count - a[1].count).map(([dept, d]) => {
         const avgAge = d.ages.length ? Math.round(d.ages.reduce((a,b)=>a+b,0)/d.ages.length) : "-";
-        return `<tr><td><strong>${dept}</strong></td><td>${d.count}</td><td>${d.sections.size}</td><td>${d.white}</td><td>${d.blue}</td><td>${avgAge}</td></tr>`;
+        return `<tr><td><strong>${dept}</strong></td><td>${d.count}</td><td>${d.white}</td><td>${d.blue}</td><td>${d.sections.size}</td><td>${avgAge}</td></tr>`;
     }).join("");
 }
 
@@ -193,3 +196,5 @@ loadOrg();
 </script>
 </body>
 </html>
+
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,12 +16,14 @@
         <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -29,6 +31,7 @@
         <li><a href="database.html"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html" class="active"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -39,7 +42,6 @@
     <div class="container-fluid p-4">
         <div class="row g-3 mb-4">
             <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Headcount</h6><h2 id="aHeadcount">0</h2></div></div></div>
-            <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Average Age</h6><h2 id="aAvgAge">0</h2></div></div></div>
             <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>White Collar</h6><h2 id="aWhite">0</h2></div></div></div>
             <div class="col-md-3"><div class="card kpi"><div class="card-body"><h6>Blue Collar</h6><h2 id="aBlue">0</h2></div></div></div>
         </div>
@@ -70,6 +72,14 @@
             </div>
         </div>
 
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card"><div class="card-header bg-success text-white"><i class="fa-solid fa-graduation-cap"></i> Education Distribution</div>
+                    <div class="card-body bar-chart" id="aEduChart"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="card">
             <div class="card-header bg-success text-white"><i class="fa-solid fa-list"></i> Upcoming Reports</div>
             <div class="card-body">
@@ -81,7 +91,8 @@
                     <li class="list-group-item"><i class="fa-solid fa-right-from-bracket text-danger me-2"></i>Exit Reasons</li>
                     <li class="list-group-item"><i class="fa-solid fa-cake-candles text-info me-2"></i>Retirement Forecast</li>
                     <li class="list-group-item"><i class="fa-solid fa-clock text-success me-2"></i>Average Service Years</li>
-                    <li class="list-group-item"><i class="fa-solid fa-vest text-success me-2"></i>Blue Collar vs White Collar</li>
+                    <li class="list-group-item"><i class="fa-solid fa-graduation-cap text-success me-2"></i>Education Distribution</li>
+                    <li class="list-group-item"><i class="fa-solid fa-hard-hat text-success me-2"></i>Blue Collar vs White Collar</li>
                 </ul>
             </div>
         </div>
@@ -90,18 +101,18 @@
 
 <script>
 let employees = [];
+function calcAge(dob) { if (!dob) return 0; const b = new Date(dob); const t = new Date(); let a = t.getFullYear() - b.getFullYear(); const m = t.getMonth() - b.getMonth(); if (m < 0 || (m === 0 && t.getDate() < b.getDate())) a--; return a; }
 async function loadAnalytics() {
     try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
 
     document.getElementById("aHeadcount").textContent = employees.length;
-    const ages = employees.filter(e => e.age > 0);
-    document.getElementById("aAvgAge").textContent = ages.length ? Math.round(ages.reduce((s,e) => s + e.age, 0) / ages.length) : 0;
     document.getElementById("aWhite").textContent = employees.filter(e => e.employeeType === "White Collar").length;
     document.getElementById("aBlue").textContent = employees.filter(e => e.employeeType === "Blue Collar").length;
 
     renderBar("aGenderChart", employees, "gender");
     renderBar("aStatusChart", employees, "status");
     renderBar("aDeptChart", employees, "department");
+    renderBar("aEduChart", employees, "education");
 
     const perfCounts = {};
     employees.forEach(e => { if (e.performance2025 > 0) { const label = e.performance2025 + "/5"; perfCounts[label] = (perfCounts[label] || 0) + 1; } });
@@ -122,3 +133,5 @@ loadAnalytics();
 </script>
 </body>
 </html>
+
+

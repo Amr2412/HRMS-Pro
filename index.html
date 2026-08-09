@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -36,12 +36,14 @@
         <li><a href="index.html" class="active"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="pages/dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="pages/turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="pages/attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="pages/organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="pages/recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="pages/performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="pages/training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="pages/medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="pages/table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="pages/requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="pages/qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -49,6 +51,7 @@
         <li><a href="pages/database.html"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="pages/handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="pages/analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="pages/hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="pages/settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -67,9 +70,9 @@
 
     <div class="container-fluid p-4">
 
-        <!-- Quick KPIs -->
+        <!-- Module Icons -->
         <div class="row g-3 mb-4">
-            <div class="col-md-2">
+            <div class="col-6 col-md-4 col-xl">
                 <a href="pages/employees.html" class="home-card card p-3">
                     <div class="icon-box" style="background:linear-gradient(135deg,#198754,#146c43)"><i class="fa-solid fa-users"></i></div>
                     <h5>Employees</h5>
@@ -77,15 +80,7 @@
                     <div class="count" id="homeTotalEmp">0</div>
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="pages/attendance.html" class="home-card card p-3">
-                    <div class="icon-box" style="background:linear-gradient(135deg,#0d6efd,#0b5ed7)"><i class="fa-solid fa-calendar-check"></i></div>
-                    <h5>Attendance</h5>
-                    <p>Today's records</p>
-                    <div class="count" id="homeAttCount" style="color:#0d6efd">0</div>
-                </a>
-            </div>
-            <div class="col-md-2">
+            <div class="col-6 col-md-4 col-xl">
                 <a href="pages/requests.html" class="home-card card p-3">
                     <div class="icon-box" style="background:linear-gradient(135deg,#ffc107,#e0a800)"><i class="fa-solid fa-file-lines"></i></div>
                     <h5>Requests</h5>
@@ -93,7 +88,7 @@
                     <div class="count" id="homeReqCount" style="color:#ffc107">0</div>
                 </a>
             </div>
-            <div class="col-md-2">
+            <div class="col-6 col-md-4 col-xl">
                 <a href="pages/medical.html" class="home-card card p-3">
                     <div class="icon-box" style="background:linear-gradient(135deg,#dc3545,#b02a37)"><i class="fa-solid fa-heart-pulse"></i></div>
                     <h5>Medical</h5>
@@ -101,20 +96,52 @@
                     <div class="count" id="homeMedCount" style="color:#dc3545">0</div>
                 </a>
             </div>
-            <div class="col-md-2">
-                <a href="pages/performance.html" class="home-card card p-3">
-                    <div class="icon-box" style="background:linear-gradient(135deg,#6f42c1,#5a32a3)"><i class="fa-solid fa-chart-column"></i></div>
-                    <h5>Performance</h5>
-                    <p>Avg score 2025</p>
-                    <div class="count" id="homePerfAvg" style="color:#6f42c1">-</div>
+            <div class="col-6 col-md-4 col-xl">
+                <a href="pages/table-discussions.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#0dcaf0,#0aa2c0)"><i class="fa-solid fa-comments"></i></div>
+                    <h5>Table Discussions</h5>
+                    <p>Team discussions</p>
+                    <div class="count" id="homeDiscCount" style="color:#0dcaf0">0</div>
                 </a>
             </div>
-            <div class="col-md-2">
+            <div class="col-6 col-md-4 col-xl">
                 <a href="pages/training.html" class="home-card card p-3">
                     <div class="icon-box" style="background:linear-gradient(135deg,#20c997,#12b886)"><i class="fa-solid fa-graduation-cap"></i></div>
                     <h5>Training</h5>
                     <p>Pending approvals</p>
                     <div class="count" id="homeTrainCount" style="color:#20c997">0</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <a href="pages/performance.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#6f42c1,#5a32a3)"><i class="fa-solid fa-chart-column"></i></div>
+                    <h5>PMS</h5>
+                    <p>Performance mgmt</p>
+                    <div class="count" id="homePerfAvg" style="color:#6f42c1">-</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <a href="pages/recruitment.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#fd7e14,#e8590c)"><i class="fa-solid fa-user-plus"></i></div>
+                    <h5>Recruitment</h5>
+                    <p>Hiring pipeline</p>
+                    <div class="count" id="homeRecruitCount" style="color:#fd7e14">0</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <a href="pages/turnover.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#dc3545,#b02a37)"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <h5>Turnover</h5>
+                    <p>Exit analysis</p>
+                    <div class="count" id="homeTurnoverRate" style="color:#dc3545">0%</div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-xl">
+                <a href="pages/hr-activities.html" class="home-card card p-3">
+                    <div class="icon-box" style="background:linear-gradient(135deg,#6c757d,#5c636a)"><i class="fa-solid fa-bolt"></i></div>
+                    <h5>HR Activities</h5>
+                    <p>Activity log</p>
+                    <div class="count" id="homeActCount" style="color:#6c757d">0</div>
                 </a>
             </div>
         </div>
@@ -220,21 +247,28 @@ async function loadHome() {
     const depts = [...new Set(active.map(e => e.department))];
     const locs = [...new Set(active.map(e => e.location))];
     const thisYear = new Date().getFullYear();
-    const exits = employees.filter(e => e.exitDate && new Date(e.exitDate).getFullYear() === thisYear);
+    const exits = employees.filter(e => (e.exitDate || e.resignationDate) && new Date(e.exitDate || e.resignationDate).getFullYear() === thisYear);
     const scores = active.filter(e => e.performance2025 > 0).map(e => e.performance2025);
     const avgScore = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : "-";
 
     const reqs = JSON.parse(localStorage.getItem("hrms_requests") || "[]").filter(r => r.status === "New");
     const meds = JSON.parse(localStorage.getItem("hrms_medical") || "[]").filter(r => r.status === "In Progress");
     const trains = JSON.parse(localStorage.getItem("hrms_training") || "[]").filter(r => r.status === "Pending");
-    const att = JSON.parse(localStorage.getItem("hrms_attendance") || "[]");
+    const recruits = JSON.parse(localStorage.getItem("hrms_recruitment") || "[]").filter(r => r.status === "Active" || r.status === "Open" || r.status === "New");
+    const discussions = JSON.parse(localStorage.getItem("hrms_discussions") || "[]");
+    const activities = JSON.parse(localStorage.getItem("hrms_activities") || "[]");
+    const exited = employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "");
+    const turnoverRate = employees.length > 0 ? ((exited.length / employees.length) * 100).toFixed(1) + "%" : "0%";
 
     document.getElementById("homeTotalEmp").textContent = active.length;
-    document.getElementById("homeAttCount").textContent = att.length;
     document.getElementById("homeReqCount").textContent = reqs.length;
     document.getElementById("homeMedCount").textContent = meds.length;
+    document.getElementById("homeDiscCount").textContent = discussions.length;
     document.getElementById("homePerfAvg").textContent = avgScore;
     document.getElementById("homeTrainCount").textContent = trains.length;
+    document.getElementById("homeRecruitCount").textContent = recruits.length;
+    document.getElementById("homeTurnoverRate").textContent = turnoverRate;
+    document.getElementById("homeActCount").textContent = activities.length;
     document.getElementById("homeNotifCount").textContent = reqs.length + meds.length;
 
     document.getElementById("sumActive").textContent = active.length;
@@ -263,8 +297,10 @@ async function loadHome() {
 
     // Recent Activity
     const activities = [];
+    (JSON.parse(localStorage.getItem("hrms_activities") || "[]")).slice(0, 4).forEach(a => activities.push({ icon: a.icon || "fa-circle-check", color: "#6c757d", text: a.text, time: a.date }));
     reqs.slice(-3).forEach(r => activities.push({ icon: "fa-file-lines", color: "#198754", text: `New request from <strong>${r.name}</strong> - ${r.type}`, time: r.date }));
     meds.slice(-3).forEach(r => activities.push({ icon: "fa-heart-pulse", color: "#dc3545", text: `Medical request from <strong>${r.employee}</strong> - ${r.type}`, time: r.submitDate }));
+    discussions.slice(-3).forEach(d => activities.push({ icon: "fa-comments", color: "#0dcaf0", text: `New discussion <strong>${d.title}</strong> by ${d.author}`, time: d.date }));
     active.slice(-3).forEach(e => activities.push({ icon: "fa-user", color: "#0d6efd", text: `<strong>${e.name}</strong> - ${e.jobTitle}`, time: e.hireDate }));
     activities.sort((a,b) => new Date(b.time) - new Date(a.time));
 
@@ -279,3 +315,5 @@ loadHome();
 </script>
 </body>
 </html>
+
+

@@ -5,6 +5,17 @@ function saveToStorage() {
     localStorage.setItem("hrms_employees", JSON.stringify(employees));
 }
 
+function logActivity(type, text, icon) {
+    const activities = JSON.parse(localStorage.getItem("hrms_activities") || "[]");
+    activities.unshift({
+        type,
+        text,
+        icon: icon || "fa-circle-check",
+        date: new Date().toISOString().slice(0, 16).replace("T", " ")
+    });
+    localStorage.setItem("hrms_activities", JSON.stringify(activities.slice(0, 200)));
+}
+
 function syncStatuses() {
     employees.forEach(emp => {
         if (emp.resignationDate && emp.resignationDate.trim() !== "") {
@@ -185,6 +196,7 @@ function addEmployee() {
     renderEmployees();
     updateDashboard();
     clearForm();
+    logActivity("Employee Added", `Added employee <strong>${name}</strong> (${code})`, "fa-user-plus");
 
     const modal = bootstrap.Modal.getInstance(document.getElementById("addEmployeeModal"));
     if (modal) modal.hide();
@@ -315,17 +327,20 @@ function saveEdit() {
     syncStatuses();
     renderEmployees();
     updateDashboard();
+    logActivity("Employee Updated", `Updated employee <strong>${emp.name}</strong> (${emp.code})`, "fa-user-pen");
 
     const modal = bootstrap.Modal.getInstance(document.getElementById("editEmployeeModal"));
     if (modal) modal.hide();
 }
 
 function deleteEmployee(code) {
+    const emp = employees.find(e => e.code === code);
     if (!confirm("Are you sure you want to delete this employee?")) return;
     employees = employees.filter(e => e.code !== code);
     saveToStorage();
     renderEmployees();
     updateDashboard();
+    if (emp) logActivity("Employee Deleted", `Deleted employee <strong>${emp.name}</strong> (${code})`, "fa-user-xmark");
 }
 
 function exportToCSV() {
@@ -472,6 +487,7 @@ function confirmImport() {
     employees = [...pendingImport];
     saveToStorage();
 
+    logActivity("Excel Import", `Imported <strong>${employees.length}</strong> employees from Excel`, "fa-file-import");
     alert(`Import complete! ${employees.length} employees saved.\nPage will now refresh.`);
     location.reload();
 }

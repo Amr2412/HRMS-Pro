@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,12 +16,14 @@
         <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="dashboard.html" class="active"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="performance.html"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -29,6 +31,7 @@
         <li><a href="database.html"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -78,6 +81,22 @@
                 <div class="card" style="height:100%">
                     <div class="card-header bg-primary text-white"><i class="fa-solid fa-cake-candles"></i> Age Distribution</div>
                     <div class="card-body bar-chart" id="ageChart"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3.5: Turnover Analysis -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-arrow-trend-down"></i> Turnover Rate by Department</div>
+                    <div class="card-body bar-chart" id="turnoverDeptChart"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-danger text-white"><i class="fa-solid fa-right-from-bracket"></i> Turnover Reasons</div>
+                    <div class="card-body bar-chart" id="turnoverReasonsChart"></div>
                 </div>
             </div>
         </div>
@@ -216,10 +235,74 @@ async function loadDashboard() {
     // Movement
     const now = new Date();
     const thisYear = now.getFullYear();
+    const thisMonth = now.getMonth();
     const newHires = employees.filter(e => { const y = new Date(e.hireDate).getFullYear(); return y === thisYear; });
     document.getElementById("newHires").textContent = newHires.length;
     document.getElementById("resignations").textContent = exited.length;
-    document.getElementById("turnoverRate").textContent = employees.length > 0 ? ((exited.length / employees.length) * 100).toFixed(1) + "%" : "0%";
+
+    // Turnover Rate Calculation
+    // Average headcount = (beginning of month + end of month) / 2
+    // For current month: beginning = total - exits this month, end = active
+    const exitsThisMonth = exited.filter(e => {
+        const rd = new Date(e.resignationDate);
+        return rd.getFullYear() === thisYear && rd.getMonth() === thisMonth;
+    });
+    const beginOfMonth = employees.length;
+    const endOfMonth = active.length;
+    const avgHeadcount = (beginOfMonth + endOfMonth) / 2;
+    const turnoverRate = avgHeadcount > 0 ? ((exitsThisMonth.length / avgHeadcount) * 100).toFixed(1) : "0";
+    document.getElementById("turnoverRate").textContent = turnoverRate + "%";
+
+    // Turnover by Department
+    const turnoverByDept = {};
+    exited.forEach(e => {
+        const dept = e.department || "N/A";
+        if (!turnoverByDept[dept]) turnoverByDept[dept] = { exits: 0, total: 0 };
+        turnoverByDept[dept].exits++;
+    });
+    active.forEach(e => {
+        const dept = e.department || "N/A";
+        if (!turnoverByDept[dept]) turnoverByDept[dept] = { exits: 0, total: 0 };
+        turnoverByDept[dept].total++;
+    });
+    // Also count inactive per dept
+    inactive.forEach(e => {
+        const dept = e.department || "N/A";
+        if (!turnoverByDept[dept]) turnoverByDept[dept] = { exits: 0, total: 0 };
+        turnoverByDept[dept].total++;
+    });
+    const turnoverDeptData = {};
+    Object.entries(turnoverByDept).forEach(([dept, data]) => {
+        const rate = data.total > 0 ? ((data.exits / data.total) * 100).toFixed(1) : "0";
+        turnoverDeptData[dept] = parseFloat(rate);
+    });
+    const tSorted = Object.entries(turnoverDeptData).sort((a,b) => b[1]-a[1]);
+    const tMax = Math.max(...tSorted.map(x=>x[1]), 1);
+    document.getElementById("turnoverDeptChart").innerHTML = tSorted.length === 0
+        ? '<div class="text-center text-muted py-4">No data</div>'
+        : tSorted.map(([k,v]) => `
+        <div class="bar-row">
+            <span class="bar-label">${k}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(v/tMax)*100}%;background:#dc3545"></div></div>
+            <span class="bar-value">${v}%</span>
+        </div>`).join("");
+
+    // Turnover Reasons (from exitReason field - not in new schema, use status-based)
+    const reasons = {};
+    exited.forEach(e => {
+        const reason = e.exitReason || e.resignationReason || "Not Specified";
+        reasons[reason] = (reasons[reason] || 0) + 1;
+    });
+    const rSorted = Object.entries(reasons).sort((a,b) => b[1]-a[1]);
+    const rMax = Math.max(...rSorted.map(x=>x[1]), 1);
+    document.getElementById("turnoverReasonsChart").innerHTML = rSorted.length === 0
+        ? '<div class="text-center text-muted py-4">No exits recorded</div>'
+        : rSorted.map(([k,v]) => `
+        <div class="bar-row">
+            <span class="bar-label" style="width:140px">${k}</span>
+            <div class="bar-track"><div class="bar-fill" style="width:${(v/rMax)*100}%;background:#dc3545"></div></div>
+            <span class="bar-value">${v}</span>
+        </div>`).join("");
 
     // Charts
     renderBar("deptChart", active, "department");
@@ -292,3 +375,5 @@ loadDashboard();
 </script>
 </body>
 </html>
+
+

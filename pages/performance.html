@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -33,12 +33,14 @@
         <li><a href="../index.html"><i class="fa-solid fa-house"></i>Home</a></li>
         <li class="nav-section">Modules</li>
         <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i>Dashboard</a></li>
+        <li><a href="turnover.html"><i class="fa-solid fa-arrow-trend-down"></i>Turnover</a></li>
         <li><a href="attendance.html"><i class="fa-solid fa-calendar-days"></i>Attendance</a></li>
         <li><a href="organization.html"><i class="fa-solid fa-building"></i>Organization</a></li>
         <li><a href="recruitment.html"><i class="fa-solid fa-user-plus"></i>Recruitment</a></li>
         <li><a href="performance.html" class="active"><i class="fa-solid fa-chart-column"></i>Performance</a></li>
         <li><a href="training.html"><i class="fa-solid fa-graduation-cap"></i>Training</a></li>
         <li><a href="medical.html"><i class="fa-solid fa-heart-pulse"></i>Medical</a></li>
+        <li><a href="table-discussions.html"><i class="fa-solid fa-comments"></i>Discussions</a></li>
         <li class="nav-section">Requests</li>
         <li><a href="requests.html"><i class="fa-solid fa-file-lines"></i>HR Requests</a></li>
         <li><a href="qr-links.html"><i class="fa-solid fa-qrcode"></i>QR & Links</a></li>
@@ -46,6 +48,7 @@
         <li><a href="database.html"><i class="fa-solid fa-database"></i>Database</a></li>
         <li><a href="handbook.html"><i class="fa-solid fa-book"></i>Handbook</a></li>
         <li><a href="analytics.html"><i class="fa-solid fa-chart-pie"></i>Analytics</a></li>
+        <li><a href="hr-activities.html"><i class="fa-solid fa-bolt"></i>HR Activities</a></li>
         <li><a href="settings.html"><i class="fa-solid fa-gear"></i>Settings</a></li>
     </ul>
 </aside>
@@ -204,7 +207,7 @@ async function loadPerf() {
     try { const r = await fetch("../data/employees.json"); employees = await r.json(); } catch { employees = []; }
     const saved = localStorage.getItem("hrms_employees");
     if (saved) employees = JSON.parse(saved);
-    employees.forEach(e => { if (e.exitDate && e.exitDate.trim()) e.status = "Inactive"; });
+    employees.forEach(e => { if (e.resignationDate && e.resignationDate.trim()) e.status = "Inactive"; });
 
     const objSaved = localStorage.getItem("hrms_objectives");
     objectives = objSaved ? JSON.parse(objSaved) : [];
@@ -443,3 +446,5 @@ loadPerf();
 </script>
 </body>
 </html>
+
+
