@@ -1,4 +1,5 @@
 // HRMS Pro - app.js
+console.log("app.js v2.1 - whitelist import loaded");
 let employees = [];
 
 function saveToStorage() {
@@ -34,10 +35,36 @@ function calcAge(dob) {
     return age;
 }
 
+function normalizeLocations(list) {
+    const map = {
+        "wahat": "Wahat Bahreya", "bahreya": "Wahat Bahreya", "واحات": "Wahat Bahreya", "بحرية": "Wahat Bahreya", "واحة": "Wahat Bahreya",
+        "minya": "Minya", "منيا": "Minya", "المنيا": "Minya",
+        "khtara": "Khtara", "خطار": "Khtara", "الخطارة": "Khtara", "خطارة": "Khtara",
+        "orabi": "Orabi", "عراب": "Orabi", "عرابي": "Orabi", "عربى": "Orabi",
+        "dokki": "H.O Dokki", "دقي": "H.O Dokki", "الدقي": "H.O Dokki", "dokky": "H.O Dokki",
+        "sadat": "Sadat", "السادات": "Sadat",
+        "october": "October", "اكتوبر": "October", "أكتوبر": "October",
+        "helio": "Helioplies", "هليوبوليس": "Helioplies", "هليوبلس": "Helioplies",
+        "shooting": "Shooting Club",
+        "dokki store": "Dokki Store"
+    };
+    return list.map(e => {
+        const l = (e.location || "").trim();
+        if (!l) return e;
+        const lower = l.toLowerCase();
+        for (const [key, val] of Object.entries(map)) {
+            if (lower.includes(key)) { e.location = val; break; }
+        }
+        return e;
+    });
+}
+
 async function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
+        employees = normalizeLocations(employees);
+        saveToStorage();
     } else {
         try {
             const response = await fetch("../data/employees.json");
@@ -317,11 +344,19 @@ function applyFilters() {
     let filtered = employees;
     if (dept) filtered = filtered.filter(e => e.department === dept);
     if (loc) {
-        if (loc === "Khtara & Orabi") {
-            filtered = filtered.filter(e => e.location === "Khtara" || e.location === "Orabi");
-        } else {
-            filtered = filtered.filter(e => e.location === loc);
-        }
+        filtered = filtered.filter(e => {
+            const el = (e.location || "").toLowerCase();
+            if (loc === "Khtara & Orabi") {
+                return el.includes("khtara") || el.includes("orabi") || el.includes("خطار") || el.includes("عراب");
+            }
+            if (loc === "Wahat Bahreya") {
+                return el.includes("wahat") || el.includes("bahreya") || el.includes("الواحات") || el.includes("بحرية") || el.includes("واحات");
+            }
+            if (loc === "Minya") {
+                return el.includes("minya") || el.includes("منيا") || el.includes("المنيا");
+            }
+            return el === loc.toLowerCase();
+        });
     }
     const keyword = document.getElementById("searchEmployee")?.value.toLowerCase() || "";
     if (keyword) {
@@ -584,7 +619,23 @@ const columnMap = {
     "status": "status", "الحالة": "status", "status ": "status",
     "hiredate": "hireDate", "hire date": "hireDate", "start date": "hireDate", "تاريخ التعيين": "hireDate", "hiring date": "hireDate", "hire date ": "hireDate", "hiring date ": "hireDate",
     "resignation date": "resignationDate", "resignationdate": "resignationDate", "تاريخ المغادرة": "resignationDate", "تاريخ الاستقالة": "resignationDate", "resignation date ": "resignationDate",
-    "resignation reason": "resignationReason", "resignationreason": "resignationReason", "سبب الاستقالة": "resignationReason", "سبب المغادرة": "resignationReason", "resignation reason ": "resignationReason"
+    "resignation reason": "resignationReason", "resignationreason": "resignationReason", "سبب الاستقالة": "resignationReason", "سبب المغادرة": "resignationReason", "resignation reason ": "resignationReason",
+    "sr.": "sr", "sr": "sr", "#": "sr", "no": "sr", "no.": "sr", "الرقم": "sr", "م": "sr",
+    "satus": "status", "statuse": "status", "employee status": "status",
+    "arabic name": "nameAr", "arabic name ": "nameAr", "name arabic": "nameAr", "الاسم العربي": "nameAr",
+    "company": "company", "الشركة": "company",
+    "old position": "oldPosition", "oldposition": "oldPosition",
+    "cat": "cat", "category": "cat", "تصنيف": "cat", "فئة": "cat",
+    "position e": "jobTitle", "position english": "jobTitle", "positionen": "jobTitle", "position e ": "jobTitle",
+    "position a": "jobTitleAr", "position arabic": "jobTitleAr", "positionar": "jobTitleAr", "position a ": "jobTitleAr",
+    "sector e": "sector", "sector english": "sector", "sectore": "sector", "sector e ": "sector",
+    "sector a": "sectorAr", "sector arabic": "sectorAr", "sectorar": "sectorAr", "sector a ": "sectorAr",
+    "department e": "department", "department english": "department", "departmenten": "department", "department e ": "department",
+    "department a": "departmentAr", "department arabic": "departmentAr", "departmentar": "departmentAr", "department a ": "departmentAr",
+    "section e": "section", "section english": "section", "sectionen": "section", "section e ": "section",
+    "section a": "sectionAr", "section arabic": "sectionAr", "sectionar": "sectionAr", "section a ": "sectionAr",
+    "location e": "location", "location english": "location", "locationen": "location", "location e ": "location",
+    "location a": "locationAr", "location arabic": "locationAr", "locationar": "locationAr", "location a ": "locationAr"
 };
 
 const defaultValues = {
@@ -620,15 +671,12 @@ function handleExcelFile(event) {
             }
 
             const headers = jsonData[0];
-            alert("Found " + (jsonData.length - 1) + " data rows.\n\nExcel Headers:\n" + headers.map((h,i) => (i+1) + ". " + h).join("\n"));
+            console.log("Excel Headers:", headers);
 
             const mappedHeaders = headers.map(h => {
                 const key = String(h).trim().toLowerCase().replace(/[\s_]+/g, " ");
                 return columnMap[key] || key;
             });
-
-            // Debug: show mapped headers
-            console.log("Excel Headers:", headers);
             console.log("Mapped Headers:", mappedHeaders);
 
             pendingImport = [];
@@ -636,12 +684,49 @@ function handleExcelFile(event) {
                 const row = jsonData[i];
                 if (!row || row.length === 0) continue;
 
-                const emp = { ...defaultValues };
+                const raw = {};
                 mappedHeaders.forEach((field, idx) => {
                     if (row[idx] !== undefined && row[idx] !== null && String(row[idx]).trim() !== "") {
-                        emp[field] = String(row[idx]).trim();
+                        raw[field] = String(row[idx]).trim();
                     }
                 });
+
+                const emp = { ...defaultValues };
+
+                // Whitelist: copy only known fields (drops attendance columns like 6/21, governorate, etc.)
+                Object.keys(defaultValues).forEach(k => {
+                    if (raw[k] !== undefined) emp[k] = raw[k];
+                });
+
+                // Arabic fallbacks if English column is empty
+                if (!emp.name && raw.nameAr) emp.name = raw.nameAr;
+                if (!emp.department && raw.departmentAr) emp.department = raw.departmentAr;
+                if (!emp.section && raw.sectionAr) emp.section = raw.sectionAr;
+                if (!emp.jobTitle && raw.jobTitleAr) emp.jobTitle = raw.jobTitleAr;
+                if (!emp.location && raw.locationAr) emp.location = raw.locationAr;
+
+                // Convert Excel serial dates (e.g. 41604) and text dates ("Monday, March 6, 1995") to yyyy-mm-dd
+                ["hireDate", "dateOfBirth", "resignationDate"].forEach(f => {
+                    if (emp[f]) {
+                        const num = Number(emp[f]);
+                        if (!isNaN(num) && num > 20000 && num < 60000) {
+                            const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+                            emp[f] = d.toISOString().slice(0, 10);
+                        } else if (/[a-zA-Z]/.test(emp[f])) {
+                            const d = new Date(emp[f]);
+                            if (!isNaN(d.getTime())) {
+                                emp[f] = d.toISOString().slice(0, 10);
+                            }
+                        }
+                    }
+                });
+
+                // Convert cat W/B to White/Blue Collar
+                if (raw.cat) {
+                    const c = raw.cat.toLowerCase();
+                    if (c === "w") emp.employeeType = "White Collar";
+                    else if (c === "b") emp.employeeType = "Blue Collar";
+                }
 
                 emp.code = String(emp.code).trim();
                 emp.name = String(emp.name).trim();
@@ -651,6 +736,16 @@ function handleExcelFile(event) {
                 if (emp.location) {
                     const match = validLocations.find(l => l.toLowerCase() === String(emp.location).toLowerCase().trim());
                     if (match) emp.location = match;
+                    else {
+                        const l = String(emp.location).toLowerCase();
+                        if (l.includes("wahat") || l.includes("bahreya") || l.includes("واحات") || l.includes("بحرية")) emp.location = "Wahat Bahreya";
+                        else if (l.includes("minya") || l.includes("منيا") || l.includes("المنيا")) emp.location = "Minya";
+                        else if (l.includes("khtara") || l.includes("خطار")) emp.location = "Khtara";
+                        else if (l.includes("orabi") || l.includes("عراب")) emp.location = "Orabi";
+                        else if (l.includes("dokki") || l.includes("دقي") || l.includes("الدقي")) emp.location = "H.O Dokki";
+                        else if (l.includes("sadat") || l.includes("السادات")) emp.location = "Sadat";
+                        else if (l.includes("october") || l.includes("اكتوبر") || l.includes("أكتوبر")) emp.location = "October";
+                    }
                 }
 
                 emp.age = calcAge(emp.dateOfBirth);
