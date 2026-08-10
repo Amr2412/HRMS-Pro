@@ -59,7 +59,7 @@ function normalizeLocations(list) {
     });
 }
 
-async function fillDepartmentFilter() {
+function fillDepartmentFilter() {
     const dept = document.getElementById("departmentFilter");
     if (!dept) return;
     const current = dept.value;
@@ -76,7 +76,7 @@ function fillDepartmentSelects() {
     });
 }
 
-function loadEmployees() {
+async function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
