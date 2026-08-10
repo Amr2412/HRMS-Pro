@@ -76,7 +76,28 @@ function fillDepartmentSelects() {
     });
 }
 
-async function loadEmployees() {
+async function toggleChartArrow() {
+    const arrow = document.querySelector(".collapse-arrow");
+    if (!arrow) return;
+    const collapsed = !document.getElementById("deptChartBody")?.classList.contains("show");
+    arrow.className = "fa-solid fa-chevron-" + (collapsed ? "down" : "up") + " collapse-arrow";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const deptHeader = document.querySelector('[data-bs-target="#deptChartBody"]');
+    if (deptHeader) {
+        document.getElementById("deptChartBody")?.addEventListener("hide.bs.collapse", () => {
+            const a = deptHeader.querySelector(".collapse-arrow");
+            if (a) a.className = "fa-solid fa-chevron-down collapse-arrow";
+        });
+        document.getElementById("deptChartBody")?.addEventListener("show.bs.collapse", () => {
+            const a = deptHeader.querySelector(".collapse-arrow");
+            if (a) a.className = "fa-solid fa-chevron-up collapse-arrow";
+        });
+    }
+});
+
+function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
@@ -141,7 +162,7 @@ function renderCharts(list) {
     const data = list || employees;
 
     // Department
-    renderBarChart("chartDept", countBy(data, e => e.department), "#198754");
+    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754");
 
     // Job Title
     renderBarChart("chartJob", countBy(data, e => e.jobTitle), "#0d6efd");

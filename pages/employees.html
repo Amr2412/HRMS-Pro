@@ -106,8 +106,11 @@
         <div class="row g-4 mb-4">
             <div class="col-md-6">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-building"></i> Employees by Department</div>
-                    <div class="card-body bar-chart" id="chartDept"></div>
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#deptChartBody" aria-expanded="true">
+                        <span><i class="fa-solid fa-building"></i> Employees by Department</span>
+                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
+                    </div>
+                    <div class="card-body bar-chart collapse show" id="deptChartBody"></div>
                 </div>
             </div>
             <div class="col-md-6">
