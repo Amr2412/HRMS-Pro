@@ -115,26 +115,38 @@
             </div>
             <div class="col-md-6">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-briefcase"></i> Employees by Job Title</div>
-                    <div class="card-body bar-chart" id="chartJob"></div>
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#jobChartBody" aria-expanded="true">
+                        <span><i class="fa-solid fa-briefcase"></i> Employees by Job Title</span>
+                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
+                    </div>
+                    <div class="card-body bar-chart collapse show" id="jobChartBody"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-arrow-trend-up"></i> Years of Service</div>
-                    <div class="card-body bar-chart" id="chartTenure"></div>
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#tenureChartBody" aria-expanded="true">
+                        <span><i class="fa-solid fa-arrow-trend-up"></i> Years of Service</span>
+                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
+                    </div>
+                    <div class="card-body bar-chart collapse show" id="tenureChartBody"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-cake-candles"></i> Age Distribution</div>
-                    <div class="card-body bar-chart" id="chartAge"></div>
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#ageChartBody" aria-expanded="true">
+                        <span><i class="fa-solid fa-cake-candles"></i> Age Distribution</span>
+                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
+                    </div>
+                    <div class="card-body bar-chart collapse show" id="ageChartBody"></div>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white"><i class="fa-solid fa-users"></i> Employee Type & Grade</div>
-                    <div class="card-body bar-chart" id="chartGrade"></div>
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#gradeChartBody" aria-expanded="true">
+                        <span><i class="fa-solid fa-users"></i> Employee Type & Grade</span>
+                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
+                    </div>
+                    <div class="card-body bar-chart collapse show" id="gradeChartBody"></div>
                 </div>
             </div>
         </div>

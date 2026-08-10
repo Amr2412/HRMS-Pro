@@ -77,24 +77,28 @@ function fillDepartmentSelects() {
 }
 
 async function toggleChartArrow() {
-    const arrow = document.querySelector(".collapse-arrow");
-    if (!arrow) return;
-    const collapsed = !document.getElementById("deptChartBody")?.classList.contains("show");
-    arrow.className = "fa-solid fa-chevron-" + (collapsed ? "down" : "up") + " collapse-arrow";
+    document.querySelectorAll(".collapse-arrow").forEach(arrow => {
+        const target = document.getElementById(arrow.closest("[data-bs-toggle='collapse']")?.getAttribute("data-bs-target")?.replace("#", ""));
+        if (target) {
+            arrow.className = "fa-solid fa-chevron-" + (target.classList.contains("show") ? "up" : "down") + " collapse-arrow";
+        }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const deptHeader = document.querySelector('[data-bs-target="#deptChartBody"]');
-    if (deptHeader) {
-        document.getElementById("deptChartBody")?.addEventListener("hide.bs.collapse", () => {
-            const a = deptHeader.querySelector(".collapse-arrow");
+    document.querySelectorAll("[data-bs-target]").forEach(header => {
+        const targetId = header.getAttribute("data-bs-target").replace("#", "");
+        const target = document.getElementById(targetId);
+        if (!target || !header.querySelector(".collapse-arrow")) return;
+        target.addEventListener("hide.bs.collapse", () => {
+            const a = header.querySelector(".collapse-arrow");
             if (a) a.className = "fa-solid fa-chevron-down collapse-arrow";
         });
-        document.getElementById("deptChartBody")?.addEventListener("show.bs.collapse", () => {
-            const a = deptHeader.querySelector(".collapse-arrow");
+        target.addEventListener("show.bs.collapse", () => {
+            const a = header.querySelector(".collapse-arrow");
             if (a) a.className = "fa-solid fa-chevron-up collapse-arrow";
         });
-    }
+    });
 });
 
 function loadEmployees() {
@@ -165,7 +169,7 @@ function renderCharts(list) {
     renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754");
 
     // Job Title
-    renderBarChart("chartJob", countBy(data, e => e.jobTitle), "#0d6efd");
+    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd");
 
     // Location
     renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14");
@@ -194,7 +198,7 @@ function renderCharts(list) {
         else if (y < 21) tenureBuckets["16-20 years"]++;
         else tenureBuckets["> 20 years"]++;
     });
-    renderBarChart("chartTenure", tenureBuckets, "#6f42c1");
+    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1");
 
     // Age distribution
     const ageBuckets = {
@@ -215,7 +219,7 @@ function renderCharts(list) {
         else if (a < 61) ageBuckets["56-60"]++;
         else ageBuckets["> 60"]++;
     });
-    renderBarChart("chartAge", ageBuckets, "#dc3545");
+    renderBarChart("ageChartBody", ageBuckets, "#dc3545");
 
     // Type & Grade
     const typeGrade = {};
@@ -223,7 +227,7 @@ function renderCharts(list) {
         const k = `${e.employeeType || "N/A"} - ${e.grade || "N/A"}`;
         typeGrade[k] = (typeGrade[k] || 0) + 1;
     });
-    renderBarChart("chartGrade", typeGrade, "#20c997");
+    renderBarChart("gradeChartBody", typeGrade, "#20c997");
 
     renderBreakdown(data);
 }
