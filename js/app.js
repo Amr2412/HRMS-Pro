@@ -162,7 +162,7 @@ function renderBarChart(elId, dataObj, color) {
 }
 
 function renderCharts(list) {
-    if (!document.getElementById("chartDept")) return;
+    if (!document.getElementById("deptChartBody")) return;
     const data = list || employees;
 
     // Department
