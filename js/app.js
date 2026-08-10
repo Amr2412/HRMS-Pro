@@ -68,6 +68,14 @@ async function fillDepartmentFilter() {
     dept.value = current;
 }
 
+function fillDepartmentSelects() {
+    const names = [...new Set(employees.map(e => (e.department || "").trim()).filter(Boolean))].sort();
+    ["empDepartment", "editEmpDepartment"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = '<option value="">Select</option>' + names.map(n => `<option>${n}</option>`).join("");
+    });
+}
+
 function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
@@ -90,6 +98,7 @@ function loadEmployees() {
     }
     syncStatuses();
     fillDepartmentFilter();
+    fillDepartmentSelects();
     updateDashboard();
     renderEmployees();
     renderCharts();
@@ -790,6 +799,7 @@ function confirmImport() {
     employees = [...pendingImport];
     saveToStorage();
     fillDepartmentFilter();
+    fillDepartmentSelects();
 
     logActivity("Excel Import", `Imported <strong>${employees.length}</strong> employees from Excel`, "fa-file-import");
     alert(`Import complete! ${employees.length} employees saved.\nPage will now refresh.`);
