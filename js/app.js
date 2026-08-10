@@ -211,8 +211,8 @@ function renderBreakdown(list) {
         el.innerHTML = `<div class="row g-3">
             <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
             <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
-            <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0)}</div><div class="job-mini">Khtara: ${countBy["Khtara"] || 0} + Orabi: ${countBy["Orabi"] || 0}</div></div></div>
-            <div class="col"><div class="breakdown-box"><h6>Other Locations</h6><div class="num" style="color:#6c757d">${Object.entries(countBy).filter(([k]) => !["Wahat Bahreya", "Minya", "Khtara", "Orabi"].includes(k)).reduce((a, [, v]) => a + v, 0)}</div><div class="job-mini">H.O Dokki, Sadat, October, ...</div></div></div>
+            <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div></div></div>
+            <div class="col"><div class="breakdown-box"><h6>Other Locations</h6><div class="num" style="color:#6c757d">${Object.entries(countBy).filter(([k]) => !["Wahat Bahreya", "Minya", "Khtara", "Orabi", "Khtara & Orabi"].includes(k)).reduce((a, [, v]) => a + v, 0)}</div><div class="job-mini">H.O Dokki, Sadat, October, ...</div></div></div>
         </div>`;
     } else {
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
