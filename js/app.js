@@ -1,4 +1,4 @@
-// HRMS Pro - app.js
+﻿// HRMS Pro - app.js
 console.log("app.js v2.1 - whitelist import loaded");
 let employees = [];
 
@@ -37,14 +37,14 @@ function calcAge(dob) {
 
 function normalizeLocations(list) {
     const map = {
-        "wahat": "Wahat Bahreya", "bahreya": "Wahat Bahreya", "واحات": "Wahat Bahreya", "بحرية": "Wahat Bahreya", "واحة": "Wahat Bahreya",
-        "minya": "Minya", "منيا": "Minya", "المنيا": "Minya",
-        "khtara": "Khtara", "خطار": "Khtara", "الخطارة": "Khtara", "خطارة": "Khtara",
-        "orabi": "Orabi", "عراب": "Orabi", "عرابي": "Orabi", "عربى": "Orabi",
-        "dokki": "H.O Dokki", "دقي": "H.O Dokki", "الدقي": "H.O Dokki", "dokky": "H.O Dokki",
-        "sadat": "Sadat", "السادات": "Sadat",
-        "october": "October", "اكتوبر": "October", "أكتوبر": "October",
-        "helio": "Helioplies", "هليوبوليس": "Helioplies", "هليوبلس": "Helioplies",
+        "wahat": "Wahat Bahreya", "bahreya": "Wahat Bahreya", "ÙˆØ§Ø­Ø§Øª": "Wahat Bahreya", "Ø¨Ø­Ø±ÙŠØ©": "Wahat Bahreya", "ÙˆØ§Ø­Ø©": "Wahat Bahreya",
+        "minya": "Minya", "Ù…Ù†ÙŠØ§": "Minya", "Ø§Ù„Ù…Ù†ÙŠØ§": "Minya",
+        "khtara": "Khtara", "Ø®Ø·Ø§Ø±": "Khtara", "Ø§Ù„Ø®Ø·Ø§Ø±Ø©": "Khtara", "Ø®Ø·Ø§Ø±Ø©": "Khtara",
+        "orabi": "Orabi", "Ø¹Ø±Ø§Ø¨": "Orabi", "Ø¹Ø±Ø§Ø¨ÙŠ": "Orabi", "Ø¹Ø±Ø¨Ù‰": "Orabi",
+        "dokki": "H.O Dokki", "Ø¯Ù‚ÙŠ": "H.O Dokki", "Ø§Ù„Ø¯Ù‚ÙŠ": "H.O Dokki", "dokky": "H.O Dokki",
+        "sadat": "Sadat", "Ø§Ù„Ø³Ø§Ø¯Ø§Øª": "Sadat",
+        "october": "October", "Ø§ÙƒØªÙˆØ¨Ø±": "October", "Ø£ÙƒØªÙˆØ¨Ø±": "October",
+        "helio": "Helioplies", "Ù‡Ù„ÙŠÙˆØ¨ÙˆÙ„ÙŠØ³": "Helioplies", "Ù‡Ù„ÙŠÙˆØ¨Ù„Ø³": "Helioplies",
         "shooting": "Shooting Club",
         "dokki store": "Dokki Store"
     };
@@ -101,7 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-function loadEmployees() {
+async function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
@@ -390,13 +390,13 @@ function applyFilters() {
         filtered = filtered.filter(e => {
             const el = (e.location || "").toLowerCase();
             if (loc === "Khtara & Orabi") {
-                return el.includes("khtara") || el.includes("orabi") || el.includes("خطار") || el.includes("عراب");
+                return el.includes("khtara") || el.includes("orabi") || el.includes("Ø®Ø·Ø§Ø±") || el.includes("Ø¹Ø±Ø§Ø¨");
             }
             if (loc === "Wahat Bahreya") {
-                return el.includes("wahat") || el.includes("bahreya") || el.includes("الواحات") || el.includes("بحرية") || el.includes("واحات");
+                return el.includes("wahat") || el.includes("bahreya") || el.includes("Ø§Ù„ÙˆØ§Ø­Ø§Øª") || el.includes("Ø¨Ø­Ø±ÙŠØ©") || el.includes("ÙˆØ§Ø­Ø§Øª");
             }
             if (loc === "Minya") {
-                return el.includes("minya") || el.includes("منيا") || el.includes("المنيا");
+                return el.includes("minya") || el.includes("Ù…Ù†ÙŠØ§") || el.includes("Ø§Ù„Ù…Ù†ÙŠØ§");
             }
             return el === loc.toLowerCase();
         });
@@ -642,33 +642,33 @@ function exportToCSV() {
 let pendingImport = [];
 
 const columnMap = {
-    "code": "code", "employee code": "code", "emp code": "code", "empcode": "code", "id": "code", "رقم": "code", "كود": "code", "employee code ": "code",
-    "name": "name", "employee name": "name", "emp name": "name", "full name": "name", "الاسم": "name", "اسم": "name", "emp name ": "name",
-    "department": "department", "dept": "department", "القسم": "department", "الادارة": "department", "department ": "department",
-    "section": "section", "الشعبة": "section", "section ": "section",
-    "position code": "positionCode", "positioncode": "positionCode", "كود المنصب": "positionCode",
-    "jobtitle": "jobTitle", "job title": "jobTitle", "position": "jobTitle", "title": "jobTitle", "المنصب": "jobTitle", "المسمى": "jobTitle", "job title ": "jobTitle",
-    "type": "employeeType", "employee type": "employeeType", "employeetype": "employeeType", "النوع": "employeeType", "نوع الموظف": "employeeType", "employee type ": "employeeType",
-    "grade": "grade", "level": "grade", "المستوى": "grade", "الدرجة": "grade", "grade ": "grade",
-    "unit": "unit", "الوحدة": "unit", "unit ": "unit",
-    "location": "location", "office": "location", "branch": "location", "الموقع": "location", "الفرع": "location", "location ": "location",
-    "email": "email", "البريد": "email", "ايميل": "email", "email ": "email",
-    "mobile": "mobile", "phone": "mobile", "الموبايل": "mobile", "التليفون": "mobile", "جوال": "mobile", "mobile ": "mobile",
-    "date of birth": "dateOfBirth", "dateofbirth": "dateOfBirth", "dob": "dateOfBirth", "تاريخ الميلاد": "dateOfBirth", "birth date": "dateOfBirth",
-    "gender": "gender", "sex": "gender", "الجنس": "gender", "gender ": "gender",
-    "direct manager": "directManager", "directmanager": "directManager", "manager": "directManager", "supervisor": "directManager", "المدير المباشر": "directManager", "direct manager ": "directManager",
-    "head of department": "headOfDepartment", "headofdepartment": "headOfDepartment", "head dept": "headOfDepartment", "مدير القسم": "headOfDepartment", "head of department ": "headOfDepartment",
-    "education": "education", "المؤهل": "education", "المؤهل": "education", "education ": "education",
-    "status": "status", "الحالة": "status", "status ": "status",
-    "hiredate": "hireDate", "hire date": "hireDate", "start date": "hireDate", "تاريخ التعيين": "hireDate", "hiring date": "hireDate", "hire date ": "hireDate", "hiring date ": "hireDate",
-    "resignation date": "resignationDate", "resignationdate": "resignationDate", "تاريخ المغادرة": "resignationDate", "تاريخ الاستقالة": "resignationDate", "resignation date ": "resignationDate",
-    "resignation reason": "resignationReason", "resignationreason": "resignationReason", "سبب الاستقالة": "resignationReason", "سبب المغادرة": "resignationReason", "resignation reason ": "resignationReason",
-    "sr.": "sr", "sr": "sr", "#": "sr", "no": "sr", "no.": "sr", "الرقم": "sr", "م": "sr",
+    "code": "code", "employee code": "code", "emp code": "code", "empcode": "code", "id": "code", "Ø±Ù‚Ù…": "code", "ÙƒÙˆØ¯": "code", "employee code ": "code",
+    "name": "name", "employee name": "name", "emp name": "name", "full name": "name", "Ø§Ù„Ø§Ø³Ù…": "name", "Ø§Ø³Ù…": "name", "emp name ": "name",
+    "department": "department", "dept": "department", "Ø§Ù„Ù‚Ø³Ù…": "department", "Ø§Ù„Ø§Ø¯Ø§Ø±Ø©": "department", "department ": "department",
+    "section": "section", "Ø§Ù„Ø´Ø¹Ø¨Ø©": "section", "section ": "section",
+    "position code": "positionCode", "positioncode": "positionCode", "ÙƒÙˆØ¯ Ø§Ù„Ù…Ù†ØµØ¨": "positionCode",
+    "jobtitle": "jobTitle", "job title": "jobTitle", "position": "jobTitle", "title": "jobTitle", "Ø§Ù„Ù…Ù†ØµØ¨": "jobTitle", "Ø§Ù„Ù…Ø³Ù…Ù‰": "jobTitle", "job title ": "jobTitle",
+    "type": "employeeType", "employee type": "employeeType", "employeetype": "employeeType", "Ø§Ù„Ù†ÙˆØ¹": "employeeType", "Ù†ÙˆØ¹ Ø§Ù„Ù…ÙˆØ¸Ù": "employeeType", "employee type ": "employeeType",
+    "grade": "grade", "level": "grade", "Ø§Ù„Ù…Ø³ØªÙˆÙ‰": "grade", "Ø§Ù„Ø¯Ø±Ø¬Ø©": "grade", "grade ": "grade",
+    "unit": "unit", "Ø§Ù„ÙˆØ­Ø¯Ø©": "unit", "unit ": "unit",
+    "location": "location", "office": "location", "branch": "location", "Ø§Ù„Ù…ÙˆÙ‚Ø¹": "location", "Ø§Ù„ÙØ±Ø¹": "location", "location ": "location",
+    "email": "email", "Ø§Ù„Ø¨Ø±ÙŠØ¯": "email", "Ø§ÙŠÙ…ÙŠÙ„": "email", "email ": "email",
+    "mobile": "mobile", "phone": "mobile", "Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„": "mobile", "Ø§Ù„ØªÙ„ÙŠÙÙˆÙ†": "mobile", "Ø¬ÙˆØ§Ù„": "mobile", "mobile ": "mobile",
+    "date of birth": "dateOfBirth", "dateofbirth": "dateOfBirth", "dob": "dateOfBirth", "ØªØ§Ø±ÙŠØ® Ø§Ù„Ù…ÙŠÙ„Ø§Ø¯": "dateOfBirth", "birth date": "dateOfBirth",
+    "gender": "gender", "sex": "gender", "Ø§Ù„Ø¬Ù†Ø³": "gender", "gender ": "gender",
+    "direct manager": "directManager", "directmanager": "directManager", "manager": "directManager", "supervisor": "directManager", "Ø§Ù„Ù…Ø¯ÙŠØ± Ø§Ù„Ù…Ø¨Ø§Ø´Ø±": "directManager", "direct manager ": "directManager",
+    "head of department": "headOfDepartment", "headofdepartment": "headOfDepartment", "head dept": "headOfDepartment", "Ù…Ø¯ÙŠØ± Ø§Ù„Ù‚Ø³Ù…": "headOfDepartment", "head of department ": "headOfDepartment",
+    "education": "education", "Ø§Ù„Ù…Ø¤Ù‡Ù„": "education", "Ø§Ù„Ù…Ø¤Ù‡Ù„": "education", "education ": "education",
+    "status": "status", "Ø§Ù„Ø­Ø§Ù„Ø©": "status", "status ": "status",
+    "hiredate": "hireDate", "hire date": "hireDate", "start date": "hireDate", "ØªØ§Ø±ÙŠØ® Ø§Ù„ØªØ¹ÙŠÙŠÙ†": "hireDate", "hiring date": "hireDate", "hire date ": "hireDate", "hiring date ": "hireDate",
+    "resignation date": "resignationDate", "resignationdate": "resignationDate", "ØªØ§Ø±ÙŠØ® Ø§Ù„Ù…ØºØ§Ø¯Ø±Ø©": "resignationDate", "ØªØ§Ø±ÙŠØ® Ø§Ù„Ø§Ø³ØªÙ‚Ø§Ù„Ø©": "resignationDate", "resignation date ": "resignationDate",
+    "resignation reason": "resignationReason", "resignationreason": "resignationReason", "Ø³Ø¨Ø¨ Ø§Ù„Ø§Ø³ØªÙ‚Ø§Ù„Ø©": "resignationReason", "Ø³Ø¨Ø¨ Ø§Ù„Ù…ØºØ§Ø¯Ø±Ø©": "resignationReason", "resignation reason ": "resignationReason",
+    "sr.": "sr", "sr": "sr", "#": "sr", "no": "sr", "no.": "sr", "Ø§Ù„Ø±Ù‚Ù…": "sr", "Ù…": "sr",
     "satus": "status", "statuse": "status", "employee status": "status",
-    "arabic name": "nameAr", "arabic name ": "nameAr", "name arabic": "nameAr", "الاسم العربي": "nameAr",
-    "company": "company", "الشركة": "company",
+    "arabic name": "nameAr", "arabic name ": "nameAr", "name arabic": "nameAr", "Ø§Ù„Ø§Ø³Ù… Ø§Ù„Ø¹Ø±Ø¨ÙŠ": "nameAr",
+    "company": "company", "Ø§Ù„Ø´Ø±ÙƒØ©": "company",
     "old position": "oldPosition", "oldposition": "oldPosition",
-    "cat": "cat", "category": "cat", "تصنيف": "cat", "فئة": "cat",
+    "cat": "cat", "category": "cat", "ØªØµÙ†ÙŠÙ": "cat", "ÙØ¦Ø©": "cat",
     "position e": "jobTitle", "position english": "jobTitle", "positionen": "jobTitle", "position e ": "jobTitle",
     "position a": "jobTitleAr", "position arabic": "jobTitleAr", "positionar": "jobTitleAr", "position a ": "jobTitleAr",
     "sector e": "sector", "sector english": "sector", "sectore": "sector", "sector e ": "sector",
@@ -781,13 +781,13 @@ function handleExcelFile(event) {
                     if (match) emp.location = match;
                     else {
                         const l = String(emp.location).toLowerCase();
-                        if (l.includes("wahat") || l.includes("bahreya") || l.includes("واحات") || l.includes("بحرية")) emp.location = "Wahat Bahreya";
-                        else if (l.includes("minya") || l.includes("منيا") || l.includes("المنيا")) emp.location = "Minya";
-                        else if (l.includes("khtara") || l.includes("خطار")) emp.location = "Khtara";
-                        else if (l.includes("orabi") || l.includes("عراب")) emp.location = "Orabi";
-                        else if (l.includes("dokki") || l.includes("دقي") || l.includes("الدقي")) emp.location = "H.O Dokki";
-                        else if (l.includes("sadat") || l.includes("السادات")) emp.location = "Sadat";
-                        else if (l.includes("october") || l.includes("اكتوبر") || l.includes("أكتوبر")) emp.location = "October";
+                        if (l.includes("wahat") || l.includes("bahreya") || l.includes("ÙˆØ§Ø­Ø§Øª") || l.includes("Ø¨Ø­Ø±ÙŠØ©")) emp.location = "Wahat Bahreya";
+                        else if (l.includes("minya") || l.includes("Ù…Ù†ÙŠØ§") || l.includes("Ø§Ù„Ù…Ù†ÙŠØ§")) emp.location = "Minya";
+                        else if (l.includes("khtara") || l.includes("Ø®Ø·Ø§Ø±")) emp.location = "Khtara";
+                        else if (l.includes("orabi") || l.includes("Ø¹Ø±Ø§Ø¨")) emp.location = "Orabi";
+                        else if (l.includes("dokki") || l.includes("Ø¯Ù‚ÙŠ") || l.includes("Ø§Ù„Ø¯Ù‚ÙŠ")) emp.location = "H.O Dokki";
+                        else if (l.includes("sadat") || l.includes("Ø§Ù„Ø³Ø§Ø¯Ø§Øª")) emp.location = "Sadat";
+                        else if (l.includes("october") || l.includes("Ø§ÙƒØªÙˆØ¨Ø±") || l.includes("Ø£ÙƒØªÙˆØ¨Ø±")) emp.location = "October";
                     }
                 }
 
@@ -853,3 +853,4 @@ document.addEventListener("DOMContentLoaded", () => {
     const excelInput = document.getElementById("excelFile");
     if (excelInput) excelInput.addEventListener("change", handleExcelFile);
 });
+
