@@ -59,7 +59,16 @@ function normalizeLocations(list) {
     });
 }
 
-async function loadEmployees() {
+async function fillDepartmentFilter() {
+    const dept = document.getElementById("departmentFilter");
+    if (!dept) return;
+    const current = dept.value;
+    const names = [...new Set(employees.map(e => (e.department || "").trim()).filter(Boolean))].sort();
+    dept.innerHTML = '<option value="">All Departments</option>' + names.map(n => `<option>${n}</option>`).join("");
+    dept.value = current;
+}
+
+function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
@@ -80,6 +89,7 @@ async function loadEmployees() {
         saveToStorage();
     }
     syncStatuses();
+    fillDepartmentFilter();
     updateDashboard();
     renderEmployees();
     renderCharts();
@@ -779,6 +789,7 @@ function confirmImport() {
 
     employees = [...pendingImport];
     saveToStorage();
+    fillDepartmentFilter();
 
     logActivity("Excel Import", `Imported <strong>${employees.length}</strong> employees from Excel`, "fa-file-import");
     alert(`Import complete! ${employees.length} employees saved.\nPage will now refresh.`);
