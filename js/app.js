@@ -272,11 +272,29 @@ function renderBreakdown(list) {
         const loc = e.location || "N/A";
         countBy[loc] = (countBy[loc] || 0) + 1;
     });
+    const total = data.length || 1;
+    const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
+    const gov = {};
+    data.forEach(e => {
+        const g = e.governorate || "N/A";
+        gov[g] = (gov[g] || 0) + 1;
+    });
+    const govEntries = Object.entries(gov).sort((a, b) => b[1] - a[1]);
     el.innerHTML = `<div class="row g-3">
-        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div></div></div>
-    </div>`;
+        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#198754">${pctOf(countBy["Wahat Bahreya"] || 0)}</span> Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#0d6efd">${pctOf(countBy["Minya"] || 0)}</span> Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini"><span class="bar-pct" style="background:#fd7e14">${pctOf((countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0))}</span> Employee(s)</div></div></div>
+    </div>
+    ${govEntries.length ? `<div class="row g-3 mt-1">
+        ${govEntries.map(([g, v]) => `
+        <div class="col-6 col-md-3 col-xl">
+            <div class="breakdown-box">
+                <h6>${g}</h6>
+                <div class="num" style="color:#0dcaf0">${v}</div>
+                <div class="job-mini"><span class="bar-pct" style="background:#0dcaf0">${pctOf(v)}</span> Employee(s)</div>
+            </div>
+        </div>`).join("")}
+    </div>` : ""}`;
 }
 
 function resetData() {
@@ -609,11 +627,11 @@ function deleteEmployee(code) {
 
 function exportToCSV() {
     if (!employees.length) { alert("No data to export"); return; }
-    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
+    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Governorate","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
     const rows = employees.map(e => [
         e.status, e.code, e.name, e.hireDate, e.resignationDate, e.resignationReason || "",
         e.positionCode, e.jobTitle, e.employeeType, e.grade, e.department, e.section,
-        e.unit, e.location, e.email, e.mobile, e.dateOfBirth,
+        e.unit, e.location, e.governorate, e.email, e.mobile, e.dateOfBirth,
         e.gender, e.directManager, e.headOfDepartment, e.education
     ]);
     let csv = headers.join(",") + "\n";
@@ -639,6 +657,7 @@ const columnMap = {
     "grade": "grade", "level": "grade", "Ø§Ù„Ù…Ø³ØªÙˆÙ‰": "grade", "Ø§Ù„Ø¯Ø±Ø¬Ø©": "grade", "grade ": "grade",
     "unit": "unit", "Ø§Ù„ÙˆØ­Ø¯Ø©": "unit", "unit ": "unit",
     "location": "location", "office": "location", "branch": "location", "Ø§Ù„Ù…ÙˆÙ‚Ø¹": "location", "Ø§Ù„ÙØ±Ø¹": "location", "location ": "location",
+    "governorate": "governorate", "governrate": "governorate", "Ø§Ù„Ù…Ø­Ø§ÙØ¸Ø©": "governorate", "Ù…Ø­Ø§ÙØ¸Ø©": "governorate", "governorate ": "governorate",
     "email": "email", "Ø§Ù„Ø¨Ø±ÙŠØ¯": "email", "Ø§ÙŠÙ…ÙŠÙ„": "email", "email ": "email",
     "mobile": "mobile", "phone": "mobile", "Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„": "mobile", "Ø§Ù„ØªÙ„ÙŠÙÙˆÙ†": "mobile", "Ø¬ÙˆØ§Ù„": "mobile", "mobile ": "mobile",
     "date of birth": "dateOfBirth", "dateofbirth": "dateOfBirth", "dob": "dateOfBirth", "ØªØ§Ø±ÙŠØ® Ø§Ù„Ù…ÙŠÙ„Ø§Ø¯": "dateOfBirth", "birth date": "dateOfBirth",
@@ -672,7 +691,7 @@ const defaultValues = {
     code: "", name: "", department: "", section: "", positionCode: "", jobTitle: "",
     employeeType: "White Collar", grade: "G5", unit: "", location: "", status: "Active", hireDate: "",
     resignationDate: "", resignationReason: "", email: "", mobile: "", dateOfBirth: "", gender: "Male",
-    directManager: "", headOfDepartment: "", education: "Bachelor's"
+    directManager: "", headOfDepartment: "", education: "Bachelor's", governorate: ""
 };
 
 const validLocations = ["H.O Dokki","Wahat Bahreya","Minya","Khtara","Orabi","Sadat","October","Dokki Store","Helioplies","Shooting Club"];
