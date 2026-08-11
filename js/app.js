@@ -129,11 +129,23 @@ async function loadEmployees() {
     renderCharts();
 }
 
+function parseDate(value) {
+    if (!value) return null;
+    const str = String(value).trim();
+    const num = Number(str);
+    if (!isNaN(num) && num > 20000 && num < 60000) {
+        return new Date(Math.round((num - 25569) * 86400 * 1000));
+    }
+    const d = new Date(str);
+    if (isNaN(d.getTime())) return null;
+    return d;
+}
+
 function calcYears(dateStr, from) {
     if (!dateStr) return 0;
-    const d = new Date(dateStr);
-    if (isNaN(d)) return 0;
-    const now = from ? new Date(from) : new Date();
+    const d = parseDate(dateStr);
+    if (!d) return 0;
+    const now = from ? parseDate(from) || new Date() : new Date();
     return Math.floor((now - d) / (1000 * 60 * 60 * 24 * 365.25));
 }
 
@@ -185,8 +197,8 @@ function renderCharts(list) {
         "10-15 years": 0, "15-20 years": 0, "20+ years": 0
     };
     data.forEach(e => {
-        const h = new Date(e.hireDate);
-        if (isNaN(h)) return;
+        const h = parseDate(e.hireDate);
+        if (!h) return;
         const months = (Date.now() - h.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
         if (months < 3) tenureBuckets["Up to 3 months"]++;
         else if (months < 6) tenureBuckets["3-6 months"]++;
