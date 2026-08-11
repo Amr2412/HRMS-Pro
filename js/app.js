@@ -522,7 +522,7 @@ function fieldTypeFor(key) {
 function fieldInputFor(key) {
     const id = "emp_" + key;
     if (key === "status") {
-        return `<select id="${id}" class="form-select"><option>Active</option><option>Probation</option><option>On Leave</option></select>`;
+        return `<select id="${id}" class="form-select"><option>Active</option><option>Probation</option></select>`;
     }
     if (key === "employeeType") {
         return `<select id="${id}" class="form-select"><option>White Collar</option><option>Blue Collar</option></select>`;
@@ -550,7 +550,8 @@ function buildEmpForm() {
     const container = document.getElementById("empFormFields");
     if (!container) return;
     const req = ["code", "name"];
-    container.innerHTML = getTableColumns().map(col => `
+    const exclude = ["grade", "gender"];
+    container.innerHTML = getTableColumns().filter(c => !exclude.includes(c.key)).map(col => `
         <div class="col-md-4"><label class="form-label">${col.label}${req.includes(col.key) ? " *" : ""}</label>${fieldInputFor(col.key)}</div>
     `).join("");
 }
