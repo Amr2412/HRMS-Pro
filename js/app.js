@@ -273,6 +273,7 @@ function renderBreakdown(list) {
     const data = list || employees;
 
     const colors = ["#198754", "#0d6efd", "#fd7e14", "#6f42c1", "#dc3545", "#0dcaf0", "#20c997", "#e83e8c"];
+    const fixed = ["Wahat Bahreya", "Minya", "Khtara & Orabi"];
     const countBy = {};
     data.forEach(e => {
         const loc = e.location;
@@ -283,10 +284,10 @@ function renderBreakdown(list) {
     const total = data.length || 1;
     const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
     const entries = Object.entries(countBy).sort((a, b) => b[1] - a[1]);
-    if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
+    const keys = [...fixed, ...entries.filter(([k]) => !fixed.includes(k)).map(([k]) => k)];
     el.innerHTML = `<div class="row g-3">
-        ${entries.map(([loc, v], i) => `
-        <div class="col"><div class="breakdown-box"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`).join("")}
+        ${keys.map((loc, i) => { const v = countBy[loc] || 0; return `
+        <div class="col"><div class="breakdown-box"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`; }).join("")}
     </div>`;
 }
 
