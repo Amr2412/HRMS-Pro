@@ -199,13 +199,13 @@ function renderCharts(list) {
     const data = list || employees;
 
     // Department
-    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754", true);
+    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754");
 
     // Job Title
-    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd", true);
+    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd");
 
     // Location
-    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14", true);
+    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14");
 
     // Years of Service (tenure)
     const tenureBuckets = {
@@ -229,7 +229,7 @@ function renderCharts(list) {
         else if (months < 240) tenureBuckets["15-20 years"]++;
         else tenureBuckets["20+ years"]++;
     });
-    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true, true);
+    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", false, true);
 
     // Age distribution
     const ageBuckets = {
@@ -250,10 +250,10 @@ function renderCharts(list) {
         else if (a < 60) ageBuckets["56-59"]++;
         else ageBuckets["60+"]++;
     });
-    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true);
+    renderBarChart("ageChartBody", ageBuckets, "#dc3545", false, true);
 
     // Governorate
-    renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0", true);
+    renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0");
 
     renderBreakdown(data);
 }
@@ -275,12 +275,10 @@ function renderBreakdown(list) {
         const loc = e.location || "N/A";
         countBy[loc] = (countBy[loc] || 0) + 1;
     });
-    const total = data.length || 1;
-    const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
     el.innerHTML = `<div class="row g-3">
-        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#198754">${pctOf(countBy["Wahat Bahreya"] || 0)}</span> Employee(s)</div></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#0d6efd">${pctOf(countBy["Minya"] || 0)}</span> Employee(s)</div></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini"><span class="bar-pct" style="background:#fd7e14">${pctOf((countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0))}</span> Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div></div></div>
     </div>`;
 }
 
