@@ -255,6 +255,9 @@ function renderCharts(list) {
     // Governorate
     renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0", true);
 
+    // Transport Allowance by Governorate
+    renderAllowanceChart(data);
+
     renderBreakdown(data);
 }
 
@@ -282,6 +285,43 @@ function renderBreakdown(list) {
         <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:#0d6efd">${pctOf(countBy["Minya"] || 0)}</span></div></div>
         <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:#fd7e14">${pctOf((countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0))}</span></div></div>
     </div>`;
+}
+
+function renderAllowanceChart(list) {
+    const el = document.getElementById("allowanceChartBody");
+    if (!el) return;
+    const data = list || employees;
+    const fmt = n => Math.round(n).toLocaleString("en-US");
+    const byGov = {};
+    data.forEach(e => {
+        const g = e.governorate || "N/A";
+        if (!byGov[g]) byGov[g] = [];
+        byGov[g].push(parseFloat(e.transAllowance) || 0);
+    });
+    const rows = Object.entries(byGov).map(([g, vals]) => ({
+        g, count: vals.length, total: vals.reduce((a, b) => a + b, 0)
+    })).sort((a, b) => b.total - a.total);
+    const grandTotal = rows.reduce((a, r) => a + r.total, 0);
+    if (!rows.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
+    el.innerHTML = `
+        <table class="table table-sm table-bordered align-middle mb-2" style="font-size:13px">
+            <thead class="table-light">
+                <tr><th>Governorate</th><th>Allowance / person</th><th>Employees</th><th class="text-end">Total Allowance</th></tr>
+            </thead>
+            <tbody>
+                ${rows.map(r => `
+                <tr>
+                    <td>${r.g}</td>
+                    <td>${r.count ? fmt(r.total / r.count) : "-"}</td>
+                    <td>${r.count}</td>
+                    <td class="text-end">${fmt(r.total)}</td>
+                </tr>`).join("")}
+            </tbody>
+        </table>
+        <div class="d-flex justify-content-between align-items-center fw-bold" style="border-top:2px solid #dee2e6; padding-top:8px">
+            <span>Grand Total Transport Allowance</span>
+            <span style="color:#0dcaf0">${fmt(grandTotal)} EGP</span>
+        </div>`;
 }
 
 function resetData() {
@@ -614,11 +654,11 @@ function deleteEmployee(code) {
 
 function exportToCSV() {
     if (!employees.length) { alert("No data to export"); return; }
-    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Governorate","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
+    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Governorate","Transport Allowance","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
     const rows = employees.map(e => [
         e.status, e.code, e.name, e.hireDate, e.resignationDate, e.resignationReason || "",
         e.positionCode, e.jobTitle, e.employeeType, e.grade, e.department, e.section,
-        e.unit, e.location, e.governorate, e.email, e.mobile, e.dateOfBirth,
+        e.unit, e.location, e.governorate, e.transAllowance, e.email, e.mobile, e.dateOfBirth,
         e.gender, e.directManager, e.headOfDepartment, e.education
     ]);
     let csv = headers.join(",") + "\n";
@@ -645,6 +685,7 @@ const columnMap = {
     "unit": "unit", "Ø§Ù„ÙˆØ­Ø¯Ø©": "unit", "unit ": "unit",
     "location": "location", "office": "location", "branch": "location", "Ø§Ù„Ù…ÙˆÙ‚Ø¹": "location", "Ø§Ù„ÙØ±Ø¹": "location", "location ": "location",
     "governorate": "governorate", "governrate": "governorate", "Ø§Ù„Ù…Ø­Ø§ÙØ¸Ø©": "governorate", "Ù…Ø­Ø§ÙØ¸Ø©": "governorate", "governorate ": "governorate",
+    "trans allowance": "transAllowance", "trans. allowance": "transAllowance", "transport allowance": "transAllowance", "transportation allowance": "transAllowance", "allowance": "transAllowance", "Ø¨Ø¯Ù„ Ø§Ù†ØªÙ‚Ø§Ù„": "transAllowance", "Ø¨Ø¯Ù„ Ø§Ù„Ù†Ù‚Ù„": "transAllowance", "trans allowance ": "transAllowance",
     "email": "email", "Ø§Ù„Ø¨Ø±ÙŠØ¯": "email", "Ø§ÙŠÙ…ÙŠÙ„": "email", "email ": "email",
     "mobile": "mobile", "phone": "mobile", "Ø§Ù„Ù…ÙˆØ¨Ø§ÙŠÙ„": "mobile", "Ø§Ù„ØªÙ„ÙŠÙÙˆÙ†": "mobile", "Ø¬ÙˆØ§Ù„": "mobile", "mobile ": "mobile",
     "date of birth": "dateOfBirth", "dateofbirth": "dateOfBirth", "dob": "dateOfBirth", "ØªØ§Ø±ÙŠØ® Ø§Ù„Ù…ÙŠÙ„Ø§Ø¯": "dateOfBirth", "birth date": "dateOfBirth",
@@ -678,7 +719,7 @@ const defaultValues = {
     code: "", name: "", department: "", section: "", positionCode: "", jobTitle: "",
     employeeType: "White Collar", grade: "G5", unit: "", location: "", status: "Active", hireDate: "",
     resignationDate: "", resignationReason: "", email: "", mobile: "", dateOfBirth: "", gender: "Male",
-    directManager: "", headOfDepartment: "", education: "Bachelor's", governorate: ""
+    directManager: "", headOfDepartment: "", education: "Bachelor's", governorate: "", transAllowance: ""
 };
 
 const validLocations = ["H.O Dokki","Wahat Bahreya","Minya","Khtara","Orabi","Sadat","October","Dokki Store","Helioplies","Shooting Club"];
