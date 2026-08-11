@@ -752,7 +752,9 @@ function handleExcelFile(event) {
 
             const mappedHeaders = headers.map(h => {
                 const key = String(h).trim().toLowerCase().replace(/[\s_]+/g, " ");
-                return columnMap[key] || key;
+                let mapped = columnMap[key] || key;
+                if (mapped === key && /allow|trans|transport/.test(key)) mapped = "transAllowance";
+                return mapped;
             });
             console.log("Mapped Headers:", mappedHeaders);
 
