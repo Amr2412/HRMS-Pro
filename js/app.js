@@ -252,14 +252,6 @@ function renderCharts(list) {
     });
     renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true);
 
-    // Type & Grade
-    const typeGrade = {};
-    data.forEach(e => {
-        const k = `${e.employeeType || "N/A"} - ${e.grade || "N/A"}`;
-        typeGrade[k] = (typeGrade[k] || 0) + 1;
-    });
-    renderBarChart("gradeChartBody", typeGrade, "#20c997");
-
     renderBreakdown(data);
 }
 
@@ -273,52 +265,18 @@ function getMonthNum(dateStr) {
 function renderBreakdown(list) {
     const el = document.getElementById("breakdownBoxes");
     if (!el) return;
-    const sel = document.getElementById("breakdownSelect");
-    const mode = sel ? sel.value : "location";
     const data = list || employees;
 
-    if (mode === "location") {
-        const countBy = {};
-        data.forEach(e => {
-            const loc = e.location || "N/A";
-            countBy[loc] = (countBy[loc] || 0) + 1;
-        });
-        el.innerHTML = `<div class="row g-3">
-            <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
-            <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
-            <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div></div></div>
-        </div>`;
-    } else {
-        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const useResign = mode === "resignation";
-        const dateField = useResign ? "resignationDate" : "hireDate";
-
-        const byMonth = Array.from({ length: 12 }, () => ({}));
-        data.forEach(e => {
-            const m = getMonthNum(e[dateField]);
-            if (m < 0) return;
-            const job = e.jobTitle || "N/A";
-            byMonth[m][job] = (byMonth[m][job] || 0) + 1;
-        });
-
-        const totals = byMonth.map(x => Object.values(x).reduce((a, b) => a + b, 0));
-        const maxTotal = Math.max(...totals, 1);
-
-        el.innerHTML = `<div class="row g-3">
-            ${months.map((name, i) => `
-            <div class="col-6 col-md-3 col-xl">
-                <div class="breakdown-box">
-                    <h6>${name}</h6>
-                    <div class="num" style="color:${useResign ? "#dc3545" : "#198754"}">${totals[i]}</div>
-                    <div class="job-mini">
-                        ${Object.entries(byMonth[i]).sort((a, b) => b[1] - a[1]).slice(0, 4).map(([j, v]) => `${v} ${j}`).join("<br>") || "-"}
-                        ${Object.keys(byMonth[i]).length > 4 ? `<br>+${Object.keys(byMonth[i]).length - 4} more` : ""}
-                    </div>
-                    <div class="progress mt-2" style="height:4px"><div class="progress-bar" style="width:${(totals[i] / maxTotal) * 100}%;background:${useResign ? "#dc3545" : "#198754"}"></div></div>
-                </div>
-            </div>`).join("")}
-        </div>`;
-    }
+    const countBy = {};
+    data.forEach(e => {
+        const loc = e.location || "N/A";
+        countBy[loc] = (countBy[loc] || 0) + 1;
+    });
+    el.innerHTML = `<div class="row g-3">
+        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div></div></div>
+        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div></div></div>
+    </div>`;
 }
 
 function resetData() {
@@ -340,7 +298,6 @@ function updateDashboard(list) {
     const data = list || employees;
     setValue("totalEmployees", data.length);
     setValue("activeEmployees", data.filter(e => e.status === "Active").length);
-    setValue("inactiveEmployees", data.filter(e => e.status === "Inactive").length);
     setValue("whiteCollar", data.filter(e => e.employeeType === "White Collar").length);
     setValue("blueCollar", data.filter(e => e.employeeType === "Blue Collar").length);
 }

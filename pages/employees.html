@@ -72,7 +72,7 @@
             </div>
             <div class="col-md-2">
                 <select class="form-select" id="locationFilter" onchange="applyFilters()">
-                    <option value="">All Locations</option>
+                    <option value="">Agriculture Sector</option>
                     <option value="Wahat Bahreya">Wahat Bahreya</option>
                     <option value="Minya">Minya</option>
                     <option value="Khtara & Orabi">Khtara & Orabi</option>
@@ -84,7 +84,6 @@
         <div class="row g-3 mb-4">
             <div class="col"><div class="card kpi"><div class="card-body text-center"><h6>Total Headcount</h6><h2 id="totalEmployees">0</h2></div></div></div>
             <div class="col"><div class="card kpi"><div class="card-body text-center"><h6>Active</h6><h2 id="activeEmployees" style="color:#198754">0</h2></div></div></div>
-            <div class="col"><div class="card kpi"><div class="card-body text-center"><h6>Inactive</h6><h2 id="inactiveEmployees" style="color:#dc3545">0</h2></div></div></div>
             <div class="col"><div class="card kpi"><div class="card-body text-center"><h6>Blue Collar</h6><h2 id="blueCollar" style="color:#6f42c1">0</h2></div></div></div>
             <div class="col"><div class="card kpi"><div class="card-body text-center"><h6>White Collar</h6><h2 id="whiteCollar" style="color:#0d6efd">0</h2></div></div></div>
         </div>
@@ -92,12 +91,7 @@
         <!-- Dynamic Selector -->
         <div class="card mb-4">
             <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                <span><i class="fa-solid fa-sliders"></i> Breakdown by</span>
-                <select class="form-select form-select-sm d-inline-block" id="breakdownSelect" style="width:auto" onchange="applyFilters()">
-                    <option value="location">Location</option>
-                    <option value="hiring">Hiring (by month)</option>
-                    <option value="resignation">Resignations (by month)</option>
-                </select>
+                <span><i class="fa-solid fa-sliders"></i> Breakdown by Location</span>
             </div>
             <div class="card-body" id="breakdownBoxes"></div>
         </div>
@@ -138,15 +132,6 @@
                         <i class="fa-solid fa-chevron-up collapse-arrow"></i>
                     </div>
                     <div class="card-body bar-chart collapse show" id="ageChartBody"></div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card" style="height:100%">
-                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center" role="button" data-bs-toggle="collapse" data-bs-target="#gradeChartBody" aria-expanded="true">
-                        <span><i class="fa-solid fa-users"></i> Employee Type & Grade</span>
-                        <i class="fa-solid fa-chevron-up collapse-arrow"></i>
-                    </div>
-                    <div class="card-body bar-chart collapse show" id="gradeChartBody"></div>
                 </div>
             </div>
         </div>
