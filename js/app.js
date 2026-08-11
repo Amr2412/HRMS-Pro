@@ -252,6 +252,9 @@ function renderCharts(list) {
     });
     renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true);
 
+    // Governorate
+    renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0", true);
+
     renderBreakdown(data);
 }
 
@@ -274,27 +277,11 @@ function renderBreakdown(list) {
     });
     const total = data.length || 1;
     const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
-    const gov = {};
-    data.forEach(e => {
-        const g = e.governorate || "N/A";
-        gov[g] = (gov[g] || 0) + 1;
-    });
-    const govEntries = Object.entries(gov).sort((a, b) => b[1] - a[1]);
     el.innerHTML = `<div class="row g-3">
         <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#198754">${pctOf(countBy["Wahat Bahreya"] || 0)}</span> Employee(s)</div></div></div>
         <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini"><span class="bar-pct" style="background:#0d6efd">${pctOf(countBy["Minya"] || 0)}</span> Employee(s)</div></div></div>
         <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini"><span class="bar-pct" style="background:#fd7e14">${pctOf((countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0))}</span> Employee(s)</div></div></div>
-    </div>
-    ${govEntries.length ? `<div class="row g-3 mt-1">
-        ${govEntries.map(([g, v]) => `
-        <div class="col-6 col-md-3 col-xl">
-            <div class="breakdown-box">
-                <h6>${g}</h6>
-                <div class="num" style="color:#0dcaf0">${v}</div>
-                <div class="job-mini"><span class="bar-pct" style="background:#0dcaf0">${pctOf(v)}</span> Employee(s)</div>
-            </div>
-        </div>`).join("")}
-    </div>` : ""}`;
+    </div>`;
 }
 
 function resetData() {
