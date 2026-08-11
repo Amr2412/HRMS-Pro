@@ -189,7 +189,7 @@ function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
             <span class="bar-label">${k}</span>
             <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color || '#198754'}"></div></div>
             <span class="bar-value">${v}</span>
-            ${pct ? `<span class="bar-pct">${pct}</span>` : ""}
+            ${pct ? `<span class="bar-pct" style="background:${color || '#198754'}">${pct}</span>` : ""}
         </div>`;
     }).join("");
 }
