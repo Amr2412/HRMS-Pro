@@ -173,29 +173,7 @@
     <div class="modal-dialog modal-lg"><div class="modal-content">
         <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-user-plus text-success"></i> Add Employee</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
         <div class="modal-body">
-            <div class="row g-3">
-                <div class="col-md-4"><label class="form-label">Status</label><select id="empStatus" class="form-select"><option>Active</option><option>Probation</option><option>On Leave</option></select></div>
-                <div class="col-md-4"><label class="form-label">Code *</label><input type="text" id="empCode" class="form-control" placeholder="e.g. 1021"></div>
-                <div class="col-md-4"><label class="form-label">Name *</label><input type="text" id="empName" class="form-control"></div>
-                <div class="col-md-4"><label class="form-label">Hiring Date</label><input type="date" id="empHireDate" class="form-control"></div>
-                <div class="col-md-4"><label class="form-label">Resignation Date</label><input type="date" id="empResignationDate" class="form-control"></div>
-                <div class="col-md-4"><label class="form-label">Resignation Reason</label><select id="empResignationReason" class="form-select"><option value="">Select</option><option>Better Job Opportunity</option><option>Higher Salary</option><option>Travel Abroad</option><option>Personal Business</option><option>Work Nature Unsuitable</option><option>Poor Performance</option><option>Failed Probation</option><option>High Work Pressure</option><option>No Development Opportunities</option><option>Direct Manager Style</option><option>Long Commute Distance</option><option>Retirement Age</option><option>Other</option></select></div>
-                <div class="col-md-4"><label class="form-label">Position Code</label><input type="text" id="empPositionCode" class="form-control" placeholder="e.g. POS-001"></div>
-                <div class="col-md-4"><label class="form-label">Job Title *</label><input type="text" id="empJob" class="form-control"></div>
-                <div class="col-md-4"><label class="form-label">Type</label><select id="empType" class="form-select"><option>White Collar</option><option>Blue Collar</option></select></div>
-                <div class="col-md-4"><label class="form-label">Grade</label><select id="empGrade" class="form-select"><option value="">Select</option><option>G1</option><option>G2</option><option>G3</option><option>G4</option><option>G5</option><option>G6</option><option>G7</option><option>G8</option><option>G9</option><option>G10</option></select></div>
-                <div class="col-md-4"><label class="form-label">Department *</label><select id="empDepartment" class="form-select"><option value="">Select</option><option>المخازن</option><option>الانشاءات</option><option>الاداره الفنيه</option><option>الزراعه</option><option>الشؤون الاداريه</option><option>البيانات</option><option>البحث والتطوير</option><option>الميكنه الزراعيه</option><option>مراقبه التكاليف</option><option>الامن</option><option>الجوده</option><option>السلامه والصحه المهنيه</option><option>الموارد البشريه</option><option>الحسابات</option><option>المشتريات المخازن</option><option>الهندسيه</option><option>المكافحه</option><option>رى وتسميد</option><option>الفنيه</option><option>المشاتل</option><option>الصيانة</option><option>القطاع الزراعي</option><option>النخيل</option><option>الزيتون</option><option>التشغيل</option></select></div>
-                <div class="col-md-4"><label class="form-label">Section</label><input type="text" id="empSection" class="form-control" placeholder="e.g. Accounting"></div>
-                <div class="col-md-4"><label class="form-label">Unit</label><input type="text" id="empUnit" class="form-control" placeholder="e.g. Finance"></div>
-                <div class="col-md-4"><label class="form-label">Location *</label><select id="empLocation" class="form-select"><option value="">Select</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara & Orabi</option></select></div>
-                <div class="col-md-4"><label class="form-label">Email</label><input type="email" id="empEmail" class="form-control" placeholder="e.g. name@company.com"></div>
-                <div class="col-md-4"><label class="form-label">Mobile</label><input type="text" id="empMobile" class="form-control" placeholder="e.g. 01012345678"></div>
-                <div class="col-md-4"><label class="form-label">Date of Birth</label><input type="date" id="empDob" class="form-control"></div>
-                <div class="col-md-4"><label class="form-label">Gender</label><select id="empGender" class="form-select"><option>Male</option><option>Female</option></select></div>
-                <div class="col-md-4"><label class="form-label">Direct Manager</label><input type="text" id="empDirectManager" class="form-control" placeholder="e.g. Manager Name"></div>
-                <div class="col-md-4"><label class="form-label">Head of Department</label><input type="text" id="empHeadDept" class="form-control" placeholder="e.g. HOD Name"></div>
-                <div class="col-md-4"><label class="form-label">Education</label><select id="empEducation" class="form-select"><option value="">Select</option><option>High School</option><option>Diploma</option><option>Bachelor's</option><option>Master's</option><option>PhD</option></select></div>
-            </div>
+            <div class="row g-3" id="empFormFields"></div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

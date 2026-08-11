@@ -513,48 +513,78 @@ function applyFilters() {
     renderEmployees(filtered);
 }
 
+function fieldTypeFor(key) {
+    if (["hireDate", "resignationDate", "dateOfBirth"].includes(key)) return "date";
+    if (key === "transAllowance") return "number";
+    return "text";
+}
+
+function fieldInputFor(key) {
+    const id = "emp_" + key;
+    if (key === "status") {
+        return `<select id="${id}" class="form-select"><option>Active</option><option>Probation</option><option>On Leave</option></select>`;
+    }
+    if (key === "employeeType") {
+        return `<select id="${id}" class="form-select"><option>White Collar</option><option>Blue Collar</option></select>`;
+    }
+    if (key === "gender") {
+        return `<select id="${id}" class="form-select"><option>Male</option><option>Female</option></select>`;
+    }
+    if (key === "location") {
+        return `<select id="${id}" class="form-select"><option value="">Select</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara & Orabi</option></select>`;
+    }
+    if (key === "resignationReason") {
+        return `<select id="${id}" class="form-select"><option value="">Select</option><option>Better Job Opportunity</option><option>Higher Salary</option><option>Travel Abroad</option><option>Personal Business</option><option>Work Nature Unsuitable</option><option>Poor Performance</option><option>Failed Probation</option><option>High Work Pressure</option><option>No Development Opportunities</option><option>Direct Manager Style</option><option>Long Commute Distance</option><option>Retirement Age</option><option>Other</option></select>`;
+    }
+    if (key === "education") {
+        return `<select id="${id}" class="form-select"><option value="">Select</option><option>High School</option><option>Diploma</option><option>Bachelor's</option><option>Master's</option><option>PhD</option></select>`;
+    }
+    if (key === "grade") {
+        return `<select id="${id}" class="form-select"><option value="">Select</option>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(g => `<option>G${g}</option>`).join("")}</select>`;
+    }
+    const t = fieldTypeFor(key);
+    return `<input type="${t}" id="${id}" class="form-control" ${t === "number" ? 'step="0.01"' : ""}>`;
+}
+
+function buildEmpForm() {
+    const container = document.getElementById("empFormFields");
+    if (!container) return;
+    const req = ["code", "name"];
+    container.innerHTML = getTableColumns().map(col => `
+        <div class="col-md-4"><label class="form-label">${col.label}${req.includes(col.key) ? " *" : ""}</label>${fieldInputFor(col.key)}</div>
+    `).join("");
+}
+
 function addEmployee() {
-    const code = document.getElementById("empCode").value.trim();
-    const name = document.getElementById("empName").value.trim();
-    const department = document.getElementById("empDepartment").value;
-    const section = document.getElementById("empSection").value.trim();
-    const positionCode = document.getElementById("empPositionCode").value.trim();
-    const jobTitle = document.getElementById("empJob").value.trim();
-    const employeeType = document.getElementById("empType").value;
-    const grade = document.getElementById("empGrade").value.trim();
-    const unit = document.getElementById("empUnit").value.trim();
-    const location = document.getElementById("empLocation").value.trim();
-    const email = document.getElementById("empEmail").value.trim();
-    const mobile = document.getElementById("empMobile").value.trim();
-    const dob = document.getElementById("empDob").value;
-    const age = calcAge(dob);
-    const gender = document.getElementById("empGender").value;
-    const directManager = document.getElementById("empDirectManager").value.trim();
-    const headOfDepartment = document.getElementById("empHeadDept").value.trim();
-    const education = document.getElementById("empEducation").value.trim();
-    const resignationDate = document.getElementById("empResignationDate").value || "";
-    const resignationReason = document.getElementById("empResignationReason") ? document.getElementById("empResignationReason").value : "";
+    const cols = getTableColumns();
+    const get = key => {
+        const el = document.getElementById("emp_" + key);
+        return el ? el.value.trim() : "";
+    };
+    const code = get("code");
+    const name = get("name");
+    const department = get("department");
+    const jobTitle = get("jobTitle");
+    const location = get("location");
+    const resignationDate = get("resignationDate");
+    const dob = get("dateOfBirth");
 
     if (!code || !name || !department || !jobTitle || !location) {
         alert("Please fill all required fields");
         return;
     }
-
     if (employees.find(e => e.code === code)) {
         alert("Employee code already exists");
         return;
     }
 
-    const status = document.getElementById("empStatus").value;
-    const finalStatus = resignationDate ? "Inactive" : status;
+    const emp = {};
+    cols.forEach(c => { emp[c.key] = get(c.key); });
+    emp.status = resignationDate ? "Inactive" : (emp.status || "Active");
+    if (!emp.hireDate) emp.hireDate = new Date().toISOString().split("T")[0];
+    if (dob) emp.age = calcAge(dob);
 
-    employees.push({
-        code, name, department, section: section || department, positionCode, jobTitle,
-        employeeType, grade, unit, location, status: finalStatus, hireDate: document.getElementById("empHireDate").value || new Date().toISOString().split("T")[0],
-        resignationDate, resignationReason, email, mobile, dateOfBirth: dob, age, gender,
-        directManager, headOfDepartment, education
-    });
-
+    employees.push(emp);
     saveToStorage();
     renderEmployees();
     updateDashboard();
@@ -567,22 +597,7 @@ function addEmployee() {
 }
 
 function clearForm() {
-    ["empCode", "empName", "empJob", "empLocation", "empSection", "empPositionCode",
-     "empGrade", "empUnit", "empEmail", "empMobile", "empDob", "empDirectManager",
-     "empHeadDept", "empEducation", "empType", "empHireDate", "empResignationDate"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-    });
-    const dept = document.getElementById("empDepartment");
-    if (dept) dept.selectedIndex = 0;
-    const gender = document.getElementById("empGender");
-    if (gender) gender.selectedIndex = 0;
-    const empType = document.getElementById("empType");
-    if (empType) empType.selectedIndex = 0;
-    const status = document.getElementById("empStatus");
-    if (status) status.selectedIndex = 0;
-    const resReason = document.getElementById("empResignationReason");
-    if (resReason) resReason.selectedIndex = 0;
+    document.querySelectorAll("#empFormFields input, #empFormFields select").forEach(el => el.value = "");
 }
 
 function viewEmployee(code) {
@@ -948,5 +963,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const excelInput = document.getElementById("excelFile");
     if (excelInput) excelInput.addEventListener("change", handleExcelFile);
+
+    const addModal = document.getElementById("addEmployeeModal");
+    if (addModal) addModal.addEventListener("show.bs.modal", buildEmpForm);
 });
 
