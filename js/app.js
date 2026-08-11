@@ -195,7 +195,7 @@ function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
 
 function renderCharts(list) {
     if (!document.getElementById("deptChartBody")) return;
-    const data = list || employees;
+    const data = activeEmployees(list);
 
     // Department
     renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754", true);
@@ -278,7 +278,7 @@ function mapToCard(loc) {
 function renderBreakdown(list) {
     const el = document.getElementById("breakdownBoxes");
     if (!el) return;
-    const data = list || employees;
+    const data = activeEmployees(list);
 
     const colors = ["#198754", "#0d6efd", "#fd7e14"];
     const fixed = ["Wahat Bahreya", "Minya", "Khtara & Orabi"];
@@ -298,7 +298,7 @@ function renderBreakdown(list) {
 function renderAllowanceChart(list) {
     const el = document.getElementById("allowanceChartBody");
     if (!el) return;
-    const data = list || employees;
+    const data = activeEmployees(list);
     const fmt = n => Math.round(n).toLocaleString("en-US");
     const byGov = {};
     data.forEach(e => {
@@ -351,10 +351,14 @@ function getStatusBadge(status) {
 }
 
 function updateDashboard(list) {
-    const data = list || employees;
+    const data = activeEmployees(list);
     setValue("totalEmployees", data.length);
     setValue("whiteCollar", data.filter(e => e.employeeType === "White Collar").length);
     setValue("blueCollar", data.filter(e => e.employeeType === "Blue Collar").length);
+}
+
+function activeEmployees(list) {
+    return (list || employees).filter(e => e.status !== "Inactive");
 }
 
 function setValue(id, value) {

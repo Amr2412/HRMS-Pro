@@ -93,7 +93,7 @@ async function loadOrg() {
     employees.forEach(e => { if (e.resignationDate && e.resignationDate.trim()) e.status = "Inactive"; });
 
     const active = employees.filter(e => e.status !== "Inactive");
-    document.getElementById("orgTotal").textContent = employees.length;
+    document.getElementById("orgTotal").textContent = active.length;
 
     const depts = [...new Set(active.map(e => e.department))];
     document.getElementById("orgDepts").textContent = depts.length;

@@ -226,11 +226,11 @@ async function loadDashboard() {
     const exited = employees.filter(e => e.resignationDate && e.resignationDate.trim() !== "");
 
     // Headcount
-    document.getElementById("totalEmployees").textContent = employees.length;
+    document.getElementById("totalEmployees").textContent = employees.filter(e => e.status !== "Inactive").length;
     document.getElementById("activeEmployees").textContent = active.length;
     document.getElementById("inactiveEmployees").textContent = inactive.length;
-    document.getElementById("whiteCollar").textContent = employees.filter(e => e.employeeType === "White Collar").length;
-    document.getElementById("blueCollar").textContent = employees.filter(e => e.employeeType === "Blue Collar").length;
+    document.getElementById("whiteCollar").textContent = employees.filter(e => e.status !== "Inactive" && e.employeeType === "White Collar").length;
+    document.getElementById("blueCollar").textContent = employees.filter(e => e.status !== "Inactive" && e.employeeType === "Blue Collar").length;
     document.getElementById("probationCount").textContent = employees.filter(e => e.status === "Probation").length;
 
     // Movement
