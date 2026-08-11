@@ -697,15 +697,21 @@ function saveEdit() {
     emp.section = document.getElementById("editEmpSection").value.trim() || emp.department;
     emp.hireDate = document.getElementById("editEmpHireDate").value || emp.hireDate;
 
-    if (emp.resignationDate && emp.resignationDate.trim() !== "") {
+    const selectedStatus = document.getElementById("editEmpStatus").value;
+    if (selectedStatus === "Active") {
+        emp.status = "Active";
+        emp.resignationDate = "";
+        emp.resignationReason = "";
+    } else if (selectedStatus === "Inactive") {
         emp.status = "Inactive";
+        if (!emp.resignationDate) {
+            emp.resignationDate = new Date().toISOString().split("T")[0];
+            logActivity("Resignation", `Employee <strong>${emp.name}</strong> (${emp.code}) became Inactive on ${emp.resignationDate}`, "fa-user-minus");
+        }
     } else {
-        emp.status = document.getElementById("editEmpStatus").value;
-    }
-
-    if (emp.status === "Inactive" && !emp.resignationDate) {
-        emp.resignationDate = new Date().toISOString().split("T")[0];
-        logActivity("Resignation", `Employee <strong>${emp.name}</strong> (${emp.code}) became Inactive on ${emp.resignationDate}`, "fa-user-minus");
+        emp.status = selectedStatus;
+        emp.resignationDate = "";
+        emp.resignationReason = "";
     }
 
     saveToStorage();
