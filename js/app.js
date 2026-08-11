@@ -744,6 +744,9 @@ function handleExcelFile(event) {
             const sheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
+            console.log("Sheet Name:", sheetName);
+
+
             if (jsonData.length < 2) {
                 alert("File is empty or has no data rows");
                 return;
