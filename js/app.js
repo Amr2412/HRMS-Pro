@@ -208,13 +208,14 @@ function renderCharts(list) {
 
     // Years of Service (tenure)
     const tenureBuckets = {
-        "< 1 year": 0, "1-3 years": 0, "3-5 years": 0, "5-10 years": 0, "10+ years": 0
+        "< 3 months": 0, "< 1 year": 0, "1-3 years": 0, "3-5 years": 0, "5-10 years": 0, "10+ years": 0
     };
     data.forEach(e => {
         const h = parseDate(e.hireDate);
         if (!h) return;
         const months = (Date.now() - h.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
-        if (months < 12) tenureBuckets["< 1 year"]++;
+        if (months < 3) tenureBuckets["< 3 months"]++;
+        else if (months < 12) tenureBuckets["< 1 year"]++;
         else if (months < 36) tenureBuckets["1-3 years"]++;
         else if (months < 60) tenureBuckets["3-5 years"]++;
         else if (months < 120) tenureBuckets["5-10 years"]++;
