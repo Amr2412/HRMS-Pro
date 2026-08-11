@@ -203,7 +203,7 @@ function renderCharts(list) {
     // Age distribution
     const ageBuckets = {
         "< 22": 0, "22-25": 0, "26-30": 0, "31-35": 0, "36-40": 0, "41-45": 0,
-        "46-50": 0, "51-55": 0, "56-60": 0, "> 60": 0
+        "46-50": 0, "51-55": 0, "56-59": 0, "60+": 0
     };
     data.forEach(e => {
         const a = calcAge(e.dateOfBirth);
@@ -216,8 +216,8 @@ function renderCharts(list) {
         else if (a < 46) ageBuckets["41-45"]++;
         else if (a < 51) ageBuckets["46-50"]++;
         else if (a < 56) ageBuckets["51-55"]++;
-        else if (a < 61) ageBuckets["56-60"]++;
-        else ageBuckets["> 60"]++;
+        else if (a < 60) ageBuckets["56-59"]++;
+        else ageBuckets["60+"]++;
     });
     renderBarChart("ageChartBody", ageBuckets, "#dc3545");
 
