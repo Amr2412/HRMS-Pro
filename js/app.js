@@ -702,6 +702,11 @@ function saveEdit() {
         emp.status = document.getElementById("editEmpStatus").value;
     }
 
+    if (emp.status === "Inactive" && !emp.resignationDate) {
+        emp.resignationDate = new Date().toISOString().split("T")[0];
+        logActivity("Resignation", `Employee <strong>${emp.name}</strong> (${emp.code}) became Inactive on ${emp.resignationDate}`, "fa-user-minus");
+    }
+
     saveToStorage();
     syncStatuses();
     renderEmployees();

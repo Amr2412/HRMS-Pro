@@ -53,6 +53,33 @@
         </div>
 
         <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid fa-user-plus"></i> New hiring</span>
+                        <span class="badge bg-white text-success" id="newHiringTotal">0</span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3" id="newHiringYear">2026</h6>
+                        <div class="bar-chart" id="newHiringChart"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
+                        <span><i class="fa-solid fa-user-minus"></i> Resignation</span>
+                        <span class="badge bg-white text-danger" id="resignationTotal">0</span>
+                    </div>
+                    <div class="card-body">
+                        <h6 class="text-muted mb-3" id="resignationYear">2026</h6>
+                        <div class="bar-chart" id="resignationChart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header bg-success text-white d-flex justify-content-between">
@@ -172,6 +199,42 @@ async function loadRecruit() {
         <div class="bar-row"><span class="bar-label">${k}</span>
         <div class="bar-track"><div class="bar-fill" style="width:${(v/max)*100}%"></div></div>
         <span class="bar-value">${v}</span></div>`).join("") || '<div class="text-center text-muted">No hires this year</div>';
+
+    renderMonthlyBreakdown();
+}
+
+const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+function renderMonthlyBreakdown() {
+    const year = new Date().getFullYear();
+    const hires = new Array(12).fill(0);
+    const resigns = new Array(12).fill(0);
+    employees.forEach(e => {
+        const hd = new Date(e.hireDate);
+        if (!isNaN(hd) && hd.getFullYear() === year) hires[hd.getMonth()]++;
+        if (e.resignationDate) {
+            const rd = new Date(e.resignationDate);
+            if (!isNaN(rd) && rd.getFullYear() === year) resigns[rd.getMonth()]++;
+        }
+    });
+
+    const render = (elId, data, color) => {
+        const el = document.getElementById(elId);
+        const total = data.reduce((a, b) => a + b, 0);
+        const max = Math.max(...data, 1);
+        el.innerHTML = data.map((v, i) => `
+            <div class="bar-row">
+                <span class="bar-label" style="width:95px">${MONTHS[i]}</span>
+                <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color}"></div></div>
+                <span class="bar-value">${v}</span>
+            </div>`).join("");
+        return total;
+    };
+
+    document.getElementById("newHiringYear").textContent = year;
+    document.getElementById("resignationYear").textContent = year;
+    document.getElementById("newHiringTotal").textContent = render("newHiringChart", hires, "#198754");
+    document.getElementById("resignationTotal").textContent = render("resignationChart", resigns, "#dc3545");
 }
 
 function drawHiringCurve(hires, year) {
