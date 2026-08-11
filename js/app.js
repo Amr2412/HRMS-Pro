@@ -147,18 +147,22 @@ function countBy(list, keyFn) {
     return map;
 }
 
-function renderBarChart(elId, dataObj, color) {
+function renderBarChart(elId, dataObj, color, showPct) {
     const el = document.getElementById(elId);
     if (!el) return;
     const entries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
     if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
     const max = Math.max(...entries.map(x => x[1]), 1);
-    el.innerHTML = entries.map(([k, v]) => `
+    const total = entries.reduce((a, [, v]) => a + v, 0);
+    el.innerHTML = entries.map(([k, v]) => {
+        const pct = showPct ? ` <span class="text-muted" style="font-size:11px">${((v / total) * 100).toFixed(1)}%</span>` : "";
+        return `
         <div class="bar-row">
             <span class="bar-label">${k}</span>
             <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color || '#198754'}"></div></div>
-            <span class="bar-value">${v}</span>
-        </div>`).join("");
+            <span class="bar-value">${v}${pct}</span>
+        </div>`;
+    }).join("");
 }
 
 function renderCharts(list) {
@@ -176,29 +180,27 @@ function renderCharts(list) {
 
     // Years of Service (tenure)
     const tenureBuckets = {
-        "< 6 months": 0, "6 months - 1 year": 0, "1 year": 0, "2 years": 0, "3 years": 0,
-        "4 years": 0, "5 years": 0, "6 years": 0, "7 years": 0, "8 years": 0, "9 years": 0,
-        "10 years": 0, "11-15 years": 0, "16-20 years": 0, "> 20 years": 0
+        "Up to 3 months": 0, "3-6 months": 0, "6 months - 1 year": 0, "1-2 years": 0,
+        "2-3 years": 0, "3-4 years": 0, "4-5 years": 0, "5-10 years": 0,
+        "10-15 years": 0, "15-20 years": 0, "20+ years": 0
     };
     data.forEach(e => {
-        const y = calcYears(e.hireDate);
-        if (y < 0.5) tenureBuckets["< 6 months"]++;
-        else if (y < 1) tenureBuckets["6 months - 1 year"]++;
-        else if (y < 2) tenureBuckets["1 year"]++;
-        else if (y < 3) tenureBuckets["2 years"]++;
-        else if (y < 4) tenureBuckets["3 years"]++;
-        else if (y < 5) tenureBuckets["4 years"]++;
-        else if (y < 6) tenureBuckets["5 years"]++;
-        else if (y < 7) tenureBuckets["6 years"]++;
-        else if (y < 8) tenureBuckets["7 years"]++;
-        else if (y < 9) tenureBuckets["8 years"]++;
-        else if (y < 10) tenureBuckets["9 years"]++;
-        else if (y < 11) tenureBuckets["10 years"]++;
-        else if (y < 16) tenureBuckets["11-15 years"]++;
-        else if (y < 21) tenureBuckets["16-20 years"]++;
-        else tenureBuckets["> 20 years"]++;
+        const h = new Date(e.hireDate);
+        if (isNaN(h)) return;
+        const months = (Date.now() - h.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
+        if (months < 3) tenureBuckets["Up to 3 months"]++;
+        else if (months < 6) tenureBuckets["3-6 months"]++;
+        else if (months < 12) tenureBuckets["6 months - 1 year"]++;
+        else if (months < 24) tenureBuckets["1-2 years"]++;
+        else if (months < 36) tenureBuckets["2-3 years"]++;
+        else if (months < 48) tenureBuckets["3-4 years"]++;
+        else if (months < 60) tenureBuckets["4-5 years"]++;
+        else if (months < 120) tenureBuckets["5-10 years"]++;
+        else if (months < 180) tenureBuckets["10-15 years"]++;
+        else if (months < 240) tenureBuckets["15-20 years"]++;
+        else tenureBuckets["20+ years"]++;
     });
-    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1");
+    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true);
 
     // Age distribution
     const ageBuckets = {
@@ -219,7 +221,7 @@ function renderCharts(list) {
         else if (a < 60) ageBuckets["56-59"]++;
         else ageBuckets["60+"]++;
     });
-    renderBarChart("ageChartBody", ageBuckets, "#dc3545");
+    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true);
 
     // Type & Grade
     const typeGrade = {};
