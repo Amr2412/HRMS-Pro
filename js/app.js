@@ -174,20 +174,22 @@ function countBy(list, keyFn) {
     return map;
 }
 
-function renderBarChart(elId, dataObj, color, showPct) {
+function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
     const el = document.getElementById(elId);
     if (!el) return;
-    const entries = Object.entries(dataObj).sort((a, b) => b[1] - a[1]);
+    let entries = Object.entries(dataObj);
+    if (!keepOrder) entries.sort((a, b) => b[1] - a[1]);
     if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
     const max = Math.max(...entries.map(x => x[1]), 1);
     const total = entries.reduce((a, [, v]) => a + v, 0);
     el.innerHTML = entries.map(([k, v]) => {
-        const pct = showPct ? ` <span class="text-muted" style="font-size:11px">${((v / total) * 100).toFixed(1)}%</span>` : "";
+        const pct = showPct ? ((v / total) * 100).toFixed(1) + "%" : "";
         return `
         <div class="bar-row">
             <span class="bar-label">${k}</span>
             <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color || '#198754'}"></div></div>
-            <span class="bar-value">${v}${pct}</span>
+            <span class="bar-value">${v}</span>
+            ${pct ? `<span class="bar-pct">${pct}</span>` : ""}
         </div>`;
     }).join("");
 }
@@ -197,13 +199,13 @@ function renderCharts(list) {
     const data = list || employees;
 
     // Department
-    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754");
+    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754", true);
 
     // Job Title
-    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd");
+    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd", true);
 
     // Location
-    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14");
+    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14", true);
 
     // Years of Service (tenure)
     const tenureBuckets = {
@@ -227,7 +229,7 @@ function renderCharts(list) {
         else if (months < 240) tenureBuckets["15-20 years"]++;
         else tenureBuckets["20+ years"]++;
     });
-    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true);
+    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true, true);
 
     // Age distribution
     const ageBuckets = {
@@ -248,7 +250,7 @@ function renderCharts(list) {
         else if (a < 60) ageBuckets["56-59"]++;
         else ageBuckets["60+"]++;
     });
-    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true);
+    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true);
 
     // Type & Grade
     const typeGrade = {};

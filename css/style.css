@@ -269,6 +269,16 @@ table td {
     text-align: right;
 }
 
+.bar-chart .bar-pct {
+    width: 52px;
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: #6c757d;
+    text-align: left;
+    margin-left: 4px;
+}
+
 /* Scrollbar */
 .sidebar::-webkit-scrollbar { width: 4px; }
 .sidebar::-webkit-scrollbar-track { background: transparent; }
