@@ -272,17 +272,21 @@ function renderBreakdown(list) {
     if (!el) return;
     const data = list || employees;
 
+    const colors = ["#198754", "#0d6efd", "#fd7e14", "#6f42c1", "#dc3545", "#0dcaf0", "#20c997", "#e83e8c"];
     const countBy = {};
     data.forEach(e => {
-        const loc = e.location || "N/A";
-        countBy[loc] = (countBy[loc] || 0) + 1;
+        const loc = e.location;
+        if (!loc) return;
+        const key = ["Khtara", "Orabi"].includes(loc) ? "Khtara & Orabi" : loc;
+        countBy[key] = (countBy[key] || 0) + 1;
     });
     const total = data.length || 1;
     const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
+    const entries = Object.entries(countBy).sort((a, b) => b[1] - a[1]);
+    if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
     el.innerHTML = `<div class="row g-3">
-        <div class="col"><div class="breakdown-box"><h6>Wahat Bahreya</h6><div class="num" style="color:#198754">${countBy["Wahat Bahreya"] || 0}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:#198754">${pctOf(countBy["Wahat Bahreya"] || 0)}</span></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Minya</h6><div class="num" style="color:#0d6efd">${countBy["Minya"] || 0}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:#0d6efd">${pctOf(countBy["Minya"] || 0)}</span></div></div>
-        <div class="col"><div class="breakdown-box"><h6>Khtara & Orabi</h6><div class="num" style="color:#fd7e14">${(countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0)}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:#fd7e14">${pctOf((countBy["Khtara"] || 0) + (countBy["Orabi"] || 0) + (countBy["Khtara & Orabi"] || 0))}</span></div></div>
+        ${entries.map(([loc, v], i) => `
+        <div class="col"><div class="breakdown-box"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`).join("")}
     </div>`;
 }
 
@@ -353,45 +357,91 @@ function setValue(id, value) {
     if (el) el.innerText = value;
 }
 
+function prettyLabel(key) {
+    return key.replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+              .replace(/([A-Z])([A-Z][a-z])/g, "$1 $2")
+              .replace(/[_\s]+/g, " ")
+              .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getTableColumns() {
+    const preferred = [
+        { key: "status", label: "Status" },
+        { key: "code", label: "Code" },
+        { key: "name", label: "Name" },
+        { key: "nameAr", label: "Arabic Name" },
+        { key: "hireDate", label: "Hiring Date" },
+        { key: "resignationDate", label: "Resignation Date" },
+        { key: "resignationReason", label: "Resignation Reason" },
+        { key: "positionCode", label: "Position Code" },
+        { key: "jobTitle", label: "Job Title" },
+        { key: "jobTitleAr", label: "Job Title Arabic" },
+        { key: "employeeType", label: "Type" },
+        { key: "grade", label: "Grade" },
+        { key: "department", label: "Department" },
+        { key: "departmentAr", label: "Department Arabic" },
+        { key: "section", label: "Section" },
+        { key: "sectionAr", label: "Section Arabic" },
+        { key: "unit", label: "Unit" },
+        { key: "location", label: "Location" },
+        { key: "locationAr", label: "Location Arabic" },
+        { key: "governorate", label: "Governorate" },
+        { key: "transAllowance", label: "Trans. Allowance" },
+        { key: "email", label: "Email" },
+        { key: "mobile", label: "Mobile" },
+        { key: "dateOfBirth", label: "Date of Birth" },
+        { key: "gender", label: "Gender" },
+        { key: "directManager", label: "Direct Manager" },
+        { key: "headOfDepartment", label: "Head of Department" },
+        { key: "education", label: "Education" },
+        { key: "sector", label: "Sector" },
+        { key: "sectorAr", label: "Sector Arabic" },
+        { key: "company", label: "Company" },
+        { key: "oldPosition", label: "Old Position" },
+        { key: "cat", label: "Category" }
+    ];
+    const present = new Set();
+    employees.forEach(e => Object.keys(e).forEach(k => present.add(k)));
+    const hasAny = k => employees.some(e => {
+        const v = e[k];
+        return v !== undefined && v !== null && String(v).trim() !== "";
+    });
+    const cols = preferred.filter(c => present.has(c.key) && hasAny(c.key));
+    const extra = [...present].filter(k => !preferred.some(c => c.key === k) && hasAny(k))
+                              .map(k => ({ key: k, label: prettyLabel(k) }));
+    return cols.concat(extra);
+}
+
+function formatCell(key, emp) {
+    const v = emp[key];
+    const s = (v === undefined || v === null) ? "" : String(v);
+    if (!s.trim()) return "-";
+    switch (key) {
+        case "status": return getStatusBadge(emp.status);
+        case "code": return `<strong>${emp.code}</strong>`;
+        case "name": return `<div class="d-flex align-items-center gap-2"><div class="emp-avatar">${getInitials(emp.name)}</div><div class="fw-semibold">${emp.name}</div></div>`;
+        default: return s;
+    }
+}
+
 function renderEmployees(list) {
     const data = list || employees;
     const tbody = document.getElementById("employeesTable");
+    const thead = document.getElementById("employeesHead");
     if (!tbody) return;
 
+    const cols = getTableColumns();
+    if (thead) thead.innerHTML = `<tr>${cols.map(c => `<th>${c.label}</th>`).join("")}<th width="150">Actions</th></tr>`;
+
     if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="22" class="text-center text-muted py-4">
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center text-muted py-4">
             <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>No employees found</td></tr>`;
         return;
     }
 
     tbody.innerHTML = data.map(emp => `
         <tr>
-            <td>${getStatusBadge(emp.status)}</td>
-            <td><strong>${emp.code}</strong></td>
-            <td>
-                <div class="d-flex align-items-center gap-2">
-                    <div class="emp-avatar">${getInitials(emp.name)}</div>
-                    <div class="fw-semibold">${emp.name}</div>
-                </div>
-            </td>
-            <td>${emp.hireDate || "-"}</td>
-            <td>${emp.resignationDate || "-"}</td>
-            <td>${emp.resignationReason || "-"}</td>
-            <td>${emp.positionCode || "-"}</td>
-            <td>${emp.jobTitle}</td>
-            <td>${emp.employeeType}</td>
-            <td>${emp.grade}</td>
-            <td>${emp.department}</td>
-            <td>${emp.section || "-"}</td>
-            <td>${emp.unit || "-"}</td>
-            <td>${emp.location}</td>
-            <td>${emp.email || "-"}</td>
-            <td>${emp.mobile || "-"}</td>
-            <td>${emp.dateOfBirth || "-"}</td>
-            <td>${emp.gender || "-"}</td>
-            <td>${emp.directManager || "-"}</td>
-            <td>${emp.headOfDepartment || "-"}</td>
-            <td>${emp.education || "-"}</td>
+            ${cols.map(c => `<td>${formatCell(c.key, emp)}</td>`).join("")}
             <td>
                 <div class="action-btns">
                     <button class="btn btn-sm btn-outline-primary" onclick="viewEmployee('${emp.code}')" title="View"><i class="fa-solid fa-eye"></i></button>
