@@ -101,10 +101,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
+function migrateDates(list) {
+    ["hireDate", "dateOfBirth", "resignationDate"].forEach(f => {
+        list.forEach(e => {
+            if (!e[f]) return;
+            const num = Number(e[f]);
+            if (!isNaN(num) && num > 20000 && num < 60000) {
+                const d = new Date(Math.round((num - 25569) * 86400 * 1000));
+                e[f] = d.toISOString().slice(0, 10);
+            }
+        });
+    });
+    return list;
+}
+
 async function loadEmployees() {
     const saved = localStorage.getItem("hrms_employees");
     if (saved) {
         employees = JSON.parse(saved);
+        employees = migrateDates(employees);
         employees = normalizeLocations(employees);
         saveToStorage();
     } else {
