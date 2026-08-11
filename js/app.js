@@ -267,26 +267,30 @@ function getMonthNum(dateStr) {
     return d.getMonth();
 }
 
+function mapToCard(loc) {
+    const l = String(loc || "").toLowerCase();
+    if (["khtara", "orabi", "khtara & orabi"].some(k => l.includes(k)) || l.includes("خطار") || l.includes("عراب") || l.includes("عربي")) return "Khtara & Orabi";
+    if (l.includes("wahat") || l.includes("bahreya") || l.includes("واح") || l.includes("بحرية") || l.includes("واحة")) return "Wahat Bahreya";
+    if (l.includes("minya") || l.includes("منيا")) return "Minya";
+    return null;
+}
+
 function renderBreakdown(list) {
     const el = document.getElementById("breakdownBoxes");
     if (!el) return;
     const data = list || employees;
 
-    const colors = ["#198754", "#0d6efd", "#fd7e14", "#6f42c1", "#dc3545", "#0dcaf0", "#20c997", "#e83e8c"];
+    const colors = ["#198754", "#0d6efd", "#fd7e14"];
     const fixed = ["Wahat Bahreya", "Minya", "Khtara & Orabi"];
-    const countBy = {};
+    const countBy = { "Wahat Bahreya": 0, "Minya": 0, "Khtara & Orabi": 0 };
     data.forEach(e => {
-        const loc = e.location;
-        if (!loc) return;
-        const key = ["Khtara", "Orabi"].includes(loc) ? "Khtara & Orabi" : loc;
-        countBy[key] = (countBy[key] || 0) + 1;
+        const card = mapToCard(e.location);
+        if (card) countBy[card]++;
     });
     const total = data.length || 1;
     const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
-    const entries = Object.entries(countBy).sort((a, b) => b[1] - a[1]);
-    const keys = [...fixed, ...entries.filter(([k]) => !fixed.includes(k)).map(([k]) => k)];
     el.innerHTML = `<div class="row g-3">
-        ${keys.map((loc, i) => { const v = countBy[loc] || 0; return `
+        ${fixed.map((loc, i) => { const v = countBy[loc]; return `
         <div class="col"><div class="breakdown-box"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`; }).join("")}
     </div>`;
 }
