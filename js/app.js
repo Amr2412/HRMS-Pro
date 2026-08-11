@@ -295,24 +295,26 @@ function renderAllowanceChart(list) {
     data.forEach(e => {
         const g = e.governorate;
         if (!g) return;
-        if (!byGov[g]) byGov[g] = [];
-        byGov[g].push(parseFloat(e.transAllowance) || 0);
+        if (!byGov[g]) byGov[g] = { count: 0, allowance: 0 };
+        byGov[g].count++;
+        const v = parseFloat(e.transAllowance) || 0;
+        if (v > byGov[g].allowance) byGov[g].allowance = v;
     });
-    const rows = Object.entries(byGov).map(([g, vals]) => ({
-        g, count: vals.length, total: vals.reduce((a, b) => a + b, 0)
+    const rows = Object.entries(byGov).map(([g, o]) => ({
+        g, count: o.count, allowance: o.allowance, total: o.allowance * o.count
     })).sort((a, b) => b.total - a.total);
     const grandTotal = rows.reduce((a, r) => a + r.total, 0);
     if (!rows.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
     el.innerHTML = `
         <table class="table table-sm table-bordered align-middle mb-2" style="font-size:13px">
             <thead class="table-light">
-                <tr><th>Governorate</th><th>Allowance / person</th><th>Employees</th><th class="text-end">Total Allowance</th></tr>
+                <tr><th>Governorate</th><th>Allowance</th><th>Employees</th><th class="text-end">Total Allowance</th></tr>
             </thead>
             <tbody>
                 ${rows.map(r => `
                 <tr>
                     <td>${r.g}</td>
-                    <td>${r.count ? fmt(r.total / r.count) : "-"}</td>
+                    <td>${r.allowance ? fmt(r.allowance) : "-"}</td>
                     <td>${r.count}</td>
                     <td class="text-end">${fmt(r.total)}</td>
                 </tr>`).join("")}
