@@ -168,8 +168,7 @@ function countBy(list, keyFn) {
     const map = {};
     list.forEach(e => {
         const k = keyFn(e);
-        const label = k || "N/A";
-        map[label] = (map[label] || 0) + 1;
+        if (k) map[k] = (map[k] || 0) + 1;
     });
     return map;
 }
@@ -294,7 +293,8 @@ function renderAllowanceChart(list) {
     const fmt = n => Math.round(n).toLocaleString("en-US");
     const byGov = {};
     data.forEach(e => {
-        const g = e.governorate || "N/A";
+        const g = e.governorate;
+        if (!g) return;
         if (!byGov[g]) byGov[g] = [];
         byGov[g].push(parseFloat(e.transAllowance) || 0);
     });
