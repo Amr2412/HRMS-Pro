@@ -37,14 +37,14 @@ function calcAge(dob) {
 
 function normalizeLocations(list) {
     const map = {
-        "wahat": "Wahat Bahreya", "bahreya": "Wahat Bahreya", "ÙˆØ§Ø­Ø§Øª": "Wahat Bahreya", "Ø¨Ø­Ø±ÙŠØ©": "Wahat Bahreya", "ÙˆØ§Ø­Ø©": "Wahat Bahreya",
-        "minya": "Minya", "Ù…Ù†ÙŠØ§": "Minya", "Ø§Ù„Ù…Ù†ÙŠØ§": "Minya",
-        "khtara": "Khtara", "Ø®Ø·Ø§Ø±": "Khtara", "Ø§Ù„Ø®Ø·Ø§Ø±Ø©": "Khtara", "Ø®Ø·Ø§Ø±Ø©": "Khtara",
-        "orabi": "Orabi", "Ø¹Ø±Ø§Ø¨": "Orabi", "Ø¹Ø±Ø§Ø¨ÙŠ": "Orabi", "Ø¹Ø±Ø¨Ù‰": "Orabi",
-        "dokki": "H.O Dokki", "Ø¯Ù‚ÙŠ": "H.O Dokki", "Ø§Ù„Ø¯Ù‚ÙŠ": "H.O Dokki", "dokky": "H.O Dokki",
-        "sadat": "Sadat", "Ø§Ù„Ø³Ø§Ø¯Ø§Øª": "Sadat",
-        "october": "October", "Ø§ÙƒØªÙˆØ¨Ø±": "October", "Ø£ÙƒØªÙˆØ¨Ø±": "October",
-        "helio": "Helioplies", "Ù‡Ù„ÙŠÙˆØ¨ÙˆÙ„ÙŠØ³": "Helioplies", "Ù‡Ù„ÙŠÙˆØ¨Ù„Ø³": "Helioplies",
+        "wahat": "Wahat Bahreya", "bahreya": "Wahat Bahreya", "الواحات": "Wahat Bahreya", "بحرية": "Wahat Bahreya", "واحة": "Wahat Bahreya",
+        "minya": "Minya", "منيا": "Minya", "المنيا": "Minya",
+        "khtara": "Khtara", "خطار": "Khtara", "الخطارة": "Khtara", "خطارة": "Khtara",
+        "orabi": "Orabi", "عراب": "Orabi", "عرابي": "Orabi", "عربي": "Orabi",
+        "dokki": "H.O Dokki", "دقي": "H.O Dokki", "الدقي": "H.O Dokki", "dokky": "H.O Dokki",
+        "sadat": "Sadat", "السادات": "Sadat",
+        "october": "October", "اكتوبر": "October", "أكتوبر": "October",
+        "helio": "Helioplies", "هليوبوليس": "Helioplies", "هليوبلس": "Helioplies",
         "shooting": "Shooting Club",
         "dokki store": "Dokki Store"
     };
@@ -913,7 +913,7 @@ function confirmImport() {
 
     if (!confirm(`This will replace ALL current employees (${employees.length}) with ${pendingImport.length} employees from the Excel file. Continue?`)) return;
 
-    employees = [...pendingImport];
+    employees = normalizeLocations([...pendingImport]);
     saveToStorage();
     fillDepartmentFilter();
     fillDepartmentSelects();
