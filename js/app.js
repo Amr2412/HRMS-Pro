@@ -297,7 +297,6 @@ function getStatusBadge(status) {
 function updateDashboard(list) {
     const data = list || employees;
     setValue("totalEmployees", data.length);
-    setValue("activeEmployees", data.filter(e => e.status === "Active").length);
     setValue("whiteCollar", data.filter(e => e.employeeType === "White Collar").length);
     setValue("blueCollar", data.filter(e => e.employeeType === "Blue Collar").length);
 }
