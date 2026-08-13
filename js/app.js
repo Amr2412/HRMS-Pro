@@ -173,9 +173,47 @@ function countBy(list, keyFn) {
     return map;
 }
 
-function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
+const chartHandlers = {};
+let activeChartFilter = null;
+
+function registerChartHandler(elId, handler) {
+    if (handler) chartHandlers[elId] = handler;
+}
+
+function chartRowClick(elId, key) {
+    const fn = chartHandlers[elId];
+    if (fn) applyChartFilter(fn(key), key);
+}
+
+function updateChartChip() {
+    const chip = document.getElementById("chartFilterChip");
+    if (!chip) return;
+    chip.innerHTML = activeChartFilter
+        ? `<span class="badge bg-primary" style="font-size:13px;padding:7px 10px">Filter: ${activeChartFilter.label} <span onclick="clearChartFilter()" style="cursor:pointer;margin-left:6px;font-weight:bold" title="Clear filter">×</span></span>`
+        : "";
+}
+
+function applyChartFilter(fn, label) {
+    activeChartFilter = { fn, label };
+    updateChartChip();
+    renderEmployees(employees.filter(fn));
+}
+
+function clearChartFilter() {
+    activeChartFilter = null;
+    updateChartChip();
+    renderEmployees(employees);
+}
+
+function resetChartFilter() {
+    activeChartFilter = null;
+    updateChartChip();
+}
+
+function renderBarChart(elId, dataObj, color, showPct, keepOrder, handler) {
     const el = document.getElementById(elId);
     if (!el) return;
+    registerChartHandler(elId, handler);
     let entries = Object.entries(dataObj);
     if (!keepOrder) entries.sort((a, b) => b[1] - a[1]);
     if (!entries.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
@@ -183,8 +221,10 @@ function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
     const total = entries.reduce((a, [, v]) => a + v, 0);
     el.innerHTML = entries.map(([k, v]) => {
         const pct = showPct ? ((v / total) * 100).toFixed(1) + "%" : "";
+        const safeKey = String(k).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+        const clickAttr = handler ? ` onclick="chartRowClick('${elId}','${safeKey}')"` : "";
         return `
-        <div class="bar-row">
+        <div class="bar-row${handler ? " clickable" : ""}"${clickAttr}>
             <span class="bar-label">${k}</span>
             <div class="bar-track"><div class="bar-fill" style="width:${(v / max) * 100}%;background:${color || '#198754'}"></div></div>
             <span class="bar-value">${v}</span>
@@ -193,53 +233,58 @@ function renderBarChart(elId, dataObj, color, showPct, keepOrder) {
     }).join("");
 }
 
+function tenureOf(e) {
+    const h = parseDate(e.hireDate);
+    if (!h) return null;
+    const months = (Date.now() - h.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
+    if (months < 3) return "< 3 months";
+    if (months < 12) return "< 1 year";
+    if (months < 36) return "1-3 years";
+    if (months < 60) return "3-5 years";
+    if (months < 120) return "5-10 years";
+    return "10+ years";
+}
+
+function ageOf(e) {
+    const a = calcAge(e.dateOfBirth);
+    if (!a) return null;
+    if (a >= 20 && a <= 29) return "20-29";
+    if (a >= 30 && a <= 39) return "30-39";
+    if (a >= 40 && a <= 49) return "40-49";
+    if (a >= 50 && a <= 59) return "50-59";
+    if (a >= 60) return "60+";
+    return null;
+}
+
 function renderCharts(list) {
     if (!document.getElementById("deptChartBody")) return;
     const data = activeEmployees(list);
 
     // Department
-    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754", true);
+    renderBarChart("deptChartBody", countBy(data, e => e.department), "#198754", true, false, key => e => e.department === key);
 
     // Job Title
-    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd", true);
+    renderBarChart("jobChartBody", countBy(data, e => e.jobTitle), "#0d6efd", true, false, key => e => e.jobTitle === key);
 
     // Location
-    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14", true);
+    renderBarChart("chartLoc", countBy(data, e => e.location), "#fd7e14", true, false, key => e => e.location === key);
 
     // Years of Service (tenure)
     const tenureBuckets = {
         "< 3 months": 0, "< 1 year": 0, "1-3 years": 0, "3-5 years": 0, "5-10 years": 0, "10+ years": 0
     };
-    data.forEach(e => {
-        const h = parseDate(e.hireDate);
-        if (!h) return;
-        const months = (Date.now() - h.getTime()) / (1000 * 60 * 60 * 24 * 30.44);
-        if (months < 3) tenureBuckets["< 3 months"]++;
-        else if (months < 12) tenureBuckets["< 1 year"]++;
-        else if (months < 36) tenureBuckets["1-3 years"]++;
-        else if (months < 60) tenureBuckets["3-5 years"]++;
-        else if (months < 120) tenureBuckets["5-10 years"]++;
-        else tenureBuckets["10+ years"]++;
-    });
-    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true, true);
+    data.forEach(e => { const t = tenureOf(e); if (t) tenureBuckets[t]++; });
+    renderBarChart("tenureChartBody", tenureBuckets, "#6f42c1", true, true, key => e => tenureOf(e) === key);
 
     // Age distribution
     const ageBuckets = {
         "20-29": 0, "30-39": 0, "40-49": 0, "50-59": 0, "60+": 0
     };
-    data.forEach(e => {
-        const a = calcAge(e.dateOfBirth);
-        if (a === 0) return;
-        if (a >= 20 && a <= 29) ageBuckets["20-29"]++;
-        else if (a >= 30 && a <= 39) ageBuckets["30-39"]++;
-        else if (a >= 40 && a <= 49) ageBuckets["40-49"]++;
-        else if (a >= 50 && a <= 59) ageBuckets["50-59"]++;
-        else if (a >= 60) ageBuckets["60+"]++;
-    });
-    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true);
+    data.forEach(e => { const a = ageOf(e); if (a) ageBuckets[a]++; });
+    renderBarChart("ageChartBody", ageBuckets, "#dc3545", true, true, key => e => ageOf(e) === key);
 
     // Governorate
-    renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0", true);
+    renderBarChart("govChartBody", countBy(data, e => e.governorate), "#0dcaf0", true, false, key => e => e.governorate === key);
 
     // Transport Allowance by Governorate
     renderAllowanceChart(data);
@@ -276,9 +321,10 @@ function renderBreakdown(list) {
     });
     const total = data.length || 1;
     const pctOf = v => ((v / total) * 100).toFixed(1) + "%";
+    registerChartHandler("breakdownBoxes", key => e => mapToCard(e.location) === key);
     el.innerHTML = `<div class="row g-3">
         ${fixed.map((loc, i) => { const v = countBy[loc]; return `
-        <div class="col"><div class="breakdown-box"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`; }).join("")}
+        <div class="col"><div class="breakdown-box clickable" onclick="chartRowClick('breakdownBoxes','${loc}')"><h6>${loc}</h6><div class="num" style="color:${colors[i % colors.length]}">${v}</div><div class="job-mini">Employee(s)</div><span class="pct-circle" style="background:${colors[i % colors.length]}">${pctOf(v)}</span></div></div>`; }).join("")}
     </div>`;
 }
 
@@ -301,6 +347,7 @@ function renderAllowanceChart(list) {
     })).sort((a, b) => b.total - a.total);
     const grandTotal = rows.reduce((a, r) => a + r.total, 0);
     if (!rows.length) { el.innerHTML = '<div class="text-center text-muted py-4">No data</div>'; return; }
+    registerChartHandler("allowanceChartBody", key => e => e.governorate === key);
     el.innerHTML = `
         <table class="table table-sm table-bordered align-middle mb-2" style="font-size:13px">
             <thead class="table-light">
@@ -309,7 +356,7 @@ function renderAllowanceChart(list) {
             <tbody>
                 ${rows.map(r => `
                 <tr>
-                    <td>${r.g}</td>
+                    <td class="clickable" style="cursor:pointer" onclick="chartRowClick('allowanceChartBody','${String(r.g).replace(/\\/g, "\\\\").replace(/'/g, "\\'")}')"><span style="text-decoration:underline dotted">${r.g}</span></td>
                     <td>${r.allowance ? fmt(r.allowance) : "-"}</td>
                     <td>${r.count}</td>
                     <td class="text-end">${fmt(r.total)}</td>
@@ -462,6 +509,7 @@ function filterLocation() {
 }
 
 function applyFilters() {
+    resetChartFilter();
     const dept = document.getElementById("departmentFilter")?.value || "";
     const loc = document.getElementById("locationFilter")?.value || "";
     let filtered = employees;
@@ -578,6 +626,7 @@ function addEmployee() {
 
     employees.push(emp);
     saveToStorage();
+    resetChartFilter();
     renderEmployees();
     updateDashboard();
     renderCharts();
@@ -707,6 +756,7 @@ function saveEdit() {
 
     saveToStorage();
     syncStatuses();
+    resetChartFilter();
     renderEmployees();
     updateDashboard();
     renderCharts();
@@ -721,6 +771,7 @@ function deleteEmployee(code) {
     if (!confirm("Are you sure you want to delete this employee?")) return;
     employees = employees.filter(e => e.code !== code);
     saveToStorage();
+    resetChartFilter();
     renderEmployees();
     updateDashboard();
     renderCharts();
