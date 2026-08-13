@@ -573,7 +573,7 @@ function fieldInputFor(key) {
         return `<select id="${id}" class="form-select"><option value="">Select</option><option>Wahat Bahreya</option><option>Minya</option><option>Khtara & Orabi</option></select>`;
     }
     if (key === "resignationReason") {
-        return `<select id="${id}" class="form-select"><option value="">Select</option><option>Better Job Opportunity</option><option>Higher Salary</option><option>Travel Abroad</option><option>Personal Business</option><option>Work Nature Unsuitable</option><option>Poor Performance</option><option>Failed Probation</option><option>High Work Pressure</option><option>No Development Opportunities</option><option>Direct Manager Style</option><option>Long Commute Distance</option><option>Retirement Age</option><option>Other</option></select>`;
+        return `<select id="${id}" class="form-select"><option value="">Select</option>${["Higher Salary","Job Opportunity – Higher Position","Travel Abroad","Own Business / Self-Employment","Job Nature Not Suitable","Accommodation / Food / Sanitation Issues","Contract Termination – Poor Performance","Contract Termination – Position No Longer Required","Failed Probation Period","High Workload / Work Pressure","Lack of Development Opportunities","Poor Management","Total / Partial Disability","Death","Personal Circumstances","Drug Abuse","Absence Without Notice","Retirement","Termination – Legal Affairs"].map(r => `<option>${r}</option>`).join("")}</select>`;
     }
     if (key === "education") {
         return `<select id="${id}" class="form-select"><option value="">Select</option><option>High School</option><option>Diploma</option><option>Bachelor's</option><option>Master's</option><option>PhD</option></select>`;
