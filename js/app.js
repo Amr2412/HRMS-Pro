@@ -729,16 +729,15 @@ function deleteEmployee(code) {
 
 function exportToCSV() {
     if (!employees.length) { alert("No data to export"); return; }
-    const headers = ["Status","Code","Name","Hiring Date","Resignation Date","Resignation Reason","Position Code","Position","Type","Grade","Department","Section","Unit","Location","Governorate","Transport Allowance","Email","Mobile","Date of Birth","Gender","Direct Manager","Head of Department","Education"];
-    const rows = employees.map(e => [
-        e.status, e.code, e.name, e.hireDate, e.resignationDate, e.resignationReason || "",
-        e.positionCode, e.jobTitle, e.employeeType, e.grade, e.department, e.section,
-        e.unit, e.location, e.governorate, e.transAllowance, e.email, e.mobile, e.dateOfBirth,
-        e.gender, e.directManager, e.headOfDepartment, e.education
-    ]);
-    let csv = headers.join(",") + "\n";
-    rows.forEach(row => { csv += row.map(v => `"${v}"`).join(",") + "\n"; });
-    const blob = new Blob([csv], { type: "text/csv" });
+    const cols = getTableColumns();
+    const headers = cols.map(c => c.label);
+    const rows = employees.map(e => cols.map(c => {
+        const v = e[c.key];
+        return (v === undefined || v === null) ? "" : String(v);
+    }));
+    let csv = "\uFEFF" + headers.join(",") + "\n";
+    rows.forEach(row => { csv += row.map(v => `"${v.replace(/"/g, '""')}"`).join(",") + "\n"; });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = "employees.csv"; a.click();
