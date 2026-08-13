@@ -739,12 +739,8 @@ function saveEdit() {
     emp.hireDate = document.getElementById("editEmpHireDate").value || emp.hireDate;
 
     const selectedStatus = document.getElementById("editEmpStatus").value;
-    if (emp.resignationDate) {
-        emp.status = "Inactive";
-        if (!emp.resignationReason) emp.resignationReason = "N/A";
-    } else {
-        emp.status = selectedStatus || "Active";
-    }
+    emp.status = emp.resignationDate ? "Inactive" : (selectedStatus || "Active");
+    if (emp.resignationDate && !emp.resignationReason) emp.resignationReason = "N/A";
 
     saveToStorage();
     syncStatuses();
