@@ -739,20 +739,11 @@ function saveEdit() {
     emp.hireDate = document.getElementById("editEmpHireDate").value || emp.hireDate;
 
     const selectedStatus = document.getElementById("editEmpStatus").value;
-    if (selectedStatus === "Active") {
-        emp.status = "Active";
-        emp.resignationDate = "";
-        emp.resignationReason = "";
-    } else if (selectedStatus === "Inactive") {
+    if (emp.resignationDate) {
         emp.status = "Inactive";
-        if (!emp.resignationDate) {
-            emp.resignationDate = new Date().toISOString().split("T")[0];
-            logActivity("Resignation", `Employee <strong>${emp.name}</strong> (${emp.code}) became Inactive on ${emp.resignationDate}`, "fa-user-minus");
-        }
+        if (!emp.resignationReason) emp.resignationReason = "N/A";
     } else {
-        emp.status = selectedStatus;
-        emp.resignationDate = "";
-        emp.resignationReason = "";
+        emp.status = selectedStatus || "Active";
     }
 
     saveToStorage();
