@@ -754,6 +754,20 @@ function saveEdit() {
     if (modal) modal.hide();
 }
 
+function editStatusAuto() {
+    const status = document.getElementById("editEmpStatus").value;
+    const dateField = document.getElementById("editEmpResignationDate");
+    const reasonField = document.getElementById("editEmpResignationReason");
+    if (!dateField) return;
+    if (status === "Inactive") {
+        if (!dateField.value) dateField.value = new Date().toISOString().split("T")[0];
+    } else {
+        dateField.value = "";
+        if (reasonField) reasonField.value = "";
+    }
+}
+
+
 function deleteEmployee(code) {
     const emp = employees.find(e => e.code === code);
     if (!confirm("Are you sure you want to delete this employee?")) return;
