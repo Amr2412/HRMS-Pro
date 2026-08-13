@@ -589,9 +589,10 @@ function buildEmpForm() {
     const container = document.getElementById("empFormFields");
     if (!container) return;
     const req = ["code", "name"];
-    const exclude = ["grade", "gender"];
-    container.innerHTML = getTableColumns().filter(c => !exclude.includes(c.key)).map(col => `
-        <div class="col-md-4"><label class="form-label">${col.label}${req.includes(col.key) ? " *" : ""}</label>${fieldInputFor(col.key)}</div>
+    const formKeys = ["status", "code", "name", "hireDate", "resignationDate", "resignationReason", "positionCode", "jobTitle", "employeeType", "department", "section", "unit", "location", "governorate", "transAllowance", "email", "mobile", "dateOfBirth", "directManager", "headOfDepartment"];
+    const labels = getTableColumns().reduce((m, c) => { m[c.key] = c.label; return m; }, {});
+    container.innerHTML = formKeys.map(key => `
+        <div class="col-md-4"><label class="form-label">${labels[key] || prettyLabel(key)}${req.includes(key) ? " *" : ""}</label>${fieldInputFor(key)}</div>
     `).join("");
 }
 
